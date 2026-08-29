@@ -8,10 +8,5 @@
   ],
   "vars": {
     "CORS_ORIGIN": "*"
-  },
-
-  /* IMPORTANT SECURITY NOTE:
-   * DO NOT put secret keys in this file.
-   * Secrets are stored securely in Cloudflare.
-   */
+  }
 }
