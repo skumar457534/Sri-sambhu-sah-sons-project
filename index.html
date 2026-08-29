@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shri Shambhu Sahu Goods & Sons | Pure Deoghar Peda</title>
+    <title>Sri Shambhu Sha & Sons | Pure Deoghar Peda</title>
     <meta name="description" content="Authentic handmade Peda from Baidyanath Dham, Deoghar. Order pure peda online.">
     
-    <!-- Google Fonts: Playfair Display (Serif) & Inter (Sans) & Noto Sans Devanagari (Hindi) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Tailwind CSS (CDN) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -38,11 +38,11 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #FDFBF7; }
         ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        .slide { transition: opacity 1s ease-in-out; }
         
-        /* Fade animation for slider */
-        .slide {
-            transition: opacity 1s ease-in-out;
-        }
+        /* Cart Drawer Animation Styles */
+        .cart-open { transform: translateX(0) !important; }
+        .overlay-open { opacity: 1 !important; visibility: visible !important; }
     </style>
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
@@ -51,11 +51,28 @@
     <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center">
+                <!-- Logo & Brand -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    
+                    <!-- Shiva Trishul Logo (Custom SVG) -->
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- Center Stick -->
+                            <path d="M12 2v20" />
+                            <!-- Center Blade -->
+                            <path d="M12 2l-2.5 3.5" />
+                            <path d="M12 2l2.5 3.5" />
+                            <!-- Side Curves -->
+                            <path d="M5 8v2c0 3.5 3 6 7 6s7-2.5 7-6V8" />
+                            <!-- Side Blades -->
+                            <path d="M5 8l-2 2.5" />
+                            <path d="M19 8l2 2.5" />
+                        </svg>
+                    </div>
+
                     <a href="#" class="flex flex-col">
-                        <span class="font-serif font-bold text-xl md:text-2xl text-maroon leading-tight">Shri Shambhu Sahu</span>
-                        <span class="text-xs text-saffron tracking-widest font-semibold uppercase">Goods & Sons</span>
+                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
+                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase">Deoghar</span>
                     </a>
                 </div>
 
@@ -63,24 +80,19 @@
                 <nav class="hidden lg:flex space-x-6 items-center text-sm xl:text-base">
                     <a href="#home" class="text-maroon font-bold border-b-2 border-maroon transition-colors">Home</a>
                     <a href="about_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">About Us</a>
-                    <a href="#products" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
+                    <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
                     <a href="how_it_works.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">How It Works</a>
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
                     <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
                     <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
                 </nav>
 
-                <!-- Profile, Cart & Mobile Toggle -->
+                <!-- Actions (Cart & Mobile Toggle ONLY - Profile Removed) -->
                 <div class="flex items-center space-x-2 md:space-x-4">
-                    <!-- Login / Profile Button -->
-                    <button class="text-maroon hover:text-saffron transition-colors p-2" aria-label="User Profile">
-                        <i class="ph ph-user-circle text-2xl"></i>
-                    </button>
-                    
                     <!-- Cart Button -->
-                    <button class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
+                    <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
-                        <span class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                        <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                     </button>
                     
                     <!-- Hamburger Icon -->
@@ -96,7 +108,7 @@
             <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
                 <a href="#home" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Home</a>
                 <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
-                <a href="#products" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
+                <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
                 <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">How It Works</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
                 <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
@@ -105,19 +117,46 @@
         </div>
     </header>
 
+    <!-- SHOPPING CART DRAWER (Guest Flow) -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <!-- Cart Header -->
+        <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
+            <h2 class="text-xl font-serif font-bold text-maroon flex items-center gap-2">
+                <i class="ph-fill ph-shopping-bag text-2xl"></i> Your Cart
+            </h2>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Cart Items Container -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <!-- Items injected by JS -->
+        </div>
+
+        <!-- Cart Footer -->
+        <div class="p-5 border-t border-golden/20 bg-white shadow-[0_-4px_15px_rgba(0,0,0,0.02)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">Subtotal</span>
+                <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
+            <button onclick="proceedToCheckout()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Checkout <i class="ph ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- HERO SLIDER SECTION -->
     <section id="home" class="relative w-full h-[100svh] min-h-[600px] overflow-hidden mt-20 md:mt-0">
-        
         <!-- Slider Container -->
         <div id="slider" class="relative w-full h-full">
-            
-            <!-- SLIDE 1 (English) -->
+            <!-- SLIDE 1 -->
             <div class="slide absolute inset-0 w-full h-full opacity-100 z-10">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
-                <!-- 🔥 HOW TO CHANGE IMAGE 1 🔥 -->
                 <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
-                     alt="Baidyanath Dham Temple" 
-                     class="w-full h-full object-cover object-center" />
+                     alt="Baidyanath Dham Temple" class="w-full h-full object-cover object-center" />
                 
                 <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pt-16">
                     <span class="text-golden uppercase tracking-[0.3em] text-xs md:text-sm font-semibold mb-4 drop-shadow-md">
@@ -129,19 +168,17 @@
                     <p class="text-base md:text-xl text-cream/90 mb-10 max-w-2xl drop-shadow-md font-medium">
                         Authentic handmade Peda straight from the sacred land of Deoghar. Made with purity, delivered with care.
                     </p>
-                    <a href="#products" class="bg-maroon hover:bg-maroon/90 text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-[0_4px_14px_0_rgba(123,24,24,0.39)] flex items-center justify-center gap-2">
+                    <button onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="bg-maroon hover:bg-maroon/90 text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-[0_4px_14px_0_rgba(123,24,24,0.39)] flex items-center justify-center gap-2">
                         <i class="ph ph-shopping-bag text-xl"></i> Order Peda Now
-                    </a>
+                    </button>
                 </div>
             </div>
 
-            <!-- SLIDE 2 (Hindi) -->
+            <!-- SLIDE 2 -->
             <div class="slide absolute inset-0 w-full h-full opacity-0 z-0">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80 z-10"></div>
-                <!-- 🔥 HOW TO CHANGE IMAGE 2 🔥 (New Temporary Sweets Image added here) -->
                 <img src="https://images.unsplash.com/photo-1605807646983-377bc5a76493?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
-                     alt="Indian Sweets Peda" 
-                     class="w-full h-full object-cover object-center" />
+                     alt="Indian Sweets Peda" class="w-full h-full object-cover object-center" />
                 
                 <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pt-16">
                     <span class="font-hindi text-golden uppercase tracking-widest text-sm md:text-base font-bold mb-4 drop-shadow-md">
@@ -153,9 +190,9 @@
                     <p class="font-hindi text-base md:text-xl text-cream/90 mb-10 max-w-2xl drop-shadow-md font-medium leading-relaxed">
                         श्री शम्भू साहू गुड्स एण्ड सन्स, वैद्यनाथ धाम (देवघर) से सीधे आपके घर तक। शुद्धता और परम्परा के साथ।
                     </p>
-                    <a href="#products" class="font-hindi bg-maroon hover:bg-maroon/90 text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-[0_4px_14px_0_rgba(123,24,24,0.39)] flex items-center justify-center gap-2">
+                    <button onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="font-hindi bg-maroon hover:bg-maroon/90 text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-[0_4px_14px_0_rgba(123,24,24,0.39)] flex items-center justify-center gap-2">
                         <i class="ph ph-shopping-bag text-xl"></i> अभी ऑर्डर करें
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -175,7 +212,7 @@
         </div>
     </section>
 
-    <!-- PRODUCT SECTION -->
+    <!-- PRODUCT SECTION (Dynamic from Firebase) -->
     <section id="products" class="py-20 bg-cream border-t border-golden/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -184,8 +221,14 @@
                 <div class="w-24 h-1 bg-maroon mx-auto rounded"></div>
             </div>
 
-            <!-- Products Grid (Responsive: 1 col on mobile, 2 on tablet, 3 on desktop) -->
-            <div id="home-product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading Spinner -->
+            <div id="product-loading" class="flex flex-col items-center justify-center py-10">
+                <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon mb-4"></i>
+                <p class="text-gray-500 font-medium">Fetching fresh peda from our kitchen...</p>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="home-product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
                 <!-- Products will be injected here dynamically via JS -->
             </div>
             
@@ -208,7 +251,6 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-14 mt-8">
-                
                 <!-- Step 1 -->
                 <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">1</div>
@@ -218,57 +260,24 @@
                     <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Choose Your Peda</h3>
                     <p class="text-gray-600 text-sm leading-relaxed">Browse our menu, select your favorite traditional peda, choose the perfect weight, and add it to your cart.</p>
                 </div>
-
                 <!-- Step 2 -->
                 <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">2</div>
                     <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-maroon shadow-inner">
                         <i class="ph ph-map-pin-line text-3xl"></i>
                     </div>
-                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Enter Delivery PIN</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Provide your complete delivery address and PIN code at checkout to check delivery availability in your area.</p>
+                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Enter Delivery Address</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Provide your complete delivery address and PIN code at checkout as a guest. No login required!</p>
                 </div>
-
                 <!-- Step 3 -->
                 <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">3</div>
                     <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-maroon shadow-inner">
-                        <i class="ph ph-truck text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Select Courier</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">View estimated delivery dates and shipping charges from our premium courier partners. Choose the one that suits you best.</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
-                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">4</div>
-                    <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-maroon shadow-inner">
                         <i class="ph ph-shield-check text-3xl"></i>
                     </div>
                     <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Pay Securely</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Complete your payment 100% securely through Razorpay using UPI, Cards, or Net Banking. We ensure your data is safe.</p>
+                    <p class="text-gray-600 text-sm leading-relaxed">Select your preferred courier and complete your payment 100% securely through Razorpay.</p>
                 </div>
-
-                <!-- Step 5 -->
-                <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
-                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">5</div>
-                    <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-maroon shadow-inner">
-                        <i class="ph ph-package text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">We Prepare & Ship</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Once your order is accepted, we freshly prepare your peda, pack it carefully, and ship it. You will receive WhatsApp updates!</p>
-                </div>
-
-                <!-- Step 6 -->
-                <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
-                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-saffron text-white font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">6</div>
-                    <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-saffron shadow-inner">
-                        <i class="ph-fill ph-heart text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Enjoy Baba Dham Taste</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Receive your order at your doorstep. Open the box, feel the aroma, and enjoy the authentic taste of Deoghar!</p>
-                </div>
-
             </div>
             
             <div class="text-center mt-16">
@@ -279,12 +288,12 @@
         </div>
     </section>
 
-    <!-- TRACK ORDER CALL TO ACTION (Updated) -->
+    <!-- TRACK ORDER CALL TO ACTION -->
     <section class="py-20 bg-cream">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <h2 class="text-3xl font-serif font-bold text-naturalBrown mb-4">Track Your Order</h2>
             <div class="w-24 h-1 bg-maroon mx-auto rounded mb-8"></div>
-            <p class="text-gray-600 max-w-xl mx-auto mb-10 font-medium">Want to know where your Peda is? Enter your Order ID or tracking number on our dedicated tracking page to get real-time updates.</p>
+            <p class="text-gray-600 max-w-xl mx-auto mb-10 font-medium">Want to know where your Peda is? Enter your Order ID on our dedicated tracking page to get real-time updates.</p>
             
             <a href="track_order.html" class="inline-flex items-center gap-2 bg-white border-2 border-maroon text-maroon hover:bg-maroon hover:text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-sm">
                 <i class="ph ph-magnifying-glass text-xl"></i> Track Package Live
@@ -292,51 +301,24 @@
         </div>
     </section>
 
-    <!-- FAQ PLACEHOLDER -->
-    <section id="faq" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h2 class="text-3xl font-serif font-bold text-naturalBrown mb-4">Got Questions?</h2>
-            <div class="w-24 h-1 bg-golden mx-auto rounded mb-8"></div>
-            <p class="text-gray-600 max-w-xl mx-auto mb-10 font-medium">Find answers about our peda, delivery, pricing, and how to place your order online safely.</p>
-            <a href="faq.html" class="inline-flex items-center gap-2 bg-white border-2 border-maroon text-maroon hover:bg-maroon hover:text-cream px-8 py-3 rounded-md font-semibold transition-all shadow-sm">
-                View All FAQs <i class="ph ph-arrow-right text-lg"></i>
-            </a>
-        </div>
-    </section>
-
-    <!-- FOOTER (Contains Contact Us) -->
-    <footer id="contact" class="bg-naturalBrown text-cream pt-16 pb-8 border-t-[6px] border-maroon">
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12 text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
                 <!-- Brand Info -->
-                <div>
-                    <h4 class="font-serif font-bold text-2xl text-golden mb-4">Shri Shambhu Sahu Goods & Sons</h4>
-                    <p class="text-cream/80 text-sm mb-6 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
+                <div class="max-w-md">
+                    <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
+                    <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
                         <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
                         <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-youtube-logo text-xl"></i></a>
                     </div>
-                </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h4 class="font-serif font-bold text-xl mb-6">Quick Links</h4>
-                    <ul class="space-y-3 text-sm text-cream/80">
-                        <li><a href="#home" class="hover:text-golden transition-colors">Home</a></li>
-                        <li><a href="about_us.html" class="hover:text-golden transition-colors">About Us</a></li>
-                        <li><a href="#products" class="hover:text-golden transition-colors">Our Peda</a></li>
-                        <li><a href="how_it_works.html" class="hover:text-golden transition-colors">How It Works</a></li>
-                        <li><a href="track_order.html" class="hover:text-golden transition-colors">Track Order</a></li>
-                        <li><a href="faq.html" class="hover:text-golden transition-colors">FAQ</a></li>
-                        <li><a href="contact_us.html" class="hover:text-golden transition-colors">Contact Us</a></li>
-                    </ul>
                 </div>
 
                 <!-- Policies -->
                 <div>
-                    <h4 class="font-serif font-bold text-xl mb-6">Policies</h4>
-                    <ul class="space-y-3 text-sm text-cream/80">
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
+                    <ul class="space-y-2 text-sm text-cream/80">
                         <li><a href="#" class="hover:text-golden transition-colors">Privacy Policy</a></li>
                         <li><a href="#" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
                         <li><a href="#" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
@@ -344,166 +326,45 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
+                <!-- Contact Info (Single WhatsApp Number Only) -->
                 <div>
-                    <h4 class="font-serif font-bold text-xl mb-6">Contact Us</h4>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3">
+                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
                             <span>Mandir Ka Purva Darwaza, Baidyanath Dham, Deoghar, Jharkhand – 814112</span>
                         </li>
-                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
-                            <i class="ph ph-phone text-golden text-xl flex-shrink-0"></i>
-                            <span>7488424584</span>
-                        </li>
-                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3">
-                            <i class="ph ph-whatsapp-logo text-golden text-xl flex-shrink-0"></i>
-                            <span>9102507878</span>
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
+                            <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
+                            <span class="font-bold text-xl text-cream">+91 7295021513</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-cream/20 pt-8 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p>© 2026 Shri Shambhu Sahu Goods & Sons. All Rights Reserved.</p>
+            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>© 2026 Sri Shambhu Sha & Sons. All Rights Reserved.</p>
                 <p>Regd. No.: 3271313</p>
             </div>
         </div>
     </footer>
 
-    <!-- FLOATING MAP / VISIT SHOP BUTTON -->
-    <a href="https://www.google.com/maps/search/?api=1&query=Mandir+Ka+Purva+Darwaza,+Baidyanath+Dham,+Deoghar,+Jharkhand+814112" target="_blank" rel="noopener noreferrer" class="fixed bottom-[96px] right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
-        <!-- Google Maps Official SVG Icon -->
+    <!-- FLOATING MAP / VISIT SHOP BUTTON (Google Maps ONLY, NO WhatsApp Widget) -->
+    <a href="https://www.google.com/maps/search/?api=1&query=Mandir+Ka+Purva+Darwaza,+Baidyanath+Dham,+Deoghar,+Jharkhand+814112" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-9 h-9" />
         <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
             Visit Our Shop
         </span>
     </a>
 
-    <!-- FLOATING WHATSAPP -->
-    <a href="https://wa.me/9102507878?text=Hello,%20I%20want%20to%20know%20more%20about%20your%20Peda." target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(37,211,102,0.3)] border border-gray-100" aria-label="Chat on WhatsApp">
-        <!-- Official WhatsApp Logo -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="w-9 h-9" />
-        <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
-            Chat on WhatsApp
-        </span>
-    </a>
-
-    <!-- SCRIPTS -->
+    <!-- UI SCRIPTS (Slider, Mobile Menu, Cart Toggle) -->
     <script>
-        // 1. Dynamic Products Database (Shared with our_peda.html)
-        const productsData = [
-            {
-                id: 1,
-                name: "Special Deoghar Peda",
-                desc: "Pure traditional khoya peda, crafted with the authentic recipe of Baba Dham.",
-                img: "https://images.unsplash.com/photo-1596561339395-6fdfbd211463?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                badge: { text: "Best Seller", bg: "bg-golden" },
-                order: 1,
-                options: [
-                    { weight: "250g", price: 120 },
-                    { weight: "500g", price: 240, default: true },
-                    { weight: "1 Kg", price: 480 }
-                ]
-            },
-            {
-                id: 2,
-                name: "Premium Kesar Peda",
-                desc: "Authentic khoya peda enriched with the goodness and aroma of pure saffron (Kesar).",
-                img: "https://images.unsplash.com/photo-1605807646983-377bc5a76493?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                badge: { text: "New", bg: "bg-maroon" },
-                order: 2,
-                options: [
-                    { weight: "250g", price: 140 },
-                    { weight: "500g", price: 280, default: true },
-                    { weight: "1 Kg", price: 560 }
-                ]
-            },
-            {
-                id: 3,
-                name: "Family Pack Peda",
-                desc: "Perfect for gifting and sharing during festivals. Shuddh Deoghar taste in a larger quantity.",
-                img: "https://images.unsplash.com/photo-1543419912-1f480373d528?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                badge: { text: "Value Pack", bg: "bg-saffron" },
-                order: 3,
-                options: [
-                    { weight: "1 Kg", price: 460, default: true },
-                    { weight: "2 Kg", price: 920 }
-                ]
-            }
-        ];
-
-        function renderHomeProducts() {
-            const grid = document.getElementById('home-product-grid');
-            if (!grid) return;
-
-            grid.innerHTML = productsData.map(product => {
-                let defaultOptIndex = product.options.findIndex(opt => opt.default);
-                if (defaultOptIndex === -1) defaultOptIndex = 0;
-                
-                const defaultPrice = product.options[defaultOptIndex].price;
-                
-                const optionsHTML = product.options.map((opt, i) => 
-                    `<option value="${i}" ${i === defaultOptIndex ? 'selected' : ''}>${opt.weight}</option>`
-                ).join('');
-
-                const badgeHTML = product.badge ? 
-                    `<div class="absolute top-4 left-4 ${product.badge.bg} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">${product.badge.text}</div>` : '';
-
-                return `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                        <div class="relative h-64 md:h-72 w-full bg-gray-100 overflow-hidden group cursor-pointer">
-                            <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                            ${badgeHTML}
-                        </div>
-                        
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl md:text-2xl font-serif font-bold text-naturalBrown mb-2">${product.name}</h3>
-                            <p class="text-sm text-gray-600 mb-6 flex-grow">${product.desc}</p>
-                            
-                            <div class="flex justify-between items-end mb-6">
-                                <div class="w-1/2 pr-2">
-                                    <label class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Select Weight</label>
-                                    <select class="w-full bg-cream border border-gray-200 rounded-md p-2.5 text-sm text-naturalBrown focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon font-medium cursor-pointer" onchange="updatePrice(this, ${product.id})">
-                                        ${optionsHTML}
-                                    </select>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Price</span>
-                                    <span class="block text-2xl font-bold text-maroon" id="price-${product.id}">₹${defaultPrice}</span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3">
-                                <button class="flex-1 bg-maroon text-cream py-3.5 rounded-md font-semibold hover:bg-maroon/90 transition-colors shadow-md text-sm md:text-base">Buy Now</button>
-                                <button class="bg-white border-2 border-maroon text-maroon p-3.5 rounded-md hover:bg-maroon hover:text-cream transition-colors flex items-center justify-center"><i class="ph ph-shopping-cart text-xl"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Price update logic for homepage
-        function updatePrice(selectElement, productId) {
-            const product = productsData.find(p => p.id === productId);
-            if (product) {
-                const selectedOptionIndex = selectElement.value;
-                const newPrice = product.options[selectedOptionIndex].price;
-                document.getElementById(`price-${productId}`).innerText = `₹${newPrice}`;
-            }
-        }
-
-        // Initialize homepage products
-        renderHomeProducts();
-
-        // 1. Mobile Menu Toggle Logic
+        // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileLinks = document.querySelectorAll('.mobile-link');
         const menuIcon = mobileMenuBtn.querySelector('i');
 
-        // Helper function to close menu
         function closeMobileMenu() {
             if (!mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
@@ -522,16 +383,12 @@
             }
         });
 
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
         document.addEventListener('click', (e) => {
-            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                closeMobileMenu();
-            }
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
         });
 
+        // Header scroll effect
         const header = document.querySelector('header');
         window.addEventListener('scroll', () => {
             closeMobileMenu(); 
@@ -539,7 +396,7 @@
             else header.classList.remove('shadow-md');
         });
 
-        // 2. Slider Logic
+        // --- Slider Logic ---
         let currentSlideIndex = 0;
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
@@ -548,47 +405,283 @@
         function updateSlider(index) {
             slides.forEach((slide, i) => {
                 if(i === index) {
-                    slide.classList.remove('opacity-0', 'z-0');
-                    slide.classList.add('opacity-100', 'z-10');
-                    dots[i].classList.replace('bg-white/50', 'bg-golden');
-                    dots[i].classList.replace('hover:bg-white', 'bg-golden');
+                    slide.classList.remove('opacity-0', 'z-0'); slide.classList.add('opacity-100', 'z-10');
+                    dots[i].classList.replace('bg-white/50', 'bg-golden'); dots[i].classList.replace('hover:bg-white', 'bg-golden');
                 } else {
-                    slide.classList.remove('opacity-100', 'z-10');
-                    slide.classList.add('opacity-0', 'z-0');
-                    dots[i].classList.replace('bg-golden', 'bg-white/50');
-                    dots[i].classList.add('hover:bg-white');
+                    slide.classList.remove('opacity-100', 'z-10'); slide.classList.add('opacity-0', 'z-0');
+                    dots[i].classList.replace('bg-golden', 'bg-white/50'); dots[i].classList.add('hover:bg-white');
                 }
             });
         }
-
-        function nextSlide() {
-            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-            updateSlider(currentSlideIndex);
-            resetInterval();
-        }
-
-        function prevSlide() {
-            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-            updateSlider(currentSlideIndex);
-            resetInterval();
-        }
-
-        function goToSlide(index) {
-            currentSlideIndex = index;
-            updateSlider(currentSlideIndex);
-            resetInterval();
-        }
-
-        function startInterval() {
-            slideInterval = setInterval(nextSlide, 5000); 
-        }
-
-        function resetInterval() {
-            clearInterval(slideInterval);
-            startInterval();
-        }
-
+        function nextSlide() { currentSlideIndex = (currentSlideIndex + 1) % slides.length; updateSlider(currentSlideIndex); resetInterval(); }
+        function prevSlide() { currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length; updateSlider(currentSlideIndex); resetInterval(); }
+        function goToSlide(index) { currentSlideIndex = index; updateSlider(currentSlideIndex); resetInterval(); }
+        function startInterval() { slideInterval = setInterval(nextSlide, 5000); }
+        function resetInterval() { clearInterval(slideInterval); startInterval(); }
         startInterval();
+
+        // --- Cart Drawer Toggle ---
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            drawer.classList.toggle('cart-open');
+            overlay.classList.toggle('overlay-open');
+        }
+
+        // Global functions exposed for HTML elements (Price update, etc.)
+        window.updatePrice = function(selectElement, productId) {
+            const customEvent = new CustomEvent('priceChanged', { detail: { selectElement, productId } });
+            document.dispatchEvent(customEvent);
+        }
+        window.triggerAddToCart = function(productId) {
+            const customEvent = new CustomEvent('addToCartTrigger', { detail: { productId } });
+            document.dispatchEvent(customEvent);
+        }
+        window.proceedToCheckout = function() {
+            window.location.href = "checkout.html";
+        }
+    </script>
+
+    <!-- FIREBASE & CART LOGIC (Dynamic Data) -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Your Exact Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fallback data in case Firestore rules fail or DB is empty during setup
+        const fallbackProducts = [
+            { id: "1", name: "Special Deoghar Peda", desc: "Pure traditional khoya peda.", img: "https://images.unsplash.com/photo-1596561339395-6fdfbd211463?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", basePrice: 480, inStock: true },
+            { id: "2", name: "Premium Kesar Peda", desc: "Authentic khoya peda with saffron.", img: "https://images.unsplash.com/photo-1605807646983-377bc5a76493?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", basePrice: 560, inStock: true }
+        ];
+
+        let loadedProducts = [];
+
+        // Convert base price (per kg) to variants
+        function generateVariants(basePrice) {
+            return [
+                { weight: "250g", price: Math.round(basePrice * 0.25) },
+                { weight: "500g", price: Math.round(basePrice * 0.50), default: true },
+                { weight: "1 Kg", price: basePrice }
+            ];
+        }
+
+        async function fetchProducts() {
+            const grid = document.getElementById('home-product-grid');
+            const loading = document.getElementById('product-loading');
+            
+            try {
+                // Try fetching from real database
+                const q = query(collection(db, "products"), where("inStock", "==", true));
+                const querySnapshot = await getDocs(q);
+                
+                loadedProducts = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    loadedProducts.push({
+                        id: doc.id,
+                        name: data.name,
+                        desc: data.desc || data.description,
+                        img: data.img || data.image,
+                        options: generateVariants(data.basePrice || data.price)
+                    });
+                });
+
+                // If DB is empty, use fallback temporarily to maintain UI
+                if(loadedProducts.length === 0) {
+                    console.log("Firestore empty. Using fallback data.");
+                    loadedProducts = fallbackProducts.map(p => ({...p, options: generateVariants(p.basePrice)}));
+                }
+
+            } catch (error) {
+                console.error("Firebase Read Error (Check Security Rules):", error);
+                // Fallback on error (like Permission Denied)
+                loadedProducts = fallbackProducts.map(p => ({...p, options: generateVariants(p.basePrice)}));
+            }
+
+            // Render Products
+            loading.classList.add('hidden');
+            grid.classList.remove('hidden');
+            
+            if(loadedProducts.length > 0) {
+                grid.innerHTML = loadedProducts.map(product => {
+                    let defaultOptIndex = product.options.findIndex(opt => opt.default);
+                    if (defaultOptIndex === -1) defaultOptIndex = 0;
+                    const defaultPrice = product.options[defaultOptIndex].price;
+                    
+                    const optionsHTML = product.options.map((opt, i) => 
+                        `<option value="${i}" ${i === defaultOptIndex ? 'selected' : ''}>${opt.weight}</option>`
+                    ).join('');
+
+                    return `
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                            <div class="relative h-64 md:h-72 w-full bg-gray-100 overflow-hidden group cursor-pointer">
+                                <img src="${product.img}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-xl md:text-2xl font-serif font-bold text-naturalBrown mb-2">${product.name}</h3>
+                                <p class="text-sm text-gray-600 mb-6 flex-grow">${product.desc}</p>
+                                
+                                <div class="flex justify-between items-end mb-6">
+                                    <div class="w-1/2 pr-2">
+                                        <label class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Select Weight</label>
+                                        <select id="select-${product.id}" class="w-full bg-cream border border-gray-200 rounded-md p-2.5 text-sm text-naturalBrown focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon font-medium cursor-pointer" onchange="window.updatePrice(this, '${product.id}')">
+                                            ${optionsHTML}
+                                        </select>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Price</span>
+                                        <span class="block text-2xl font-bold text-maroon" id="price-${product.id}">₹${defaultPrice}</span>
+                                    </div>
+                                </div>
+                                <button onclick="window.triggerAddToCart('${product.id}')" class="w-full bg-maroon text-cream py-3.5 rounded-md font-semibold hover:bg-maroon/90 transition-colors shadow-md text-sm md:text-base flex items-center justify-center gap-2">
+                                    <i class="ph ph-shopping-cart text-xl"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500">No products available currently.</p>`;
+            }
+        }
+
+        // --- CART LOGIC (localStorage based for Guest checkout) ---
+        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
+            renderCartUI();
+        }
+
+        // Listen for dynamic UI events
+        document.addEventListener('priceChanged', (e) => {
+            const { selectElement, productId } = e.detail;
+            const product = loadedProducts.find(p => p.id === productId);
+            if (product) {
+                const newPrice = product.options[selectElement.value].price;
+                document.getElementById(`price-${productId}`).innerText = `₹${newPrice}`;
+            }
+        });
+
+        document.addEventListener('addToCartTrigger', (e) => {
+            const { productId } = e.detail;
+            const product = loadedProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const selectEl = document.getElementById(`select-${productId}`);
+            const selectedOpt = product.options[selectEl.value];
+            
+            // Check if exact item (id + weight) already in cart
+            const existingItem = cart.find(item => item.id === productId && item.weight === selectedOpt.weight);
+            
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    img: product.img,
+                    weight: selectedOpt.weight,
+                    price: selectedOpt.price,
+                    qty: 1
+                });
+            }
+            saveCart();
+            
+            // Open Drawer automatically
+            const drawer = document.getElementById('cart-drawer');
+            if(!drawer.classList.contains('cart-open')) {
+                window.toggleCart();
+            }
+        });
+
+        // Render Cart inside Drawer
+        function renderCartUI() {
+            const itemsContainer = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const badgeEl = document.getElementById('cart-badge');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            let subtotal = 0;
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
+                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
+                        <p class="font-medium text-lg">Your cart is empty</p>
+                    </div>`;
+                subtotalEl.innerText = '₹0';
+                badgeEl.classList.add('hidden');
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map((item, index) => {
+                subtotal += (item.price * item.qty);
+                totalItems += item.qty;
+                return `
+                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
+                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
+                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.innerText = `₹${subtotal}`;
+            badgeEl.innerText = totalItems;
+            badgeEl.classList.remove('hidden');
+            checkoutBtn.disabled = false;
+
+            // Attach event listeners for dynamic buttons inside cart
+            document.querySelectorAll('.update-qty').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    const action = e.target.getAttribute('data-action');
+                    if(action === 'plus') cart[idx].qty += 1;
+                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
+                    saveCart();
+                });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                    cart.splice(idx, 1);
+                    saveCart();
+                });
+            });
+        }
+
+        // Init
+        fetchProducts();
+        renderCartUI();
     </script>
 </body>
 </html>
