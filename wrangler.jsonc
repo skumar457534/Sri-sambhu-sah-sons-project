@@ -12,12 +12,10 @@
   
   /* * IMPORTANT SECURITY NOTE:
    * DO NOT put your secret keys (Razorpay, Shiprocket, Firebase) in this file.
-   * This file is usually uploaded to GitHub, so secrets here can be stolen.
-   * * Run these commands in your terminal to safely store secrets in Cloudflare:
+   * Run these commands in your terminal to safely store secrets in Cloudflare:
    * wrangler secret put RAZORPAY_KEY_ID
    * wrangler secret put RAZORPAY_KEY_SECRET
    * wrangler secret put SHIPROCKET_EMAIL
    * wrangler secret put SHIPROCKET_PASSWORD
    */
 }
-```
