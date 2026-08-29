@@ -1,7 +1,7 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "shri-shambhu-sahu-api",
-  "main": "src/index.ts",
+"$schema": "node_modules/wrangler/config-schema.json",
+"name": "peda-store-api",
+"main": "src/index.ts",
   "compatibility_date": "2026-08-29",
   "compatibility_flags": [
     "nodejs_compat"
