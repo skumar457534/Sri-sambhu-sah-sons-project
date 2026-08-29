@@ -1,21 +1,17 @@
 {
-"$schema": "node_modules/wrangler/config-schema.json",
-"name": "peda-store-api",
-"main": "src/index.ts",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "peda-store-api",
+  "main": "src/index.ts",
   "compatibility_date": "2026-08-29",
   "compatibility_flags": [
     "nodejs_compat"
   ],
   "vars": {
-    "CORS_ORIGIN": "*" 
-  }
-  
-  /* * IMPORTANT SECURITY NOTE:
-   * DO NOT put your secret keys (Razorpay, Shiprocket, Firebase) in this file.
-   * Run these commands in your terminal to safely store secrets in Cloudflare:
-   * wrangler secret put RAZORPAY_KEY_ID
-   * wrangler secret put RAZORPAY_KEY_SECRET
-   * wrangler secret put SHIPROCKET_EMAIL
-   * wrangler secret put SHIPROCKET_PASSWORD
+    "CORS_ORIGIN": "*"
+  },
+
+  /* IMPORTANT SECURITY NOTE:
+   * DO NOT put secret keys in this file.
+   * Secrets are stored securely in Cloudflare.
    */
 }
