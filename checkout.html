@@ -131,11 +131,11 @@
                             </div>
                             <div class="col-span-1 md:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
-                                <input type="text" id="city-input" required class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
+                                <input type="text" id="city-input" required readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-3 focus:outline-none text-gray-600 transition-all cursor-not-allowed" placeholder="Auto-filled">
                             </div>
                             <div class="col-span-1 md:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">State *</label>
-                                <input type="text" id="state-input" required class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
+                                <input type="text" id="state-input" required readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-3 focus:outline-none text-gray-600 transition-all cursor-not-allowed" placeholder="Auto-filled">
                             </div>
                         </div>
                     </form>
@@ -157,11 +157,11 @@
 
                     <div id="courier-loading" class="hidden text-center py-6">
                         <i class="ph ph-spinner-gap animate-spin text-3xl text-maroon mb-3 inline-block"></i>
-                        <p class="text-sm font-medium text-gray-500">Checking Live Shiprocket Rates...</p>
+                        <p class="text-sm font-medium text-gray-500">Checking Serviceability...</p>
                     </div>
 
                     <div id="courier-options" class="space-y-4 hidden">
-                        <!-- Options injected via API -->
+                        <!-- Options injected via JS based on PIN check -->
                     </div>
                 </div>
 
@@ -406,6 +406,9 @@
                     courierLoading.classList.remove('hidden');
                     courierOptionsBox.classList.add('hidden');
                     
+                    cityInput.value = '';
+                    stateInput.value = '';
+                    
                     fetchRealCourierOptions(val);
                 }, 300);
             } else {
@@ -423,13 +426,13 @@
 
         async function fetchRealCourierOptions(pincode) {
             try {
-                // Calculate rough weight in kg
+                // Calculate dynamic weight in kg based on cart items
                 let totalWeight = 0;
                 cart.forEach(item => {
                     if (item.weight.includes("Kg")) totalWeight += (parseFloat(item.weight) * item.qty);
                     else if (item.weight.includes("g")) totalWeight += ((parseFloat(item.weight) / 1000) * item.qty);
                 });
-                if (totalWeight === 0) totalWeight = 1;
+                if (totalWeight === 0) totalWeight = 0.5; // Minimum 500g fallback if parsing fails
 
                 const response = await fetch(`${API_BASE_URL}/shiprocket/serviceability`, {
                     method: 'POST',
@@ -440,6 +443,12 @@
                 const result = await response.json();
                 
                 if (result.success && result.data && result.data.available_courier_companies) {
+                    
+                    // Auto fill city and state from Shiprocket Real Data
+                    if(result.data.city) cityInput.value = result.data.city;
+                    if(result.data.state) stateInput.value = result.data.state;
+
+                    // Map top 3 couriers
                     const couriers = result.data.available_courier_companies.slice(0, 3).map(c => ({
                         id: c.courier_company_id,
                         name: c.courier_name,
@@ -466,17 +475,14 @@
                     `).join('');
                     
                     window.setShipping(couriers[0].price);
-                    
-                    // Auto fill city and state from Shiprocket Data
-                    if(result.data.city) cityInput.value = result.data.city;
-                    if(result.data.state) stateInput.value = result.data.state;
 
                 } else {
-                    throw new Error("No couriers available");
+                    throw new Error(result.error || "No couriers available for this PIN");
                 }
             } catch (error) {
                 console.error("Shiprocket Error:", error);
-                courierOptionsBox.innerHTML = `<div class="text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 font-medium">Delivery not available for this PIN code right now. Please try another PIN.</div>`;
+                // Production-ready error handling
+                courierOptionsBox.innerHTML = `<div class="text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 font-medium flex items-start gap-2"><i class="ph-fill ph-warning-circle text-lg"></i> <span>Delivery not available for this PIN code or service is currently busy. Please verify the PIN or try again later.</span></div>`;
                 selectedShippingAmount = 0;
                 updateTotals();
             } finally {
@@ -502,8 +508,8 @@
             }
 
             const selectedCourier = document.querySelector('input[name="courier"]:checked');
-            if(!selectedCourier || selectedShippingAmount === 0) {
-                formError.innerText = "Please ensure PIN code is valid and a courier is selected.";
+            if(!selectedCourier || selectedShippingAmount === 0 || cityInput.value === '') {
+                formError.innerText = "Please ensure a valid PIN code is entered and a courier is selected.";
                 formError.classList.remove('hidden');
                 return;
             }
@@ -535,7 +541,7 @@
                     "currency": "INR",
                     "name": "Sri Shambhu Sha & Sons",
                     "description": "Authentic Deoghar Peda Order",
-                    "image": "https://placehold.co/100x100/7B1818/FDFBF7?text=S", // Assured to load in Razorpay iframe
+                    "image": "https://placehold.co/100x100/7B1818/FDFBF7?text=S", 
                     "order_id": orderData.id, 
                     "handler": async function (response) {
                         // 3. SHOW PROCESSING OVERLAY
@@ -586,7 +592,6 @@
                                 userId: window.currentUser ? window.currentUser.uid : 'GUEST'
                             };
 
-                            // Save using the globally exported Firebase functions
                             await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, "orders"), orderPayload);
 
                             // 6. SUCCESS UI
