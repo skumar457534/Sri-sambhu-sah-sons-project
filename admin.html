@@ -647,7 +647,7 @@
         // STRICT AUTHENTICATION CHECK
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.replace("login.html");
+                window.location.replace("admin-login.html");
                 return;
             }
 
@@ -667,18 +667,18 @@
                     // Normal user trying to access admin page
                     showToast("Access Denied. Administrator Privileges Required.", "error");
                     await signOut(auth);
-                    window.location.replace("login.html");
+                    window.location.replace("admin-login.html");
                 }
             } catch (error) {
                 console.error("Auth Error:", error);
                 showToast("Security check failed.", "error");
                 await signOut(auth);
-                window.location.replace("login.html");
+                window.location.replace("admin-login.html");
             }
         });
 
         window.logoutAdmin = function() {
-            signOut(auth).then(() => window.location.replace("login.html"));
+            signOut(auth).then(() => window.location.replace("admin-login.html"));
         }
 
         // --- REAL-TIME LISTENERS ---
@@ -809,8 +809,9 @@
                         <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2">Reject</button>
                     `;
                 } else if (status === 'ACCEPTED' && order.awb) {
+                    const shipmentIdParam = order.shiprocketShipmentId || '';
                     btns = `
-                        <button onclick="window.simulatePrintLabel('${order.awb}')" class="px-3 py-1.5 text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Label</button>
+                        <button onclick="window.simulatePrintLabel('${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Label</button>
                         <button onclick="window.simulateCourierPickup('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1" title="Mock Shiprocket Pickup"><i class="ph-fill ph-truck"></i> [Pickup]</button>
                     `;
                 }
@@ -1049,7 +1050,29 @@
             `).join('');
         }
 
-        window.simulatePrintLabel = function(awb) { showToast(`Simulating Label Download for AWB: ${awb}`, "success"); }
+        window.simulatePrintLabel = async function(shipmentId) {
+            if(!shipmentId || shipmentId === 'undefined') {
+                showToast("Shipment ID not found. Cannot generate label.", "error");
+                return;
+            }
+            showToast("Generating Label from Shiprocket...", "success");
+            try {
+                const res = await fetch("https://peda-store-api.skumar457534.workers.dev/api/shiprocket/label", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: shipmentId })
+                });
+                const data = await res.json();
+                if(data.success && data.label_url) {
+                    window.open(data.label_url, '_blank');
+                } else {
+                    showToast("Label not generated yet. Try again later.", "error");
+                }
+            } catch(e) {
+                showToast("Failed to fetch label.", "error");
+            }
+        }
+
         window.simulateCourierPickup = async function(id) {
             try {
                 const orderRef = doc(db, "orders", id);
