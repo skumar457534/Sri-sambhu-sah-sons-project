@@ -52,16 +52,8 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo & Brand -->
                 <div class="flex-shrink-0 flex items-center gap-3">
-                    <!-- Shiva Trishul Logo -->
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20" />
-                            <path d="M12 2l-2.5 3.5" />
-                            <path d="M12 2l2.5 3.5" />
-                            <path d="M5 8v2c0 3.5 3 6 7 6s7-2.5 7-6V8" />
-                            <path d="M5 8l-2 2.5" />
-                            <path d="M19 8l2 2.5" />
-                        </svg>
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                        <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                     </div>
                     <a href="index.html" class="flex flex-col">
                         <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
@@ -78,9 +70,13 @@
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
                     <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
                     <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
+                    <!-- Dynamic Auth Link Desktop -->
+                    <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
+                        <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
+                    </span>
                 </nav>
 
-                <!-- Actions (Cart & Mobile Toggle ONLY) -->
+                <!-- Actions (Cart & Mobile Toggle) -->
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
@@ -102,12 +98,16 @@
                 <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">How It Works</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
                 <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
-                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md">Contact Us</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
+                <!-- Dynamic Auth Link Mobile -->
+                <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
+                    <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- SHOPPING CART DRAWER (Guest Flow) -->
+    <!-- SHOPPING CART DRAWER -->
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
@@ -127,9 +127,34 @@
                 <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
             </div>
             <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
-            <button onclick="proceedToCheckout()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 Proceed to Checkout <i class="ph ph-arrow-right"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- GUEST CHECKOUT WARNING MODAL -->
+    <div id="guest-checkout-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-maroon">
+            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-user-circle text-4xl text-saffron"></i>
+            </div>
+            <h3 class="font-serif font-bold text-naturalBrown text-2xl mb-2">Login Required?</h3>
+            <p class="text-sm text-gray-600 mb-4 leading-relaxed">You are not logged in. Creating an account allows you to track your live order history and manage addresses easily.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 text-gray-700 text-xs p-3 rounded-lg mb-6 text-left shadow-sm">
+                <strong><i class="ph-fill ph-warning-circle text-saffron"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-maroon">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-sign-in"></i> Login / Signup Now
+                </a>
+                <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
+                    Order Without Signup (Guest)
+                </a>
+                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-maroon underline transition-colors">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -185,8 +210,8 @@
                     <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
                     <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
-                        <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
                     </div>
                 </div>
 
@@ -194,10 +219,10 @@
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
                     <ul class="space-y-2 text-sm text-cream/80">
-                        <li><a href="#" class="hover:text-golden transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Shipping Policy</a></li>
+                        <li><a href="privacy_policy.html" class="hover:text-golden transition-colors">Privacy Policy</a></li>
+                        <li><a href="return_policy.html" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
+                        <li><a href="shipping_policy.html" class="hover:text-golden transition-colors">Shipping Policy</a></li>
                     </ul>
                 </div>
 
@@ -207,11 +232,11 @@
                     <ul class="space-y-4 text-sm text-cream/80">
                         <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
-                            <span>Mandir Ka Purva Darwaza, Baidyanath Dham, Deoghar, Jharkhand – 814112</span>
+                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
                         </li>
                         <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
-                            <span class="font-bold text-xl text-cream">+91 7295021513</span>
+                            <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
                         </li>
                     </ul>
                 </div>
@@ -225,14 +250,14 @@
     </footer>
 
     <!-- FLOATING MAP / VISIT SHOP BUTTON -->
-    <a href="https://www.google.com/maps/search/?api=1&query=Mandir+Ka+Purva+Darwaza,+Baidyanath+Dham,+Deoghar,+Jharkhand+814112" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
+    <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-9 h-9" />
         <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
             Visit Our Shop
         </span>
     </a>
 
-    <!-- SCRIPTS -->
+    <!-- UI SCRIPTS -->
     <script>
         // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -278,11 +303,12 @@
             overlay.classList.toggle('overlay-open');
         }
 
-        window.proceedToCheckout = function() {
-            window.location.href = "checkout.html";
+        function closeGuestModal() {
+            document.getElementById('guest-checkout-modal').classList.add('hidden');
+            document.getElementById('guest-checkout-modal').classList.remove('flex');
         }
 
-        // Global functions exposed for HTML elements (Price update, etc.)
+        // Global functions exposed for HTML elements
         window.updatePrice = function(selectElement, productId) {
             const customEvent = new CustomEvent('priceChanged', { detail: { selectElement, productId } });
             document.dispatchEvent(customEvent);
@@ -293,10 +319,11 @@
         }
     </script>
 
-    <!-- FIREBASE & CART LOGIC (Dynamic Data) -->
+    <!-- FIREBASE & CART LOGIC (Strictly Dynamic) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
@@ -310,14 +337,41 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        const fallbackProducts = [
-            { id: "1", name: "Special Deoghar Peda", desc: "Pure traditional khoya peda.", img: "https://images.unsplash.com/photo-1596561339395-6fdfbd211463?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", basePrice: 480, inStock: true, order: 1 },
-            { id: "2", name: "Premium Kesar Peda", desc: "Authentic khoya peda with saffron.", img: "https://images.unsplash.com/photo-1605807646983-377bc5a76493?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", basePrice: 560, inStock: true, order: 2 },
-            { id: "3", name: "Family Pack Peda", desc: "Shuddh Deoghar taste in a larger quantity.", img: "https://images.unsplash.com/photo-1543419912-1f480373d528?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", basePrice: 460, inStock: true, order: 3 }
-        ];
-
+        const auth = getAuth(app);
+        
         let loadedProducts = [];
+        let currentUser = null;
+
+        // AUTHENTICATION LISTENER
+        onAuthStateChanged(auth, (user) => {
+            const deskLink = document.getElementById('auth-link-desk');
+            const mobLink = document.getElementById('auth-link-mob');
+            
+            if (user) {
+                currentUser = user;
+                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-maroon font-bold hover:text-saffron transition-colors">Logout</button>`;
+                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
+            } else {
+                currentUser = null;
+                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-maroon font-bold transition-colors">Login / Signup</a>`;
+                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
+            }
+        });
+
+        window.userLogout = function() {
+            signOut(auth).then(() => window.location.reload());
+        }
+
+        // CHECKOUT FLOW WITH AUTH CHECK
+        window.proceedToCheckoutFlow = function() {
+            if (currentUser) {
+                window.location.href = "checkout.html";
+            } else {
+                document.getElementById('guest-checkout-modal').classList.remove('hidden');
+                document.getElementById('guest-checkout-modal').classList.add('flex');
+                toggleCart();
+            }
+        }
 
         function generateVariants(basePrice) {
             return [
@@ -331,6 +385,7 @@
             const loading = document.getElementById('product-loading');
             
             try {
+                // Strictly fetch from real database (No fake data fallback here)
                 const q = query(collection(db, "products"), where("inStock", "==", true));
                 const querySnapshot = await getDocs(q);
                 
@@ -346,18 +401,13 @@
                         options: generateVariants(data.basePrice || data.price)
                     });
                 });
-
-                if(loadedProducts.length === 0) {
-                    loadedProducts = fallbackProducts.map(p => ({...p, options: generateVariants(p.basePrice)}));
-                }
-
             } catch (error) {
                 console.error("Firebase Read Error:", error);
-                loadedProducts = fallbackProducts.map(p => ({...p, options: generateVariants(p.basePrice)}));
             }
 
             loading.classList.add('hidden');
-            // Sort initially by Recommended (order)
+            
+            // Sort initially by Recommended (order field)
             loadedProducts.sort((a, b) => a.order - b.order);
             renderProductGrid(loadedProducts);
         }
@@ -405,7 +455,8 @@
                     `;
                 }).join('');
             } else {
-                grid.innerHTML = `<p class="col-span-full text-center text-gray-500">No products available currently.</p>`;
+                // Completely dynamic. Shows empty state if database has no active products.
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 text-lg py-10 bg-white border border-gray-100 rounded-xl shadow-sm">No products available currently. We are updating our menu.</p>`;
             }
         }
 
