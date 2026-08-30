@@ -23,10 +23,6 @@
                         golden: "#D4AF37",
                         saffron: "#F48C06",
                         naturalBrown: "#5C4033",
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['"Inter"', 'sans-serif'],
                     }
                 }
             }
@@ -47,17 +43,17 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden flex h-screen">
 
-    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[500] flex flex-col gap-2 w-full max-w-sm px-4"></div>
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[1000] flex flex-col gap-2 w-full max-w-sm px-4"></div>
 
     <!-- ========================================== -->
     <!-- 1. ADMIN LOGIN SCREEN (Visible by default) -->
     <!-- ========================================== -->
-    <div id="admin-login-screen" class="fixed inset-0 bg-cream z-[400] flex items-center justify-center p-4 transition-opacity duration-300">
+    <div id="admin-login-screen" class="fixed inset-0 bg-cream z-[900] flex items-center justify-center p-4 transition-opacity duration-300">
         <!-- Background Decor -->
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-maroon/5 rounded-full blur-3xl z-0"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-golden/10 rounded-full blur-3xl z-0"></div>
 
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-golden/20 z-10 overflow-hidden flex flex-col transform transition-transform" id="login-box">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-golden/20 z-10 overflow-hidden flex flex-col">
             <div class="bg-maroon p-6 text-center border-b-[4px] border-golden">
                 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-maroon to-red-900 mx-auto flex items-center justify-center shadow-lg mb-3 border-2 border-golden/50">
                     <!-- Trishul Icon -->
@@ -70,7 +66,7 @@
                         <path d="M19 8l2 2.5" />
                     </svg>
                 </div>
-                <h1 class="text-xl font-serif font-bold text-cream">Secure Admin Portal</h1>
+                <h1 class="text-xl font-[Playfair_Display] font-bold text-cream">Secure Admin Portal</h1>
                 <p class="text-xs text-golden tracking-widest uppercase mt-1">Sri Shambhu Sha & Sons</p>
             </div>
             
@@ -90,16 +86,16 @@
                     </button>
                 </form>
                 <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500 text-center">
-                    <i class="ph-fill ph-lock-key text-sm align-middle text-maroon"></i> Access restricted to verified database administrators.
+                    <i class="ph-fill ph-lock-key text-sm align-middle text-maroon"></i> Restricted strictly to authorized database administrators.
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- 2. ADMIN DASHBOARD SCREEN (Hidden until Login)-->
+    <!-- 2. ADMIN DASHBOARD SCREEN (Hidden until fully verified)-->
     <!-- ========================================== -->
-    <div id="admin-dashboard-screen" class="hidden w-full h-full flex-col lg:flex-row opacity-0 transition-opacity duration-500">
+    <div id="admin-dashboard-screen" class="hidden w-full h-full flex-col lg:flex-row bg-gray-50/50">
         <!-- MOBILE SIDEBAR OVERLAY -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
 
@@ -107,8 +103,8 @@
         <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-maroon text-cream transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none">
             <div class="p-6 border-b border-white/10 flex justify-between items-center">
                 <div>
-                    <h2 class="font-serif font-bold text-xl text-golden">Admin Panel</h2>
-                    <p class="text-xs text-cream/60 mt-1 truncate" id="admin-user-email">admin@...</p>
+                    <h2 class="font-[Playfair_Display] font-bold text-xl text-golden">Admin Panel</h2>
+                    <p class="text-xs text-cream/60 mt-1 truncate" id="admin-user-email">Loading...</p>
                 </div>
                 <button onclick="toggleSidebar()" class="lg:hidden text-cream/70 hover:text-white">
                     <i class="ph ph-x text-2xl"></i>
@@ -120,7 +116,7 @@
                     <i class="ph ph-shopping-bag text-xl"></i> Manage Orders
                 </button>
                 <button onclick="switchTab('products')" id="nav-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-cream/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
-                    <i class="ph ph-package text-xl"></i> Products
+                    <i class="ph ph-package text-xl"></i> Menu Catalog
                 </button>
                 <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-cream/70 hover:bg-white/5 hover:text-white font-medium transition-colors">
                     <i class="ph ph-gear text-xl"></i> Settings
@@ -135,7 +131,7 @@
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50/50">
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
             <!-- Topbar -->
             <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 sm:px-6 shrink-0">
                 <div class="flex items-center gap-4">
@@ -145,8 +141,8 @@
                     <h1 class="font-bold text-lg text-gray-800" id="topbar-title">Manage Orders</h1>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center border border-green-200" title="Database Connected">
-                        <i class="ph-fill ph-database"></i>
+                    <div class="text-xs font-semibold text-green-600 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Live
                     </div>
                 </div>
             </header>
@@ -159,14 +155,11 @@
                     <!-- Orders Filter -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                         <div class="flex bg-white rounded-lg p-1 border border-gray-200 shadow-sm w-full sm:w-auto overflow-x-auto">
-                            <button onclick="filterOrders('ALL')" id="filter-ALL" class="filter-btn px-4 py-2 rounded-md bg-maroon text-cream text-sm font-medium whitespace-nowrap">All Orders</button>
-                            <button onclick="filterOrders('PENDING')" id="filter-PENDING" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap">Pending</button>
-                            <button onclick="filterOrders('ACCEPTED')" id="filter-ACCEPTED" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap">Accepted</button>
-                            <button onclick="filterOrders('SHIPPED')" id="filter-SHIPPED" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap">Shipped/Delivered</button>
+                            <button onclick="filterOrders('ALL')" id="filter-ALL" class="filter-btn px-4 py-2 rounded-md bg-maroon text-cream text-sm font-medium whitespace-nowrap transition-colors">All Orders</button>
+                            <button onclick="filterOrders('PENDING')" id="filter-PENDING" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap transition-colors">Pending</button>
+                            <button onclick="filterOrders('ACCEPTED')" id="filter-ACCEPTED" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap transition-colors">Accepted</button>
+                            <button onclick="filterOrders('SHIPPED')" id="filter-SHIPPED" class="filter-btn px-4 py-2 rounded-md text-gray-600 hover:bg-gray-50 text-sm font-medium whitespace-nowrap transition-colors">Shipped/Completed</button>
                         </div>
-                        <button onclick="refreshOrders()" class="bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center gap-2 shadow-sm shrink-0">
-                            <i class="ph ph-arrows-clockwise"></i> Refresh
-                        </button>
                     </div>
 
                     <!-- Order Stats Grid -->
@@ -207,7 +200,7 @@
                         </button>
                     </div>
 
-                    <!-- Add/Edit Product Form (Hidden by default) -->
+                    <!-- Add Product Form -->
                     <div id="product-form-container" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 hidden transition-all">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">New Product Entry</h3>
                         <form id="product-form" class="space-y-4">
@@ -228,7 +221,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Image *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Image * (Upload carefully)</label>
                                 <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative group hover:border-maroon transition-colors cursor-pointer" onclick="document.getElementById('prod-img-file').click()">
                                     <div class="space-y-1 text-center" id="upload-placeholder">
                                         <i class="ph ph-image text-3xl text-gray-400 mb-2"></i>
@@ -296,7 +289,7 @@
                                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2 border-b border-gray-100 pb-2">Database Status</h3>
                                 <div class="flex items-center gap-2 mt-3">
                                     <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-                                    <span class="text-sm font-medium text-gray-700">Connected to Firebase Firestore</span>
+                                    <span class="text-sm font-medium text-gray-700">Connected & Secure (Firestore)</span>
                                 </div>
                             </div>
                         </div>
@@ -308,7 +301,7 @@
     </div>
 
     <!-- ORDER ACTION MODAL -->
-    <div id="order-modal" class="fixed inset-0 bg-black/60 z-[600] hidden items-center justify-center p-4 backdrop-blur-sm">
+    <div id="order-modal" class="fixed inset-0 bg-black/60 z-[2000] hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center shrink-0">
                 <h3 class="font-bold text-gray-800 text-lg" id="modal-order-id">Order Details</h3>
@@ -366,7 +359,6 @@
             
             container.appendChild(toast);
             
-            // Auto remove after 4 seconds
             setTimeout(() => {
                 if (toast.parentElement) {
                     toast.classList.remove('toast-enter');
@@ -389,7 +381,7 @@
             activeBtn.classList.remove('text-cream/70');
             activeBtn.classList.add('bg-white/10', 'text-white');
             
-            const titles = { 'orders': 'Manage Orders', 'products': 'Menu Catalog', 'settings': 'Settings' };
+            const titles = { 'orders': 'Manage Orders', 'products': 'Menu Catalog', 'settings': 'Store Settings' };
             document.getElementById('topbar-title').innerText = titles[tabId];
             
             if(window.innerWidth < 1024) toggleSidebar();
@@ -418,14 +410,14 @@
             }
         }
 
-        // Image Selection (Base64 conversion for Firebase)
+        // Image Selection (Base64 conversion)
         function handleImageSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
             
-            // Check size (max 1MB)
-            if(file.size > 1024 * 1024) {
-                showToast("Image too large. Maximum size is 1MB.", "error");
+            // Limit size to ~1MB to avoid Firestore limits
+            if(file.size > 1048576) {
+                showToast("Image is too large. Please use an image under 1MB.", "error");
                 event.target.value = "";
                 return;
             }
@@ -450,13 +442,12 @@
         }
     </script>
 
-    <!-- FIREBASE & CORE LOGIC -->
+    <!-- FIREBASE, STRICT AUTH & REAL-TIME LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
             authDomain: "srishambhushaandsons.firebaseapp.com",
@@ -471,14 +462,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // State variables
+        // State
         let globalOrders = [];
         let globalProducts = [];
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
         let listenersInitialized = false;
 
-        // --- AUTHENTICATION & ADMIN VERIFICATION LOGIC ---
+        // --- 1. STRICT AUTHENTICATION LOGIC ---
         
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -491,93 +482,100 @@
             btn.disabled = true;
 
             try {
-                // Attempt Login
+                // Attempt standard login first
                 await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged handles the DB verification & redirect
+                // The onAuthStateChanged listener handles the Strict Admin check
             } catch (error) {
                 console.error(error);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 
                 let errMsg = "Login failed. Check credentials.";
-                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password'){
-                    errMsg = "Invalid Email or Password.";
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password'){
+                    errMsg = "Invalid Admin Email or Password.";
                 }
                 showToast(errMsg, "error");
             }
         });
 
-        // Watch Auth State & Verify Admin Role in Database
+        // The Gatekeeper: Checks if logged in user is actually an admin in the database
         onAuthStateChanged(auth, async (user) => {
+            const loginScreen = document.getElementById('admin-login-screen');
+            const dashboardScreen = document.getElementById('admin-dashboard-screen');
+
             if (user) {
                 try {
-                    // Check if this user UID exists in the 'admins' collection
+                    // CRITICAL SECURITY CHECK: Lookup UID in 'admins' collection
                     const adminDocRef = doc(db, "admins", user.uid);
                     const adminSnap = await getDoc(adminDocRef);
 
                     if (adminSnap.exists()) {
-                        // User is verified Admin - Instant Transition to Dashboard
-                        const loginScreen = document.getElementById('admin-login-screen');
-                        const dashboardScreen = document.getElementById('admin-dashboard-screen');
-                        
-                        loginScreen.classList.add('opacity-0');
-                        setTimeout(() => {
-                            loginScreen.classList.add('hidden');
-                            dashboardScreen.classList.remove('hidden');
-                            dashboardScreen.classList.add('flex');
-                            // Small delay for fade in effect
-                            setTimeout(() => dashboardScreen.classList.remove('opacity-0'), 50);
-                        }, 300);
-                        
+                        // User is verified Admin
                         document.getElementById('admin-user-email').innerText = user.email;
                         
-                        // Start pulling data
+                        // Switch UI
+                        loginScreen.classList.add('hidden');
+                        dashboardScreen.classList.remove('hidden');
+                        dashboardScreen.classList.add('flex');
+                        
                         if(!listenersInitialized) {
                             initRealtimeListeners();
                             listenersInitialized = true;
+                            showToast("Welcome to Secure Admin Panel", "success");
                         }
-                        showToast("Welcome to Secure Admin Panel", "success");
                     } else {
-                        // Logged in via Auth, but NOT in 'admins' collection
+                        // NORMAL CUSTOMER TRYING TO ACCESS ADMIN
                         await signOut(auth);
-                        showToast("Access Denied: You do not have Database Admin permissions.", "error");
+                        showToast("Access Denied: You do not have Admin permissions.", "error");
                         
-                        document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                        document.getElementById('btn-admin-login').disabled = false;
+                        // Force UI to login state
+                        dashboardScreen.classList.add('hidden');
+                        dashboardScreen.classList.remove('flex');
+                        loginScreen.classList.remove('hidden');
+                        
+                        const btn = document.getElementById('btn-admin-login');
+                        btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
+                        btn.disabled = false;
                     }
                 } catch (dbError) {
                     console.error("Verification Error:", dbError);
                     await signOut(auth);
                     
-                    // Specific check for Firestore Rules error
                     if(dbError.code === 'permission-denied') {
-                        showToast("Permission Denied: Please update Firestore Security Rules as instructed.", "error");
+                        showToast("Access Blocked by Security Rules.", "error");
                     } else {
-                        showToast("Error verifying admin permissions.", "error");
+                        showToast("Verification failed. Try again.", "error");
                     }
                     
-                    document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                    document.getElementById('btn-admin-login').disabled = false;
+                    dashboardScreen.classList.add('hidden');
+                    dashboardScreen.classList.remove('flex');
+                    loginScreen.classList.remove('hidden');
+                    
+                    const btn = document.getElementById('btn-admin-login');
+                    btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
+                    btn.disabled = false;
                 }
             } else {
-                // Not logged in at all - Reset to login screen
-                document.getElementById('admin-login-screen').classList.remove('hidden', 'opacity-0');
-                document.getElementById('admin-dashboard-screen').classList.add('hidden', 'opacity-0');
-                document.getElementById('admin-dashboard-screen').classList.remove('flex');
+                // Completely logged out
+                dashboardScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('flex');
+                loginScreen.classList.remove('hidden');
                 
                 document.getElementById('admin-login-form').reset();
-                document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                document.getElementById('btn-admin-login').disabled = false;
+                const btn = document.getElementById('btn-admin-login');
+                btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
+                btn.disabled = false;
             }
         });
 
         window.logoutAdmin = function() {
             signOut(auth).then(() => {
                 showToast("Logged out successfully.", "success");
+                // The onAuthStateChanged listener handles the UI transition automatically
             });
         }
 
-        // --- REAL-TIME LISTENERS ---
+        // --- 2. REAL-TIME LISTENERS ---
         function initRealtimeListeners() {
             // Listen to Orders Collection
             onSnapshot(collection(db, "orders"), (snapshot) => {
@@ -596,8 +594,7 @@
                 renderOrders();
             }, (error) => {
                 console.error("Orders listener error:", error);
-                if(error.code === 'permission-denied') showToast("Rules Error: Cannot read Orders.", "error");
-                else showToast("Error reading orders database.", "error");
+                if(error.code !== 'permission-denied') showToast("Error reading orders data.", "error");
             });
 
             // Listen to Products Collection
@@ -609,17 +606,16 @@
                 renderProducts();
             }, (error) => {
                 console.error("Products listener error:", error);
-                if(error.code === 'permission-denied') showToast("Rules Error: Cannot read Products.", "error");
-                else showToast("Error reading products database.", "error");
+                if(error.code !== 'permission-denied') showToast("Error reading products data.", "error");
             });
         }
 
-        // --- ORDERS UI LOGIC ---
+        // --- 3. ORDERS UI LOGIC ---
         function updateOrderStats() {
             document.getElementById('stat-total').innerText = globalOrders.length;
             document.getElementById('stat-pending').innerText = globalOrders.filter(o => !o.status || o.status === 'PENDING').length;
             document.getElementById('stat-accepted').innerText = globalOrders.filter(o => o.status === 'ACCEPTED').length;
-            document.getElementById('stat-completed').innerText = globalOrders.filter(o => o.status === 'DELIVERED').length;
+            document.getElementById('stat-completed').innerText = globalOrders.filter(o => o.status === 'DELIVERED' || o.status === 'SHIPPED').length;
         }
 
         window.filterOrders = function(status) {
@@ -634,10 +630,6 @@
             activeBtn.classList.add('bg-maroon', 'text-cream');
             
             renderOrders();
-        }
-
-        window.refreshOrders = function() {
-            showToast("Orders feed is live and up to date.", "success");
         }
 
         function renderOrders() {
@@ -682,13 +674,13 @@
                                 <span class="font-bold text-gray-800">${order.id}</span>
                                 ${statusBadge}
                             </div>
-                            <p class="text-sm text-gray-600 font-medium">${order.customerName || 'Guest'} • ${order.customerPhone || 'No Phone'}</p>
+                            <p class="text-sm text-gray-600 font-medium">${order.customerName || 'Guest User'} • ${order.customerPhone || 'N/A'}</p>
                             <p class="text-xs text-gray-400 mt-1">${dateStr}</p>
                         </div>
                         <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                             <div class="text-right">
                                 <p class="text-xs text-gray-500 uppercase font-medium">Amount</p>
-                                <p class="font-bold text-naturalBrown text-lg">₹${order.amount}</p>
+                                <p class="font-bold text-naturalBrown text-lg">₹${order.amount || 0}</p>
                             </div>
                             <button onclick="openOrderModal('${order.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
                                 View Details
@@ -699,7 +691,7 @@
             }).join('');
         }
 
-        // --- ORDER MODAL & ACTIONS ---
+        // --- 4. ORDER MODAL ACTIONS ---
         window.openOrderModal = function(id) {
             const order = globalOrders.find(o => o.id === id);
             if(!order) return;
@@ -707,7 +699,7 @@
             actionOrderId = id;
             
             document.getElementById('modal-order-id').innerText = `Order: ${id}`;
-            document.getElementById('modal-cust-name').innerText = order.customerName || 'Guest';
+            document.getElementById('modal-cust-name').innerText = order.customerName || 'Guest User';
             document.getElementById('modal-cust-phone').innerText = `${order.customerPhone || 'N/A'} | ${order.customerEmail || 'N/A'}`;
             
             let addressHtml = "Address unavailable";
@@ -741,13 +733,13 @@
             
             if (status === 'PENDING') {
                 actionsDiv.innerHTML = `
-                    <button onclick="updateOrderStatus('REJECTED')" class="flex-1 border-2 border-red-500 text-red-500 bg-white py-2.5 rounded-lg font-bold hover:bg-red-50 transition-colors">Reject & Refund</button>
+                    <button onclick="updateOrderStatus('REJECTED')" class="flex-1 border-2 border-red-500 text-red-500 bg-white py-2.5 rounded-lg font-bold hover:bg-red-50 transition-colors">Reject Order</button>
                     <button onclick="updateOrderStatus('ACCEPTED')" class="flex-1 bg-green-500 text-white py-2.5 rounded-lg font-bold hover:bg-green-600 transition-colors shadow-sm">Accept Order</button>
                 `;
             } else if (status === 'ACCEPTED') {
                  actionsDiv.innerHTML = `
                     <div class="w-full text-center p-2 bg-blue-50 text-blue-700 rounded border border-blue-200 text-sm font-medium">
-                        Order Accepted. Awaiting API integration for Shiprocket label generation.
+                        Order Accepted. Awaiting Courier Label Generation.
                     </div>
                 `;
             } else {
@@ -769,7 +761,7 @@
         window.updateOrderStatus = async function(newStatus) {
             if(!actionOrderId) return;
             
-            if(newStatus === 'REJECTED' && !confirm("Are you sure you want to reject this order? This will initiate a refund via Razorpay.")) {
+            if(newStatus === 'REJECTED' && !confirm("Are you sure you want to reject this order?")) {
                 return;
             }
             
@@ -778,6 +770,7 @@
                 
                 let updateData = { status: newStatus };
                 if(newStatus === 'ACCEPTED') {
+                    // Mocking AWB generation
                     updateData.awb = `SR-${Math.floor(Math.random()*900000) + 100000}`;
                 }
 
@@ -787,12 +780,11 @@
                 closeOrderModal();
             } catch(e) {
                 console.error(e);
-                if(e.code === 'permission-denied') showToast("Permission Denied updating order.", "error");
-                else showToast("Failed to update order.", "error");
+                showToast("Failed to update order status.", "error");
             }
         }
 
-        // --- PRODUCTS LOGIC ---
+        // --- 5. PRODUCTS LOGIC ---
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -802,12 +794,17 @@
             const b64 = document.getElementById('prod-img-b64').value;
             const btn = document.getElementById('btn-save-prod');
 
+            if(!b64) {
+                showToast("Please select a product image first.", "error");
+                return;
+            }
+
             const originalText = btn.innerHTML;
             btn.innerHTML = `<i class="ph ph-spinner-gap animate-spin"></i> Saving...`;
             btn.disabled = true;
 
             try {
-                // Push to Firestore
+                // Push new product to Firestore
                 await addDoc(collection(db, "products"), {
                     name: name,
                     basePrice: price,
@@ -819,14 +816,13 @@
                 });
                 
                 showToast("Product added successfully to database.", "success");
-                toggleProductForm(); // Hide form on success
+                toggleProductForm();
             } catch(error) {
                 console.error("Save Product Error:", error);
-                // EXPLICIT SECURITY RULES ERROR MESSAGE
                 if(error.code === 'permission-denied') {
-                    showToast("Save Failed! Please update Firestore Security Rules as instructed.", "error");
+                    showToast("Permission Denied: Ensure Firebase Rules are updated.", "error");
                 } else {
-                    showToast("Failed to save product to database.", "error");
+                    showToast("Failed to save product. Check console.", "error");
                 }
             } finally {
                 btn.innerHTML = originalText;
@@ -848,21 +844,21 @@
 
             container.innerHTML = globalProducts.map(prod => `
                 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col relative group">
-                    <div class="h-40 bg-gray-100 overflow-hidden relative">
+                    <div class="h-40 bg-gray-100 overflow-hidden relative border-b border-gray-100">
                         <img src="${prod.img || 'https://placehold.co/400x300?text=No+Image'}" class="w-full h-full object-cover">
                         ${!prod.inStock ? '<div class="absolute inset-0 bg-white/70 flex items-center justify-center"><span class="bg-red-100 text-red-600 px-3 py-1 rounded font-bold text-sm">Out of Stock</span></div>' : ''}
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
                         <h4 class="font-bold text-gray-800 text-lg line-clamp-1 mb-1">${prod.name}</h4>
                         <p class="text-xs text-gray-500 line-clamp-2 mb-3 flex-1">${prod.desc || ''}</p>
-                        <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-3">
+                        <div class="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
                             <span class="font-bold text-maroon">₹${prod.basePrice || prod.price || 0} <span class="text-xs text-gray-500 font-normal">/kg</span></span>
                             <div class="flex gap-2">
                                 <button onclick="toggleStock('${prod.id}', ${prod.inStock})" class="p-1.5 text-gray-400 hover:text-blue-500 bg-gray-50 rounded hover:bg-blue-50 transition-colors" title="${prod.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}">
-                                    <i class="ph-fill ${prod.inStock ? 'ph-toggle-right text-green-500' : 'ph-toggle-left'} text-lg"></i>
+                                    <i class="ph-fill ${prod.inStock ? 'ph-toggle-right text-green-500' : 'ph-toggle-left'} text-xl"></i>
                                 </button>
                                 <button onclick="deleteProduct('${prod.id}')" class="p-1.5 text-gray-400 hover:text-red-500 bg-gray-50 rounded hover:bg-red-50 transition-colors" title="Delete Product">
-                                    <i class="ph ph-trash text-lg"></i>
+                                    <i class="ph ph-trash text-xl"></i>
                                 </button>
                             </div>
                         </div>
@@ -877,8 +873,7 @@
                 showToast(`Product marked as ${!currentStatus ? 'In Stock' : 'Out of Stock'}.`, "success");
             } catch(e) {
                 console.error(e);
-                if(e.code === 'permission-denied') showToast("Rules Error updating stock.", "error");
-                else showToast("Failed to update stock status.", "error");
+                showToast("Failed to update stock status.", "error");
             }
         }
 
@@ -890,8 +885,7 @@
                 showToast("Product deleted successfully.", "success");
             } catch(e) {
                 console.error(e);
-                if(e.code === 'permission-denied') showToast("Rules Error deleting product.", "error");
-                else showToast("Failed to delete product.", "error");
+                showToast("Failed to delete product.", "error");
             }
         }
     </script>
