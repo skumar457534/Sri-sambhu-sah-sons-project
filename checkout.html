@@ -55,15 +55,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand & Logo -->
             <div class="flex-shrink-0 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20" />
-                        <path d="M12 2l-2.5 3.5" />
-                        <path d="M12 2l2.5 3.5" />
-                        <path d="M5 8v2c0 3.5 3 6 7 6s7-2.5 7-6V8" />
-                        <path d="M5 8l-2 2.5" />
-                        <path d="M19 8l2 2.5" />
-                    </svg>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                    <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                 </div>
                 <a href="index.html" class="flex flex-col">
                     <span class="font-serif font-bold text-xl md:text-2xl text-maroon leading-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
@@ -117,8 +110,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address (Optional)</label>
-                            <input type="email" id="cust-email" class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all placeholder-gray-400" placeholder="For order & tracking updates">
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address * <span class="text-xs text-gray-400 font-normal ml-1">(Required for tracking updates)</span></label>
+                            <input type="email" id="cust-email" required class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all placeholder-gray-400" placeholder="you@example.com">
                         </div>
 
                         <div>
@@ -205,7 +198,7 @@
                     </div>
 
                     <!-- Payment Button -->
-                    <button onclick="initiatePayment()" id="pay-btn" class="w-full bg-maroon text-cream py-4 rounded-xl font-bold hover:bg-maroon/90 transition-all shadow-md mt-6 flex items-center justify-center gap-2 group">
+                    <button type="button" onclick="initiatePayment()" id="pay-btn" class="w-full bg-maroon text-cream py-4 rounded-xl font-bold hover:bg-maroon/90 transition-all shadow-md mt-6 flex items-center justify-center gap-2 group">
                         <i class="ph ph-shield-check text-xl"></i> 
                         Pay Securely
                         <i class="ph ph-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
@@ -223,15 +216,51 @@
         </div>
     </main>
 
-    <!-- CLEAN FOOTER FOR CHECKOUT -->
-    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <div class="flex justify-center gap-6 text-gray-400 text-sm mb-4">
-                <span>Safe & Secure Payments</span>
-                <span>•</span>
-                <span>100% Authentic Product</span>
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8 text-center md:text-left">
+                <!-- Brand Info -->
+                <div class="max-w-md mx-auto md:mx-0">
+                    <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
+                    <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
+                    <div class="flex space-x-4 justify-center md:justify-start">
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                    </div>
+                </div>
+
+                <!-- Policies -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
+                    <ul class="space-y-2 text-sm text-cream/80">
+                        <li><a href="privacy_policy.html" class="hover:text-golden transition-colors">Privacy Policy</a></li>
+                        <li><a href="return_policy.html" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
+                        <li><a href="shipping_policy.html" class="hover:text-golden transition-colors">Shipping Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info (Single WhatsApp Number Only) -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
+                    <ul class="space-y-4 text-sm text-cream/80">
+                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 justify-center md:justify-start">
+                            <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
+                            <span class="max-w-xs">FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
+                        </li>
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4 justify-center md:justify-start">
+                            <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
+                            <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <p class="text-xs text-gray-400">© 2026 Sri Shambhu Sha & Sons. All Rights Reserved. Regd. No.: 3271313</p>
+
+            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>© 2026 Sri Shambhu Sha & Sons. All Rights Reserved.</p>
+                <p>Regd. No.: 3271313</p>
+            </div>
         </div>
     </footer>
 
@@ -253,6 +282,34 @@
     </div>
 
     <!-- SCRIPTS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Firebase Setup
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Pre-fill email if user is logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email) {
+                const emailInput = document.getElementById('cust-email');
+                if (!emailInput.value) {
+                    emailInput.value = user.email;
+                }
+            }
+        });
+    </script>
+
     <script>
         // DOM Elements
         const pincodeInput = document.getElementById('pincode-input');
