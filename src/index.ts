@@ -187,6 +187,27 @@ export default {
       }
 
       // =========================================================
+      // 6. SHIPROCKET: GENERATE LABEL (PDF)
+      // =========================================================
+      if (path === '/api/shiprocket/label' && method === 'POST') {
+        const { shipment_id } = await request.json() as any;
+        const token = await getShiprocketToken();
+
+        const labelRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/label", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ shipment_id: [shipment_id] }) // Shiprocket expects an array of shipment IDs
+        });
+
+        const labelData = await labelRes.json() as any;
+        if (labelRes.ok && labelData.label_created === 1) {
+          return new Response(JSON.stringify({ success: true, label_url: labelData.label_url }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          return new Response(JSON.stringify({ success: false, error: "Label not ready yet or failed", details: labelData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+      }
+
+      // =========================================================
       // FALLBACK ROUTE
       // =========================================================
       return new Response(JSON.stringify({ error: "API Endpoint Not Found" }), { 
@@ -203,3 +224,5 @@ export default {
     }
   }
 };
+
+
