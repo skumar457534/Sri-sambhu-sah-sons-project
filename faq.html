@@ -47,7 +47,7 @@
             overflow: hidden;
         }
         .accordion-content.open {
-            max-height: 500px; /* arbitrary large max-height */
+            max-height: 500px;
             opacity: 1;
             padding-top: 1rem;
             padding-bottom: 1rem;
@@ -72,16 +72,8 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo & Brand -->
                 <div class="flex-shrink-0 flex items-center gap-3">
-                    <!-- Shiva Trishul Logo -->
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20" />
-                            <path d="M12 2l-2.5 3.5" />
-                            <path d="M12 2l2.5 3.5" />
-                            <path d="M5 8v2c0 3.5 3 6 7 6s7-2.5 7-6V8" />
-                            <path d="M5 8l-2 2.5" />
-                            <path d="M19 8l2 2.5" />
-                        </svg>
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                        <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                     </div>
                     <a href="index.html" class="flex flex-col">
                         <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
@@ -98,15 +90,18 @@
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
                     <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">FAQ</a>
                     <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
+                    <!-- Dynamic Auth Link Desktop -->
+                    <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
+                        <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
+                    </span>
                 </nav>
 
-                <!-- Actions (Cart & Mobile Toggle ONLY) -->
+                <!-- Actions -->
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
                         <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                     </button>
-                    <!-- Hamburger Icon -->
                     <button id="mobile-menu-btn" class="lg:hidden text-maroon p-2">
                         <i class="ph ph-list text-3xl"></i>
                     </button>
@@ -123,12 +118,16 @@
                 <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">How It Works</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
                 <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">FAQ</a>
-                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md">Contact Us</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
+                <!-- Dynamic Auth Link Mobile -->
+                <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
+                    <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- SHOPPING CART DRAWER (Guest Flow) -->
+    <!-- SHOPPING CART DRAWER -->
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
@@ -148,9 +147,34 @@
                 <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
             </div>
             <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
-            <button onclick="proceedToCheckout()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 Proceed to Checkout <i class="ph ph-arrow-right"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- GUEST CHECKOUT WARNING MODAL -->
+    <div id="guest-checkout-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-maroon">
+            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-user-circle text-4xl text-saffron"></i>
+            </div>
+            <h3 class="font-serif font-bold text-naturalBrown text-2xl mb-2">Login Required?</h3>
+            <p class="text-sm text-gray-600 mb-4 leading-relaxed">You are not logged in. Creating an account allows you to track your live order history and manage addresses easily.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 text-gray-700 text-xs p-3 rounded-lg mb-6 text-left shadow-sm">
+                <strong><i class="ph-fill ph-warning-circle text-saffron"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-maroon">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-sign-in"></i> Login / Signup Now
+                </a>
+                <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
+                    Order Without Signup (Guest)
+                </a>
+                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-maroon underline transition-colors">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -202,7 +226,7 @@
                         <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
                     </button>
                     <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
-                        Simply browse our menu, select your preferred peda and weight, enter your delivery PIN code to check serviceability, and check out securely online. No account creation is required!
+                        Simply browse our menu, select your preferred peda and weight, check out securely online, and provide your delivery details. You can optionally log in to track your order easily!
                     </div>
                 </div>
 
@@ -257,7 +281,7 @@
                         <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
                     </button>
                     <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
-                        You can reach us via WhatsApp or call us at 7295021513. If you wish to visit us, our physical shop is located at Mandir Ka Purva Darwaza, Baidyanath Dham, Deoghar, Jharkhand – 814112.
+                        You can reach us directly via WhatsApp or call us at 7295021513. If you wish to visit us, our physical shop is located at FPR2+Q57, Shivganga Muhalla, Baidyanath Dham, Deoghar, Jharkhand – 814112.
                     </div>
                 </div>
 
@@ -278,14 +302,14 @@
     <!-- FOOTER -->
     <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-8 text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
                 <!-- Brand Info -->
-                <div class="max-w-md mx-auto md:mx-0">
+                <div class="max-w-md">
                     <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
                     <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
-                        <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
                     </div>
                 </div>
 
@@ -293,24 +317,24 @@
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
                     <ul class="space-y-2 text-sm text-cream/80">
-                        <li><a href="#" class="hover:text-golden transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
-                        <li><a href="#" class="hover:text-golden transition-colors">Shipping Policy</a></li>
+                        <li><a href="privacy_policy.html" class="hover:text-golden transition-colors">Privacy Policy</a></li>
+                        <li><a href="return_policy.html" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
+                        <li><a href="shipping_policy.html" class="hover:text-golden transition-colors">Shipping Policy</a></li>
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
+                <!-- Contact Info (Single WhatsApp Number Only) -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
-                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 justify-center md:justify-start">
+                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
-                            <span class="max-w-xs">Mandir Ka Purva Darwaza, Baidyanath Dham, Deoghar, Jharkhand – 814112</span>
+                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
                         </li>
                         <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4 justify-center md:justify-start">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
-                            <span class="font-bold text-xl text-cream">+91 7295021513</span>
+                            <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
                         </li>
                     </ul>
                 </div>
@@ -324,7 +348,7 @@
     </footer>
 
     <!-- FLOATING MAP / VISIT SHOP BUTTON -->
-    <a href="https://www.google.com/maps/search/?api=1&query=Mandir+Ka+Purva+Darwaza,+Baidyanath+Dham,+Deoghar,+Jharkhand+814112" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
+    <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-9 h-9" />
         <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
             Visit Our Shop
@@ -333,7 +357,7 @@
 
     <!-- SCRIPTS -->
     <script>
-        // Mobile Menu Logic
+        // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileLinks = document.querySelectorAll('.mobile-link');
@@ -357,14 +381,9 @@
             }
         });
 
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
         document.addEventListener('click', (e) => {
-            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                closeMobileMenu();
-            }
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
         });
 
         const header = document.querySelector('header');
@@ -374,12 +393,11 @@
             else header.classList.remove('shadow-md');
         });
 
-        // FAQ Accordion Logic
+        // --- FAQ Accordion Logic ---
         function toggleFAQ(button) {
             const content = button.nextElementSibling;
             const icon = button.querySelector('.accordion-icon');
             
-            // Toggle current
             if (content.classList.contains('open')) {
                 content.classList.remove('open');
                 icon.classList.remove('rotate');
@@ -397,8 +415,9 @@
             overlay.classList.toggle('overlay-open');
         }
 
-        window.proceedToCheckout = function() {
-            window.location.href = "checkout.html";
+        function closeGuestModal() {
+            document.getElementById('guest-checkout-modal').classList.add('hidden');
+            document.getElementById('guest-checkout-modal').classList.remove('flex');
         }
 
         // --- Dynamic Cart Rendering from LocalStorage ---
@@ -479,6 +498,58 @@
 
         // Init cart rendering
         renderCartUI();
+    </script>
+
+    <!-- FIREBASE AUTH & CHECKOUT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        let currentUser = null;
+
+        // AUTHENTICATION LISTENER
+        onAuthStateChanged(auth, (user) => {
+            const deskLink = document.getElementById('auth-link-desk');
+            const mobLink = document.getElementById('auth-link-mob');
+            
+            if (user) {
+                currentUser = user;
+                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-maroon font-bold hover:text-saffron transition-colors">Logout</button>`;
+                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
+            } else {
+                currentUser = null;
+                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-maroon font-bold transition-colors">Login / Signup</a>`;
+                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
+            }
+        });
+
+        window.userLogout = function() {
+            signOut(auth).then(() => window.location.reload());
+        }
+
+        // CHECKOUT FLOW WITH AUTH CHECK
+        window.proceedToCheckoutFlow = function() {
+            if (currentUser) {
+                window.location.href = "checkout.html";
+            } else {
+                document.getElementById('guest-checkout-modal').classList.remove('hidden');
+                document.getElementById('guest-checkout-modal').classList.add('flex');
+                toggleCart();
+            }
+        }
     </script>
 </body>
 </html>
