@@ -1,12 +1,7 @@
 export interface Env {
-  // Environment variables and secrets (Set via wrangler secret put)
+  // Environment variables and secrets
   RAZORPAY_KEY_ID: string;
   RAZORPAY_KEY_SECRET: string;
-  SHIPROCKET_EMAIL: string;
-  SHIPROCKET_PASSWORD: string;
-  FIREBASE_PROJECT_ID: string;
-  FIREBASE_CLIENT_EMAIL: string;
-  FIREBASE_PRIVATE_KEY: string;
   CORS_ORIGIN: string;
 }
 
@@ -16,86 +11,109 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
-    // Standard CORS headers for communicating safely with the frontend
+    // CORS Headers for secure communication with your HTML frontend
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     };
 
+    // Handle preflight requests
     if (method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
     try {
-      // ---------------------------------------------------------
-      // 1. PAYMENT ROUTES
-      // ---------------------------------------------------------
+      // =========================================================
+      // 1. PAYMENT VERIFICATION API
+      // =========================================================
       if (path === '/api/payment/verify' && method === 'POST') {
-        // Secure server-side verification of Razorpay signature
-        // DO NOT trust frontend success callbacks alone.
-        // Once verified, update Firestore: paymentStatus = PAID, orderStatus = PENDING
+        const body = await request.json() as any;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+          return new Response(JSON.stringify({ success: false, error: "Missing parameters" }), { status: 400, headers: corsHeaders });
+        }
+
+        // Crypto validation (HMAC SHA256)
+        const encoder = new TextEncoder();
+        const data = encoder.encode(razorpay_order_id + "|" + razorpay_payment_id);
+        const key = await crypto.subtle.importKey(
+          "raw", 
+          encoder.encode(env.RAZORPAY_KEY_SECRET),
+          { name: "HMAC", hash: "SHA-256" }, 
+          false, 
+          ["sign"]
+        );
         
-        return new Response(JSON.stringify({ 
-          success: true, 
-          message: "Payment verified successfully securely on the server." 
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
+        const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
+        const signatureArray = Array.from(new Uint8Array(signatureBuffer));
+        const generatedSignature = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if (generatedSignature === razorpay_signature) {
+          // Signature matches! Payment is authentic.
+          return new Response(JSON.stringify({ 
+            success: true, 
+            message: "Payment verified successfully securely on the server." 
+          }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          // Fake or tampered payment
+          return new Response(JSON.stringify({ 
+            success: false, 
+            error: "Invalid signature. Payment verification failed." 
+          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
       }
 
-      // ---------------------------------------------------------
-      // 2. WEBHOOK ROUTES (Automated Updates)
-      // ---------------------------------------------------------
-      if (path === '/api/webhooks/razorpay' && method === 'POST') {
-        // Listen for Razorpay events (e.g., refund.processed)
-        // Verify webhook signature using RAZORPAY_WEBHOOK_SECRET
-        // Update Firestore: paymentStatus = REFUNDED
-        return new Response("Razorpay Webhook Received", { status: 200, headers: corsHeaders });
-      }
-
-      if (path === '/api/webhooks/shiprocket' && method === 'POST') {
-        // Listen for Shiprocket tracking updates
-        // Update Firestore shipmentStatus automatically (SHIPPED, IN_TRANSIT, DELIVERED)
-        // NO manual "Mark as Shipped" allowed, strictly automated tracking.
-        return new Response("Shiprocket Webhook Received", { status: 200, headers: corsHeaders });
-      }
-
-      // ---------------------------------------------------------
-      // 3. ADMIN OPERATIONS
-      // ---------------------------------------------------------
-      if (path === '/api/admin/shipment/create' && method === 'POST') {
-        // Ensure request has Admin Authorization
-        // 1. Perform a FRESH Shiprocket serviceability check before generating shipment
-        // 2. If courier is unavailable, return error and prompt Admin to select another courier
-        // 3. If successful, generate AWB and Label securely.
-        
-        return new Response(JSON.stringify({ 
-          success: true, 
-          awbNumber: "SR-88776655",
-          labelUrl: "https://shiprocket.co/label/mock-url.pdf"
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
-        });
-      }
-
+      // =========================================================
+      // 2. AUTO REFUND API (Admin Only)
+      // =========================================================
       if (path === '/api/admin/refund/initiate' && method === 'POST') {
-        // Ensure request has Admin Authorization
-        // 1. Verify order is PAID and hasn't been refunded yet.
-        // 2. Call Razorpay Refund API securely.
-        // 3. Update Firestore: orderStatus = REJECTED, paymentStatus = REFUND_INITIATED
+        const body = await request.json() as any;
+        const { payment_id, amount, admin_token } = body;
+
+        if (!payment_id) {
+          return new Response(JSON.stringify({ success: false, error: "Payment ID required" }), { status: 400, headers: corsHeaders });
+        }
+
+        // NOTE: In production, verify the `admin_token` with Firebase Auth REST API here 
+        // to ensure the person making this request is actually the Admin.
+
+        // Call Razorpay Refund API
+        const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
         
-        return new Response(JSON.stringify({ 
-          success: true, 
-          message: "Full refund initiated via Razorpay successfully."
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        // Amount is sent in paise to Razorpay
+        const refundPayload: any = {};
+        if (amount) refundPayload.amount = Math.round(amount * 100); 
+
+        const rzpResponse = await fetch(`https://api.razorpay.com/v1/payments/${payment_id}/refund`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': authHeader 
+          },
+          body: JSON.stringify(refundPayload)
         });
+
+        const rzpData = await rzpResponse.json() as any;
+
+        if (rzpResponse.ok) {
+          return new Response(JSON.stringify({ 
+            success: true, 
+            message: "Refund initiated successfully via Razorpay.",
+            refund_id: rzpData.id
+          }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          return new Response(JSON.stringify({ 
+            success: false, 
+            error: rzpData.error?.description || "Razorpay refund failed." 
+          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
       }
 
-      // ---------------------------------------------------------
+      // =========================================================
       // FALLBACK ROUTE
-      // ---------------------------------------------------------
+      // =========================================================
       return new Response(JSON.stringify({ error: "API Endpoint Not Found" }), { 
         status: 404, 
         headers: { 'Content-Type': 'application/json', ...corsHeaders } 
