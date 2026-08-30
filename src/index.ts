@@ -15,6 +15,12 @@ export interface Env {
   CORS_ORIGIN: string;
 }
 
+// =========================================================
+// SMART CACHE SYSTEM: To Prevent 2-Hour Account Locks
+// =========================================================
+let cachedShiprocketToken: string | null = null;
+let tokenExpiryTime: number = 0;
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -22,7 +28,7 @@ export default {
     const method = request.method;
 
     // -----------------------------------------------------
-    // CORS HEADERS (वेबसाइट को सर्वर से बात करने की आज़ादी)
+    // CORS HEADERS
     // -----------------------------------------------------
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
@@ -36,7 +42,7 @@ export default {
 
     try {
       // =========================================================
-      // 0. RAZORPAY: CREATE ORDER API (NEW)
+      // 0. RAZORPAY: CREATE ORDER API
       // =========================================================
       if (path === '/api/payment/create-order' && method === 'POST') {
         const { amount } = await request.json() as any;
@@ -63,7 +69,6 @@ export default {
           return new Response(JSON.stringify({ success: false, error: "Missing parameters" }), { status: 400, headers: corsHeaders });
         }
 
-        // Crypto validation (HMAC SHA256)
         const encoder = new TextEncoder();
         const data = encoder.encode(razorpay_order_id + "|" + razorpay_payment_id);
         const key = await crypto.subtle.importKey(
@@ -91,7 +96,7 @@ export default {
 
         const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
         const refundPayload: any = {};
-        if (amount) refundPayload.amount = Math.round(amount * 100); // Amount in paise
+        if (amount) refundPayload.amount = Math.round(amount * 100);
 
         const rzpResponse = await fetch(`https://api.razorpay.com/v1/payments/${payment_id}/refund`, {
           method: 'POST',
@@ -108,17 +113,32 @@ export default {
       }
 
       // =========================================================
-      // HELPER: GET SHIPROCKET TOKEN
+      // HELPER: GET SHIPROCKET TOKEN (WITH CACHING)
       // =========================================================
       const getShiprocketToken = async () => {
+        const currentTime = Date.now();
+        // If token exists and is valid for at least 5 more minutes, use cached token
+        if (cachedShiprocketToken && currentTime < tokenExpiryTime) {
+          return cachedShiprocketToken;
+        }
+
         const authRes = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: env.SHIPROCKET_EMAIL, password: env.SHIPROCKET_PASSWORD })
         });
-        if (!authRes.ok) throw new Error("Shiprocket Authentication Failed");
+        
+        if (!authRes.ok) {
+          const errText = await authRes.text();
+          throw new Error(`Shiprocket Authentication Failed: ${errText}`);
+        }
+        
         const authData = await authRes.json() as any;
-        return authData.token;
+        cachedShiprocketToken = authData.token;
+        // Shiprocket tokens typically last 10 days, we set cache expiry to 9 days to be safe
+        tokenExpiryTime = currentTime + (9 * 24 * 60 * 60 * 1000);
+
+        return cachedShiprocketToken;
       };
 
       // =========================================================
@@ -126,8 +146,6 @@ export default {
       // =========================================================
       if (path === '/api/shiprocket/serviceability' && method === 'POST') {
         const { delivery_postcode, weight, cod } = await request.json() as any;
-        
-        // Use your pickup pincode here (Deoghar: 814112)
         const pickup_postcode = "814112"; 
         const token = await getShiprocketToken();
 
@@ -166,7 +184,7 @@ export default {
       }
 
       // =========================================================
-      // 5. SHIPROCKET: LIVE TRACKING BY AWB (NEW)
+      // 5. SHIPROCKET: LIVE TRACKING BY AWB
       // =========================================================
       if (path === '/api/shiprocket/track' && method === 'GET') {
         const awb = url.searchParams.get('awb');
@@ -196,7 +214,7 @@ export default {
         const labelRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/label", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ shipment_id: [shipment_id] }) // Shiprocket expects an array of shipment IDs
+          body: JSON.stringify({ shipment_id: [shipment_id] })
         });
 
         const labelData = await labelRes.json() as any;
@@ -224,5 +242,3 @@ export default {
     }
   }
 };
-
-
