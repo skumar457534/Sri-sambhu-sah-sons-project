@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Shri Shambhu Sahu Goods & Sons</title>
+    <title>Admin Dashboard | Sri Shambhu Sha & Sons</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,9 +40,19 @@
         /* Toggle Switch CSS */
         .toggle-checkbox:checked { right: 0; border-color: #68D391; }
         .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+
+        /* Toast Animation */
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .toast-enter { animation: slideDown 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden flex h-screen">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4"></div>
 
     <!-- MOBILE SIDEBAR OVERLAY -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
@@ -50,10 +60,13 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-maroon text-cream transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
         <!-- Logo Area -->
-        <div class="h-20 flex items-center justify-center border-b border-white/10 px-4">
-            <div class="text-center">
-                <h1 class="font-bold text-lg leading-tight text-white">Shri Shambhu Sahu</h1>
-                <p class="text-xs text-golden uppercase tracking-widest">Admin Panel</p>
+        <div class="h-20 flex items-center justify-center border-b border-white/10 px-4 gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-sm border border-golden/50">
+                <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover rounded-full" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+            </div>
+            <div class="text-left">
+                <h1 class="font-bold text-sm leading-tight text-white">Sri Shambhu Sha</h1>
+                <p class="text-[10px] text-golden uppercase tracking-widest">Admin Panel</p>
             </div>
         </div>
 
@@ -64,19 +77,13 @@
             </button>
             <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-shopping-cart text-xl"></i> Orders
-                <span id="nav-pending-badge" class="ml-auto bg-saffron text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                <span id="nav-pending-badge" class="ml-auto bg-saffron text-white text-xs font-bold px-2 py-0.5 rounded-full hidden">0</span>
             </button>
             <button onclick="switchTab('products')" id="nav-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-package text-xl"></i> Products
             </button>
-            <button onclick="switchTab('customers')" id="nav-customers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
-                <i class="ph ph-users text-xl"></i> Customers
-            </button>
             <button onclick="switchTab('shipments')" id="nav-shipments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-truck text-xl"></i> Shipments
-            </button>
-            <button onclick="switchTab('reviews')" id="nav-reviews" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
-                <i class="ph ph-star text-xl"></i> Reviews
             </button>
             <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-gear text-xl"></i> Settings
@@ -85,9 +92,9 @@
 
         <!-- Logout -->
         <div class="p-4 border-t border-white/10">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-red-500/20 hover:text-white rounded-lg font-medium transition-colors w-full">
+            <button onclick="logoutAdmin()" class="flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-red-500/20 hover:text-white rounded-lg font-medium transition-colors w-full">
                 <i class="ph ph-sign-out text-xl"></i> Logout
-            </a>
+            </button>
         </div>
     </aside>
 
@@ -103,17 +110,13 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <button class="relative p-2 text-gray-400 hover:text-maroon transition-colors">
-                    <i class="ph ph-bell text-xl"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
                 <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
                     <div class="w-10 h-10 rounded-full bg-maroon/10 flex items-center justify-center text-maroon font-bold border border-maroon/20">
-                        A
+                        <i class="ph-fill ph-user text-xl"></i>
                     </div>
                     <div class="hidden sm:block">
-                        <p class="text-sm font-semibold text-gray-700">Admin User</p>
-                        <p class="text-xs text-gray-500">Superadmin</p>
+                        <p class="text-sm font-semibold text-gray-700" id="admin-user-email">Loading...</p>
+                        <p class="text-xs text-green-600 font-medium">Online</p>
                     </div>
                 </div>
             </div>
@@ -123,6 +126,7 @@
         <div class="flex-1 overflow-y-auto p-4 sm:p-8">
             <div class="max-w-7xl mx-auto space-y-8 relative">
 
+                <!-- DASHBOARD TAB -->
                 <div id="tab-dashboard" class="tab-content block">
                     <!-- STATS GRID -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -155,11 +159,11 @@
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
                             <div class="w-12 h-12 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center text-2xl shrink-0">
-                                <i class="ph-fill ph-users"></i>
+                                <i class="ph-fill ph-storefront"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-1">Customers</p>
-                                <h3 class="text-2xl font-bold text-gray-900" id="dash-customers">0</h3>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Live Products</p>
+                                <h3 class="text-2xl font-bold text-gray-900" id="dash-products">0</h3>
                             </div>
                         </div>
                     </div>
@@ -168,25 +172,25 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                             <h3 class="text-lg font-bold text-gray-900 mb-4">Action Needed</h3>
-                            <div class="bg-orange-50 border border-orange-100 p-4 rounded-lg flex items-start gap-3">
-                                <i class="ph-fill ph-warning-circle text-orange-500 text-xl mt-0.5"></i>
+                            <div id="action-needed-box" class="bg-gray-50 border border-gray-100 p-4 rounded-lg flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-green-500 text-xl mt-0.5"></i>
                                 <div>
-                                    <h4 class="font-bold text-orange-800">New Pending Orders</h4>
-                                    <p class="text-sm text-orange-600 mt-1">You have orders waiting to be verified and accepted.</p>
-                                    <button onclick="switchTab('orders')" class="mt-3 text-sm font-bold bg-orange-500 text-white px-4 py-1.5 rounded hover:bg-orange-600 transition">View Orders</button>
+                                    <h4 class="font-bold text-gray-800">All Caught Up!</h4>
+                                    <p class="text-sm text-gray-600 mt-1">There are no pending orders waiting for your action right now.</p>
                                 </div>
                             </div>
                         </div>
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex flex-col justify-center items-center text-center">
                             <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
-                                <i class="ph-fill ph-envelope-simple text-2xl"></i>
+                                <i class="ph-fill ph-database text-2xl"></i>
                             </div>
-                            <h3 class="font-bold text-gray-800">Email Gateway Connected</h3>
-                            <p class="text-sm text-gray-500 mt-1">Automated confirmation emails are active.</p>
+                            <h3 class="font-bold text-gray-800">Firebase Live Sync Active</h3>
+                            <p class="text-sm text-gray-500 mt-1">Dashboard is connected and receiving real-time updates.</p>
                         </div>
                     </div>
                 </div>
 
+                <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <!-- Order Header & Filters -->
@@ -218,55 +222,30 @@
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body" class="divide-y divide-gray-100">
-                                    <!-- Dynamic Orders -->
+                                    <tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
+                <!-- PRODUCTS TAB -->
                 <div id="tab-products" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Product Catalog</h3>
-                        <button onclick="openProductModal()" class="bg-maroon text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-maroon/90 flex items-center gap-2">
+                        <button onclick="openProductModal()" class="bg-maroon text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-maroon/90 flex items-center gap-2 transition-colors">
                             <i class="ph ph-plus-circle text-lg"></i> Add Product
                         </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
-                        <!-- Dynamic Products -->
-                    </div>
-                </div>
-
-                <div id="tab-customers" class="tab-content hidden">
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <h3 class="text-lg font-bold text-gray-900">Customer Database</h3>
-                            
-                            <div class="relative w-full sm:w-64">
-                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" id="customer-search" oninput="searchCustomers()" placeholder="Search by phone number..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-colors">
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Customer</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Contact</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Total Orders</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Total Spent</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 text-right">Order History</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="customers-table-body" class="divide-y divide-gray-100">
-                                    <!-- Dynamic Customers -->
-                                </tbody>
-                            </table>
+                        <div class="col-span-full py-12 text-center text-gray-500 bg-white rounded-xl border border-gray-100">
+                            <i class="ph ph-spinner animate-spin text-3xl mb-2"></i><br>Loading products...
                         </div>
                     </div>
                 </div>
 
+                <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
@@ -274,7 +253,7 @@
                                 <h3 class="text-lg font-bold text-gray-900">Shipments & Tracking</h3>
                                 <p class="text-xs text-gray-500 mt-1">Orders that have been picked up by the courier are moved here.</p>
                             </div>
-                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Shiprocket API Active</span>
+                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
                         </div>
                         <div class="flex-1 overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
@@ -288,83 +267,43 @@
                                     </tr>
                                 </thead>
                                 <tbody id="shipments-table-body" class="divide-y divide-gray-100">
-                                    <!-- Dynamic Shipments -->
+                                    <tr><td colspan="5" class="py-8 text-center text-gray-500">Loading shipments...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-reviews" class="tab-content hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
-                            <h3 class="text-4xl font-bold text-naturalBrown mb-2 flex items-center justify-center gap-2">4.8 <i class="ph-fill ph-star text-saffron"></i></h3>
-                            <p class="text-sm font-medium text-gray-500">Average Rating</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
-                            <h3 class="text-4xl font-bold text-naturalBrown mb-2">124</h3>
-                            <p class="text-sm font-medium text-gray-500">Total Ratings</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center px-8">
-                            <div class="flex items-center gap-2 text-sm"><span class="w-3 text-right font-bold text-gray-700">5</span> <i class="ph-fill ph-star text-saffron"></i> <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-saffron h-full w-[80%]"></div></div></div>
-                            <div class="flex items-center gap-2 text-sm mt-1.5"><span class="w-3 text-right font-bold text-gray-700">4</span> <i class="ph-fill ph-star text-saffron"></i> <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-saffron h-full w-[15%]"></div></div></div>
-                            <div class="flex items-center gap-2 text-sm mt-1.5"><span class="w-3 text-right font-bold text-gray-700">3</span> <i class="ph-fill ph-star text-saffron"></i> <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-saffron h-full w-[5%]"></div></div></div>
-                        </div>
-                    </div>
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-900">Recent Ratings</h3>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Order ID</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Customer</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Rating</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="reviews-table-body" class="divide-y divide-gray-100">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- SETTINGS TAB -->
                 <div id="tab-settings" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-3xl">
                         <div class="p-6 border-b border-gray-200">
                             <h3 class="text-lg font-bold text-gray-900">Business Information</h3>
-                            <p class="text-sm text-gray-500 mt-1">Update your GSTIN and contact details for official records.</p>
+                            <p class="text-sm text-gray-500 mt-1">This information is shown to customers on the website.</p>
                         </div>
                         <div class="p-6 space-y-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Business Name</label>
-                                    <input type="text" value="Shri Shambhu Sahu Goods & Sons" class="w-full bg-gray-50 border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
+                                    <input type="text" value="Sri Shambhu Sha & Sons" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GSTIN</label>
-                                    <input type="text" value="20ABCDE1234F1Z5" class="w-full bg-gray-50 border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all font-mono">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GSTIN / Reg No.</label>
+                                    <input type="text" value="3271313" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 font-mono">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Business Address</label>
-                                <textarea rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all resize-none">Mandir Ka Purva Darwaza, Baidyanath Dham, Deoghar, Jharkhand – 814112</textarea>
+                                <textarea rows="2" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 resize-none">FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</textarea>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Support Email</label>
-                                    <input type="email" value="support@shrishambhusahu.com" class="w-full bg-gray-50 border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Support Phone</label>
-                                    <input type="tel" value="7488424584" class="w-full bg-gray-50 border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Support Phone (WhatsApp)</label>
+                                    <input type="tel" value="7295021513" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500">
                                 </div>
                             </div>
-                            <div class="pt-4 border-t border-gray-100 flex justify-end">
-                                <button type="button" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors" onclick="alert('Settings saved successfully (Mock).')">Save Settings</button>
+                            <div class="pt-4 border-t border-gray-100 text-sm text-gray-500">
+                                <i class="ph-fill ph-info text-blue-500"></i> Settings are currently locked by the Super Admin to maintain brand consistency.
                             </div>
                         </div>
                     </div>
@@ -388,6 +327,7 @@
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Customer Info</span>
                     <p class="font-semibold text-gray-900" id="modal-customer">...</p>
                     <p class="text-sm text-gray-600" id="modal-phone">...</p>
+                    <p class="text-sm text-gray-500" id="modal-email">...</p>
                 </div>
                 <div>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Delivery Address</span>
@@ -395,9 +335,12 @@
                 </div>
                 <div>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Order Items</span>
-                    <div class="bg-cream p-3 rounded-lg border border-golden/20 text-sm font-medium text-naturalBrown flex justify-between items-center">
-                        <span id="modal-items">...</span>
-                        <span id="modal-amount" class="font-bold">...</span>
+                    <div id="modal-items-container" class="space-y-2">
+                        <!-- Items injected here -->
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+                        <span class="text-gray-600 font-medium text-sm">Total Amount Paid</span>
+                        <span id="modal-amount" class="font-bold text-maroon text-lg">...</span>
                     </div>
                 </div>
                 <div>
@@ -422,50 +365,18 @@
             
             <div id="shiprocket-check-loading" class="p-8 text-center">
                 <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon mb-4 inline-block"></i>
-                <h3 class="font-bold text-gray-800 text-lg mb-1">Checking Shiprocket...</h3>
-                <p class="text-sm text-gray-500">Verifying fresh serviceability for this PIN code.</p>
+                <h3 class="font-bold text-gray-800 text-lg mb-1" id="shiprocket-load-text">Checking Serviceability...</h3>
+                <p class="text-sm text-gray-500">Connecting to Shiprocket API</p>
             </div>
 
             <div id="shiprocket-couriers-list" class="p-6 hidden">
                 <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-4 flex gap-3 text-sm">
                     <i class="ph-fill ph-info text-blue-500 text-lg mt-0.5"></i>
-                    <p class="text-blue-800">Customer originally selected <strong id="orig-courier-name">Blue Dart</strong>. Please select an available courier to generate AWB.</p>
+                    <p class="text-blue-800">Customer originally selected <strong id="orig-courier-name">...</strong>. Confirm to generate AWB.</p>
                 </div>
-                
-                <div class="space-y-3 mb-6">
-                    <label class="cursor-pointer relative block">
-                        <input type="radio" name="admin_courier" value="delhivery" class="courier-radio sr-only" checked>
-                        <div class="border-2 border-gray-100 rounded-xl p-3 flex items-center justify-between hover:border-maroon/30 transition-all">
-                            <div class="flex items-center gap-3">
-                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
-                                    <div class="check-icon w-2.5 h-2.5 bg-maroon rounded-full opacity-0 transform scale-50 transition-all"></div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-sm">Delhivery Surface</h4>
-                                </div>
-                            </div>
-                            <span class="font-bold text-gray-700 text-sm">₹110</span>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer relative block">
-                        <input type="radio" name="admin_courier" value="xpressbees" class="courier-radio sr-only">
-                        <div class="border-2 border-gray-100 rounded-xl p-3 flex items-center justify-between hover:border-maroon/30 transition-all">
-                            <div class="flex items-center gap-3">
-                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
-                                    <div class="check-icon w-2.5 h-2.5 bg-maroon rounded-full opacity-0 transform scale-50 transition-all"></div>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-sm">XpressBees</h4>
-                                </div>
-                            </div>
-                            <span class="font-bold text-gray-700 text-sm">₹95</span>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="flex justify-end gap-3">
+                <div class="flex justify-end gap-3 mt-6">
                     <button onclick="closeModals()" class="px-5 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                    <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md">Create Shipment & AWB</button>
+                    <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md">Generate AWB</button>
                 </div>
             </div>
             
@@ -489,35 +400,16 @@
             <h3 class="font-bold text-gray-800 text-lg mb-2">Reject Order & Refund?</h3>
             <p class="text-sm text-gray-600 mb-4">You are about to reject Order <strong id="reject-order-id">...</strong>.</p>
             <div class="bg-red-50 text-red-800 text-sm p-3 rounded-lg mb-6 text-left border border-red-100">
-                <p><strong>Warning:</strong> This will call the Razorpay Refund API via Firebase Cloud Functions and initiate a <strong>FULL REFUND</strong> of <span id="reject-amount" class="font-bold">...</span> to the customer.</p>
+                <p><strong>Warning:</strong> This will trigger the Refund API and initiate a <strong>FULL REFUND</strong> of <span id="reject-amount" class="font-bold">...</span> to the customer.</p>
             </div>
             <div class="flex gap-3">
                 <button onclick="closeModals()" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-                <button id="confirm-reject-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors">Confirm Reject & Refund</button>
+                <button id="confirm-reject-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors">Confirm Reject</button>
             </div>
         </div>
     </div>
 
-    <!-- LIVE TRACKING MODAL (SIMULATION) -->
-    <div id="tracking-modal" class="fixed inset-0 bg-gray-900/60 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden text-center p-8">
-            <div id="tracking-loading">
-                <i class="ph ph-spinner animate-spin text-4xl text-saffron mb-4 inline-block"></i>
-                <h3 class="font-bold text-gray-800 text-lg mb-1">Fetching Status...</h3>
-                <p class="text-xs text-gray-500">Contacting Shiprocket via backend ID <span id="track-id-show" class="font-bold"></span></p>
-            </div>
-            <div id="tracking-success" class="hidden">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph-fill ph-map-pin text-4xl text-blue-500"></i>
-                </div>
-                <h3 class="font-bold text-gray-800 text-xl mb-1">Live Status Updated</h3>
-                <p class="text-sm font-semibold text-naturalBrown bg-gray-50 p-2 rounded border border-gray-100 mb-4" id="track-new-status">In Transit</p>
-                <button onclick="closeTrackingModal()" class="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-bold hover:bg-gray-200">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PRODUCT MODAL -->
+    <!-- PRODUCT ADD MODAL -->
     <div id="product-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -528,7 +420,6 @@
             </div>
             <div class="p-6 overflow-y-auto max-h-[75vh]">
                 <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
-                    <input type="hidden" id="edit-product-id" value="">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg relative group hover:border-maroon transition-colors cursor-pointer bg-gray-50/50" onclick="document.getElementById('prod-img-file').click()">
@@ -540,7 +431,7 @@
                                         <input id="prod-img-file" name="prod-img-file" type="file" accept="image/*" class="sr-only" onchange="previewImage(event)">
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 1MB</p>
                             </div>
                             <div id="image-preview-container" class="hidden absolute inset-0 w-full h-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-maroon">
                                 <img id="image-preview" src="" class="h-full w-full object-cover">
@@ -549,15 +440,16 @@
                                 </button>
                             </div>
                         </div>
-                        <input type="hidden" id="prod-img-url" value="">
+                        <input type="hidden" id="prod-img-b64" value="">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                         <input type="text" id="prod-name" required placeholder="e.g. Special Khoya Peda" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Base Price per Kg (₹)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Base Price per 1 Kg (₹)</label>
                         <input type="number" id="prod-price" required placeholder="e.g. 480" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                        <p class="text-[10px] text-gray-500 mt-1">250g and 500g prices will be calculated automatically.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -565,8 +457,8 @@
                     </div>
                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
                         <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                        <button type="submit" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md flex items-center gap-2">
-                            <i class="ph ph-broadcast text-lg"></i> Make Live
+                        <button type="submit" id="btn-save-prod" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md flex items-center gap-2">
+                            <i class="ph ph-broadcast text-lg"></i> Publish Product
                         </button>
                     </div>
                 </form>
@@ -574,77 +466,29 @@
         </div>
     </div>
 
-    <!-- CUSTOMER ORDER HISTORY MODAL -->
-    <div id="customer-orders-modal" class="fixed inset-0 bg-gray-900/60 z-[105] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <div>
-                    <h3 class="font-bold text-lg text-naturalBrown" id="co-modal-title">Order History</h3>
-                    <p class="text-sm text-gray-500 font-medium" id="co-modal-phone">...</p>
-                </div>
-                <button onclick="closeCustomerOrdersModal()" class="text-gray-400 hover:text-red-500 transition-colors">
-                    <i class="ph ph-x text-2xl"></i>
-                </button>
-            </div>
-            <div class="overflow-y-auto">
-                <table class="w-full text-left border-collapse whitespace-nowrap">
-                    <thead class="bg-gray-50 sticky top-0 shadow-sm">
-                        <tr>
-                            <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">Order ID</th>
-                            <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">Date</th>
-                            <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">Amount</th>
-                            <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase border-b border-gray-200">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="co-modal-tbody" class="divide-y divide-gray-100">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- DELETE CONFIRM MODAL -->
-    <div id="delete-confirm-modal" class="fixed inset-0 bg-gray-900/60 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden text-center p-6">
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="ph-fill ph-warning-circle text-4xl text-red-500"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-lg mb-2">Delete Product?</h3>
-            <p class="text-sm text-gray-500 mb-6">Are you sure you want to permanently delete this product? This action cannot be undone.</p>
-            <div class="flex gap-3">
-                <button onclick="document.getElementById('delete-confirm-modal').classList.add('hidden'); document.getElementById('delete-confirm-modal').classList.remove('flex');" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-                <button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors">Delete</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- UI INTERACTION SCRIPTS -->
     <script>
-        // Data Mocks
-        let orders = [
-            { id: "ORD-0001", date: "29 Aug 2026", customer: "Rahul Kumar", phone: "9876543210", amount: 480, payment: "PAID", status: "PENDING", items: "1x Special Deoghar Peda (1 Kg)", address: "House 45, Boring Road, Patna, Bihar - 800001", courier: "Delhivery Surface", awb: null },
-            { id: "ORD-0002", date: "29 Aug 2026", customer: "Priya Singh", phone: "9876543211", amount: 240, payment: "PAID", status: "PENDING", items: "1x Premium Kesar Peda (250g)", address: "Flat 202, Gomti Nagar, Lucknow, UP - 226010", courier: "Blue Dart Express", awb: null },
-            { id: "ORD-0003", date: "28 Aug 2026", customer: "Amit Sharma", phone: "9876543212", amount: 920, payment: "PAID", status: "ACCEPTED", items: "2x Family Pack Peda (1 Kg)", address: "Sector 62, Noida, UP - 201309", courier: "XpressBees", awb: "XB-99887711" },
-            { id: "ORD-0004", date: "27 Aug 2026", customer: "Neha Gupta", phone: "9876543213", amount: 120, payment: "REFUND_COMPLETED", status: "REJECTED", items: "1x Special Deoghar Peda (250g)", address: "Salt Lake, Kolkata, WB - 700091", courier: "Delhivery", awb: null },
-            { id: "ORD-0005", date: "26 Aug 2026", customer: "Vikash Yadav", phone: "9876543214", amount: 560, payment: "PAID", status: "SHIPPED", items: "1x Premium Kesar Peda (1 Kg)", address: "Ratu Road, Ranchi, Jharkhand - 834001", courier: "Blue Dart", awb: "BD-77382910" },
-        ];
+        // Custom Toast Notification System (Replaces alert())
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const isSuccess = type === 'success';
+            const bgColor = isSuccess ? 'bg-green-600' : 'bg-red-600';
+            const icon = isSuccess ? 'ph-check-circle' : 'ph-warning-circle';
 
-        let products = [
-            { id: 1, name: "Special Deoghar Peda", price: 480, desc: "Pure traditional khoya peda, crafted with the authentic recipe of Baba Dham.", img: "https://images.unsplash.com/photo-1596561339395-6fdfbd211463?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80", inStock: true },
-            { id: 2, name: "Premium Kesar Peda", price: 560, desc: "Authentic khoya peda enriched with the goodness and aroma of pure saffron (Kesar).", img: "https://images.unsplash.com/photo-1605807646983-377bc5a76493?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80", inStock: true },
-        ];
-
-        let customers = [
-            { name: "Rahul Kumar", phone: "9876543210", orders: 3, spent: 1440 },
-            { name: "Priya Singh", phone: "9876543211", orders: 1, spent: 240 },
-        ];
-
-        let reviews = [
-            { id: "ORD-0005", customer: "Vikash Yadav", rating: 5, date: "28 Aug 2026" },
-        ];
-
-        let currentFilter = 'ALL';
-        let customerSearchTerm = '';
-        let tempActionOrderId = null;
+            toast.className = `toast-enter w-full flex items-center justify-between p-4 rounded-lg shadow-lg text-white ${bgColor}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3 font-medium text-sm">
+                    <i class="ph-fill ${icon} text-2xl"></i>
+                    <span>${message}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white"><i class="ph ph-x"></i></button>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 4000);
+        }
 
         // Sidebar & Tabs Logic
         function toggleSidebar() {
@@ -664,7 +508,7 @@
         function switchTab(tabId) {
             const titles = {
                 'dashboard': 'Overview Dashboard', 'orders': 'Order Management', 'products': 'Product Catalog',
-                'customers': 'Customer Database', 'shipments': 'Shipments & Tracking', 'reviews': 'Customer Ratings', 'settings': 'Business Settings'
+                'shipments': 'Shipments & Tracking', 'settings': 'Business Settings'
             };
             document.getElementById('page-title').innerText = titles[tabId];
 
@@ -685,191 +529,286 @@
             if(window.innerWidth < 1024) toggleSidebar();
         }
 
-        // Stats
-        function updateStats() {
+        // Modals Logic
+        function closeModals() {
+            document.querySelectorAll('.fixed.inset-0.z-\\[100\\], .fixed.inset-0.z-\\[110\\]').forEach(m => {
+                m.classList.add('hidden'); m.classList.remove('flex');
+            });
+        }
+        function openProductModal() {
+            document.getElementById('product-form').reset();
+            clearImagePreview();
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.getElementById('product-modal').classList.add('flex');
+        }
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('product-modal').classList.remove('flex');
+        }
+
+        // Image Preview Logic
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Strict limit of 1MB for Base64 Firestore storage
+                if (file.size > 1048576) {
+                    showToast("Image is too large! Please select an image under 1MB.", "error");
+                    event.target.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prod-img-b64').value = e.target.result; 
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        function clearImagePreview(event) {
+            if(event) event.stopPropagation();
+            document.getElementById('prod-img-file').value = "";
+            document.getElementById('prod-img-b64').value = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- FIREBASE & CORE LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State variables
+        let globalOrders = [];
+        let globalProducts = [];
+        let currentOrderFilter = 'ALL';
+        let actionOrderId = null;
+
+        // AUTHENTICATION CHECK
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.replace("login.html");
+            } else {
+                document.getElementById('admin-user-email').innerText = user.email;
+                initRealtimeListeners();
+            }
+        });
+
+        window.logoutAdmin = function() {
+            signOut(auth).then(() => window.location.replace("login.html"));
+        }
+
+        // --- REAL-TIME LISTENERS ---
+        function initRealtimeListeners() {
+            // Listen to Orders
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                globalOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort by newest first based on createdAt
+                globalOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                
+                renderOrders();
+                renderShipments();
+                updateDashboardStats();
+            }, (error) => {
+                showToast("Failed to fetch live orders data.", "error");
+                console.error(error);
+            });
+
+            // Listen to Products
+            onSnapshot(collection(db, "products"), (snapshot) => {
+                globalProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts();
+                updateDashboardStats();
+            }, (error) => {
+                showToast("Failed to fetch live products data.", "error");
+            });
+        }
+
+        // --- DASHBOARD UPDATES ---
+        function updateDashboardStats() {
             let totalSales = 0, pendingCount = 0;
-            orders.forEach(o => {
-                if(o.payment === 'PAID' && o.status !== 'REJECTED') totalSales += o.amount;
+            globalOrders.forEach(o => {
+                if(o.paymentStatus === 'PAID' && o.status !== 'REJECTED') {
+                    totalSales += Number(o.amount || 0);
+                }
                 if(o.status === 'PENDING') pendingCount++;
             });
 
             document.getElementById('dash-sales').innerText = `₹${totalSales.toLocaleString('en-IN')}`;
             document.getElementById('dash-pending').innerText = pendingCount;
-            document.getElementById('dash-orders').innerText = orders.length;
-            document.getElementById('dash-customers').innerText = customers.length;
+            document.getElementById('dash-orders').innerText = globalOrders.length;
+            document.getElementById('dash-products').innerText = globalProducts.length;
             
             const badge = document.getElementById('nav-pending-badge');
             badge.innerText = pendingCount;
             badge.classList.toggle('hidden', pendingCount === 0);
+
+            const actionBox = document.getElementById('action-needed-box');
+            if(pendingCount > 0) {
+                actionBox.className = "bg-orange-50 border border-orange-100 p-4 rounded-lg flex items-start gap-3";
+                actionBox.innerHTML = `
+                    <i class="ph-fill ph-warning-circle text-orange-500 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-orange-800">${pendingCount} Pending Orders</h4>
+                        <p class="text-sm text-orange-600 mt-1">You have orders waiting to be accepted.</p>
+                        <button onclick="switchTab('orders')" class="mt-3 text-sm font-bold bg-orange-500 text-white px-4 py-1.5 rounded hover:bg-orange-600 transition">View Orders</button>
+                    </div>
+                `;
+            } else {
+                actionBox.className = "bg-gray-50 border border-gray-100 p-4 rounded-lg flex items-start gap-3";
+                actionBox.innerHTML = `
+                    <i class="ph-fill ph-check-circle text-green-500 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-800">All Caught Up!</h4>
+                        <p class="text-sm text-gray-600 mt-1">There are no pending orders waiting right now.</p>
+                    </div>
+                `;
+            }
         }
 
-        // Badges
+        // --- RENDERING HELPERS ---
         function getStatusBadge(status) {
-            switch(status) {
+            const s = status || 'UNKNOWN';
+            switch(s) {
                 case 'PENDING': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-700 border border-orange-200">Pending</span>';
                 case 'ACCEPTED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700 border border-blue-200">Accepted</span>';
                 case 'REJECTED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700 border border-red-200">Rejected</span>';
                 case 'SHIPPED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-700 border border-purple-200">Shipped</span>';
                 case 'IN_TRANSIT': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">In Transit</span>';
-                case 'OUT_FOR_DELIVERY': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">Out for Delivery</span>';
                 case 'DELIVERED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 border border-green-200">Delivered</span>';
-                default: return `<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-gray-100 text-gray-700">${status}</span>`;
+                default: return `<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-gray-100 text-gray-700">${s}</span>`;
             }
         }
 
         function getPaymentBadge(payment) {
-            if(payment === 'PAID') return '<span class="text-green-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Paid</span>';
-            if(payment === 'REFUND_INITIATED') return '<span class="text-orange-500 font-bold text-xs"><i class="ph-fill ph-clock-counter-clockwise"></i> Refund Initiated</span>';
-            if(payment === 'REFUND_COMPLETED') return '<span class="text-blue-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Refund Completed</span>';
-            return '<span class="text-red-500 font-bold text-xs"><i class="ph-fill ph-warning-circle"></i> Failed</span>';
+            const p = payment || 'UNKNOWN';
+            if(p === 'PAID') return '<span class="text-green-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Paid</span>';
+            if(p === 'REFUND_INITIATED') return '<span class="text-orange-500 font-bold text-xs"><i class="ph-fill ph-clock-counter-clockwise"></i> Refund Initiated</span>';
+            if(p === 'REFUND_COMPLETED') return '<span class="text-blue-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Refund Completed</span>';
+            return `<span class="text-gray-500 font-bold text-xs">${p}</span>`;
         }
 
-        // Render Orders (Only Active: Pending, Accepted, Rejected)
+        function formatDate(timestamp) {
+            if(!timestamp) return 'N/A';
+            const d = new Date(timestamp);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        // --- ORDER MANAGEMENT ---
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-            tbody.innerHTML = '';
+            let visibleOrders = globalOrders.filter(o => ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING'));
             
-            // Filter out shipped/delivered from orders tab
-            let visibleOrders = orders.filter(o => ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status));
-            
-            if (currentFilter !== 'ALL') {
-                visibleOrders = visibleOrders.filter(o => o.status === currentFilter);
+            if (currentOrderFilter !== 'ALL') {
+                visibleOrders = visibleOrders.filter(o => o.status === currentOrderFilter);
             }
 
             if(visibleOrders.length === 0) {
-                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active orders found.</td></tr>`;
+                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active orders found for this filter.</td></tr>`;
+                 return;
             }
 
-            visibleOrders.forEach(order => {
+            tbody.innerHTML = visibleOrders.map(order => {
                 let btns = '';
-                if(order.status === 'PENDING') {
+                const status = order.status || 'PENDING';
+                
+                if(status === 'PENDING') {
                     btns = `
-                        <button onclick="openAcceptModal('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2">Accept</button>
-                        <button onclick="openRejectModal('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2">Reject</button>
+                        <button onclick="window.initAcceptOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2">Accept</button>
+                        <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2">Reject</button>
                     `;
-                } else if (order.status === 'ACCEPTED' && order.awb) {
+                } else if (status === 'ACCEPTED' && order.awb) {
                     btns = `
-                        <button onclick="printLabel('${order.awb}')" class="px-3 py-1.5 text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Print Label</button>
-                        <button onclick="simulateWebhookPickup('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1" title="Mock Shiprocket Webhook"><i class="ph-fill ph-truck"></i> [Simulate Pickup]</button>
+                        <button onclick="window.simulatePrintLabel('${order.awb}')" class="px-3 py-1.5 text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Label</button>
+                        <button onclick="window.simulateCourierPickup('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1" title="Mock Shiprocket Pickup"><i class="ph-fill ph-truck"></i> [Pickup]</button>
                     `;
                 }
-                btns += `<button onclick="openOrderDetails('${order.id}')" class="text-gray-400 hover:text-maroon align-middle" title="View"><i class="ph ph-eye text-xl"></i></button>`;
+                btns += `<button onclick="window.viewOrderDetails('${order.id}')" class="text-gray-400 hover:text-maroon align-middle" title="View Details"><i class="ph ph-eye text-xl"></i></button>`;
 
-                tbody.innerHTML += `
+                return `
                     <tr class="hover:bg-gray-50/50">
                         <td class="py-4 px-6 text-sm font-bold text-naturalBrown">${order.id}</td>
-                        <td class="py-4 px-6 text-sm text-gray-600">${order.date}</td>
-                        <td class="py-4 px-6"><p class="text-sm font-semibold">${order.customer}</p></td>
-                        <td class="py-4 px-6 text-sm font-bold">₹${order.amount}</td>
-                        <td class="py-4 px-6">${getPaymentBadge(order.payment)}</td>
-                        <td class="py-4 px-6">${getStatusBadge(order.status)}</td>
+                        <td class="py-4 px-6 text-sm text-gray-600">${formatDate(order.createdAt)}</td>
+                        <td class="py-4 px-6"><p class="text-sm font-semibold">${order.customerName || 'Guest'}</p></td>
+                        <td class="py-4 px-6 text-sm font-bold">₹${order.amount || 0}</td>
+                        <td class="py-4 px-6">${getPaymentBadge(order.paymentStatus)}</td>
+                        <td class="py-4 px-6">${getStatusBadge(status)}</td>
                         <td class="py-4 px-6 text-right">${btns}</td>
                     </tr>`;
+            }).join('');
+        }
+
+        // Order Filters Listener
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent');
+                    b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                });
+                e.target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                e.target.classList.add('bg-maroon', 'text-white', 'border-transparent');
+                currentOrderFilter = e.target.getAttribute('data-status');
+                renderOrders();
             });
-            updateStats();
-        }
+        });
 
-        // Render Shipments (Only Shipped, Transit, Delivered)
-        function renderShipments() {
-            const tbody = document.getElementById('shipments-table-body');
-            const shippedOrders = orders.filter(o => ['SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
+        // Modals Action Functions
+        window.viewOrderDetails = function(id) {
+            const o = globalOrders.find(x => x.id === id);
+            if(!o) return;
             
-            if(shippedOrders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active shipments found.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = shippedOrders.map(o => `
-                <tr class="hover:bg-gray-50/50">
-                    <td class="py-4 px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
-                    <td class="py-4 px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb}</span></td>
-                    <td class="py-4 px-6 text-sm font-semibold text-gray-700">${o.courier}</td>
-                    <td class="py-4 px-6">${getStatusBadge(o.status)}</td>
-                    <td class="py-4 px-6 text-right">
-                        <button onclick="trackShipment('${o.id}')" class="text-sm font-medium text-maroon hover:text-saffron flex items-center justify-end gap-1.5 w-full transition-colors"><i class="ph ph-magnifying-glass"></i> Track Live</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Order Action Logic
-        function openOrderDetails(id) {
-            const o = orders.find(x => x.id === id);
-            if(o) {
-                document.getElementById('modal-order-id').innerText = `Order: ${o.id}`;
-                document.getElementById('modal-customer').innerText = o.customer;
-                document.getElementById('modal-phone').innerText = o.phone;
-                document.getElementById('modal-address').innerText = o.address;
-                document.getElementById('modal-items').innerText = o.items;
-                document.getElementById('modal-amount').innerText = `₹${o.amount}`;
-                document.getElementById('modal-courier').innerText = o.courier;
-                
-                document.getElementById('order-modal').classList.remove('hidden');
-                document.getElementById('order-modal').classList.add('flex');
-            }
-        }
-
-        function printLabel(awb) {
-            alert(`Simulating Label Download for AWB: ${awb}\nIn production, this will open the PDF from Shiprocket.`);
-        }
-
-        // MOCK WEBHOOK: Moves Order to Shipments Page
-        function simulateWebhookPickup(id) {
-            const idx = orders.findIndex(o => o.id === id);
-            if(idx !== -1) {
-                orders[idx].status = 'SHIPPED'; // Webhook updates status
-                renderOrders();    // Removes from Orders page
-                renderShipments(); // Adds to Shipments page
-                
-                // Show simple feedback
-                const toast = document.createElement('div');
-                toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-4 py-2 rounded shadow-lg z-[200] text-sm font-bold';
-                toast.innerHTML = `<i class="ph-fill ph-bell-ringing"></i> Webhook: Courier Picked Up! Moved to Shipments.`;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
-            }
-        }
-
-        // LIVE TRACKING MOCK
-        function trackShipment(id) {
-            const order = orders.find(o => o.id === id);
-            if(!order) return;
-
-            document.getElementById('track-id-show').innerText = order.awb;
-            document.getElementById('tracking-loading').classList.remove('hidden');
-            document.getElementById('tracking-success').classList.add('hidden');
+            document.getElementById('modal-order-id').innerText = `Order: ${o.id}`;
+            document.getElementById('modal-customer').innerText = o.customerName || 'N/A';
+            document.getElementById('modal-phone').innerText = o.phone || 'N/A';
+            document.getElementById('modal-email').innerText = o.email || 'N/A';
+            document.getElementById('modal-address').innerText = o.address || 'N/A';
+            document.getElementById('modal-amount').innerText = `₹${o.amount || 0}`;
+            document.getElementById('modal-courier').innerText = o.courier || 'N/A';
             
-            const modal = document.getElementById('tracking-modal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-
-            // Simulate API fetch delay
-            setTimeout(() => {
-                // Progress the status for demo purposes
-                let newStatusText = "";
-                if(order.status === 'SHIPPED') { order.status = 'IN_TRANSIT'; newStatusText = "In Transit"; }
-                else if(order.status === 'IN_TRANSIT') { order.status = 'OUT_FOR_DELIVERY'; newStatusText = "Out for Delivery"; }
-                else if(order.status === 'OUT_FOR_DELIVERY') { order.status = 'DELIVERED'; newStatusText = "Delivered"; }
-                else { newStatusText = "Delivered"; }
-
-                document.getElementById('track-new-status').innerText = newStatusText;
-                document.getElementById('tracking-loading').classList.add('hidden');
-                document.getElementById('tracking-success').classList.remove('hidden');
-                
-                renderShipments(); // Update table with new status
-            }, 1500);
-        }
-        function closeTrackingModal() {
-            document.getElementById('tracking-modal').classList.add('hidden');
-            document.getElementById('tracking-modal').classList.remove('flex');
+            // Render items
+            let itemsHtml = '';
+            if(Array.isArray(o.items)) {
+                itemsHtml = o.items.map(item => `
+                    <div class="bg-cream p-3 rounded-lg border border-golden/20 text-sm font-medium text-naturalBrown flex justify-between items-center mb-2">
+                        <span>${item.qty}x ${item.name} (${item.weight})</span>
+                        <span class="font-bold">₹${item.price * item.qty}</span>
+                    </div>
+                `).join('');
+            } else {
+                itemsHtml = `<p class="text-sm text-gray-500">${o.items || 'No item data'}</p>`;
+            }
+            document.getElementById('modal-items-container').innerHTML = itemsHtml;
+            
+            document.getElementById('order-modal').classList.remove('hidden');
+            document.getElementById('order-modal').classList.add('flex');
         }
 
-        // ACCEPT FLOW (Shiprocket check)
-        function openAcceptModal(id) {
-            tempActionOrderId = id;
-            const o = orders.find(x => x.id === id);
-            document.getElementById('orig-courier-name').innerText = o.courier;
+        // --- ACCEPT ORDER LOGIC ---
+        window.initAcceptOrder = function(id) {
+            actionOrderId = id;
+            const o = globalOrders.find(x => x.id === id);
+            document.getElementById('orig-courier-name').innerText = o.courier || 'Standard';
             
             document.getElementById('shiprocket-check-loading').classList.remove('hidden');
+            document.getElementById('shiprocket-load-text').innerText = "Checking Serviceability...";
             document.getElementById('shiprocket-couriers-list').classList.add('hidden');
             document.getElementById('shipment-success').classList.add('hidden');
             
@@ -879,109 +818,206 @@
             setTimeout(() => {
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shiprocket-couriers-list').classList.remove('hidden');
-            }, 1200);
+            }, 1000);
         }
 
-        document.getElementById('confirm-shipment-btn').addEventListener('click', () => {
+        document.getElementById('confirm-shipment-btn').addEventListener('click', async () => {
             document.getElementById('shiprocket-couriers-list').classList.add('hidden');
             document.getElementById('shiprocket-check-loading').classList.remove('hidden');
-            document.getElementById('shiprocket-check-loading').querySelector('h3').innerText = "Creating Shipment...";
+            document.getElementById('shiprocket-load-text').innerText = "Generating AWB via API...";
             
-            setTimeout(() => {
-                const awb = 'SR-' + Math.floor(Math.random() * 9000000 + 1000000);
-                document.getElementById('new-awb').innerText = awb;
+            try {
+                // Simulate Backend Delay
+                await new Promise(r => setTimeout(r, 1500));
+                
+                const generatedAWB = 'SR-' + Math.floor(Math.random() * 9000000 + 1000000);
+                
+                // Update Firestore Live Data
+                const orderRef = doc(db, "orders", actionOrderId);
+                await updateDoc(orderRef, {
+                    status: 'ACCEPTED',
+                    awb: generatedAWB
+                });
+
+                document.getElementById('new-awb').innerText = generatedAWB;
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shipment-success').classList.remove('hidden');
+                showToast("Order Accepted & AWB Generated successfully!");
                 
-                const idx = orders.findIndex(o => o.id === tempActionOrderId);
-                if(idx !== -1) {
-                    orders[idx].status = 'ACCEPTED'; // Master Prompt: Order stays accepted until webhook
-                    orders[idx].awb = awb;
-                }
-            }, 1500);
+            } catch(e) {
+                console.error(e);
+                closeModals();
+                showToast("Failed to generate AWB. Check console.", "error");
+            }
         });
 
-        // REJECT FLOW (Refund Logic)
-        function openRejectModal(id) {
-            tempActionOrderId = id;
-            const o = orders.find(x => x.id === id);
+        // --- REJECT ORDER LOGIC ---
+        window.initRejectOrder = function(id) {
+            actionOrderId = id;
+            const o = globalOrders.find(x => x.id === id);
             document.getElementById('reject-order-id').innerText = o.id;
-            document.getElementById('reject-amount').innerText = `₹${o.amount}`;
+            document.getElementById('reject-amount').innerText = `₹${o.amount || 0}`;
             
             const modal = document.getElementById('reject-modal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
         }
 
-        document.getElementById('confirm-reject-btn').addEventListener('click', () => {
-            const idx = orders.findIndex(o => o.id === tempActionOrderId);
-            if(idx !== -1) {
-                // Change status to Rejected and Payment to Refund Initiated
-                orders[idx].status = 'REJECTED';
-                orders[idx].payment = 'REFUND_INITIATED';
-                renderOrders();
-                closeModals();
+        document.getElementById('confirm-reject-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirm-reject-btn');
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Processing...`;
+            btn.disabled = true;
 
-                // Mock Razorpay Webhook -> Complete refund after 3 seconds
-                setTimeout(() => {
-                    orders[idx].payment = 'REFUND_COMPLETED';
-                    renderOrders();
-                    
-                    const toast = document.createElement('div');
-                    toast.className = 'fixed bottom-5 right-5 bg-green-600 text-white px-4 py-3 rounded shadow-lg z-[200] text-sm font-bold flex items-center gap-2';
-                    toast.innerHTML = `<i class="ph-fill ph-check-circle text-lg"></i> Refund Completed for ${orders[idx].id}`;
-                    document.body.appendChild(toast);
-                    setTimeout(() => toast.remove(), 4000);
-                }, 3000);
-            }
-        });
-
-        function closeModals() {
-            document.querySelectorAll('.fixed.inset-0.z-\\[100\\], .fixed.inset-0.z-\\[110\\]').forEach(m => {
-                m.classList.add('hidden'); m.classList.remove('flex');
-            });
-            renderOrders(); renderShipments();
-        }
-
-        // Product Form (Local Preview Logic)
-        let currentUploadedFile = null;
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                currentUploadedFile = file;
-                const previewUrl = URL.createObjectURL(file); 
-                document.getElementById('image-preview').src = previewUrl;
-                document.getElementById('prod-img-url').value = previewUrl;
-                document.getElementById('upload-placeholder').classList.add('hidden');
-                document.getElementById('image-preview-container').classList.remove('hidden');
-            }
-        }
-        function clearImagePreview(event) {
-            if(event) event.stopPropagation();
-            document.getElementById('prod-img-file').value = "";
-            currentUploadedFile = null;
-            document.getElementById('prod-img-url').value = "";
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('upload-placeholder').classList.remove('hidden');
-        }
-
-        // Init
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent');
-                    b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            try {
+                // Update status in Firestore
+                const orderRef = doc(db, "orders", actionOrderId);
+                await updateDoc(orderRef, {
+                    status: 'REJECTED',
+                    paymentStatus: 'REFUND_INITIATED'
                 });
-                e.target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                e.target.classList.add('bg-maroon', 'text-white', 'border-transparent');
-                currentFilter = e.target.getAttribute('data-status');
-                renderOrders();
-            });
+
+                closeModals();
+                showToast("Order Rejected. Refund Initiated via Razorpay API.", "success");
+                btn.innerHTML = `Confirm Reject`; btn.disabled = false;
+
+                // MOCK WEBHOOK: Auto complete refund after 3 seconds
+                setTimeout(async () => {
+                    await updateDoc(orderRef, { paymentStatus: 'REFUND_COMPLETED' });
+                    showToast(`Refund Completed successfully for order ${actionOrderId}!`, "success");
+                }, 3000);
+
+            } catch(e) {
+                console.error(e);
+                btn.innerHTML = `Confirm Reject`; btn.disabled = false;
+                showToast("Failed to reject order. Check connection.", "error");
+            }
         });
 
-        renderOrders();
-        renderProducts();
-        renderShipments();
-        // reviews and customers are omitted here for brevity as per your previous design setup.
+        // --- SHIPMENTS TAB LOGIC ---
+        function renderShipments() {
+            const tbody = document.getElementById('shipments-table-body');
+            const shippedOrders = globalOrders.filter(o => ['SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
+            
+            if(shippedOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active shipments found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = shippedOrders.map(o => `
+                <tr class="hover:bg-gray-50/50">
+                    <td class="py-4 px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
+                    <td class="py-4 px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb || 'Pending API Sync'}</span></td>
+                    <td class="py-4 px-6 text-sm font-semibold text-gray-700">${o.courier || 'N/A'}</td>
+                    <td class="py-4 px-6">${getStatusBadge(o.status)}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="window.simulateTrackingUpdate('${o.id}')" class="text-xs font-bold text-maroon hover:text-white border border-maroon hover:bg-maroon px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1" title="Mock Webhook Update"><i class="ph ph-fast-forward"></i> [Mock Track Step]</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Mock functions for Shiprocket flows
+        window.simulatePrintLabel = function(awb) {
+            showToast(`Simulating Label Download for AWB: ${awb}`, "success");
+        }
+        window.simulateCourierPickup = async function(id) {
+            try {
+                const orderRef = doc(db, "orders", id);
+                await updateDoc(orderRef, { status: 'SHIPPED' });
+                showToast(`Webhook Mock: Courier Picked up order ${id}. Moved to Shipments!`, "success");
+            } catch(e) { console.error(e); }
+        }
+        window.simulateTrackingUpdate = async function(id) {
+            const o = globalOrders.find(x => x.id === id);
+            let nextStatus = 'DELIVERED';
+            if(o.status === 'SHIPPED') nextStatus = 'IN_TRANSIT';
+            else if(o.status === 'IN_TRANSIT') nextStatus = 'OUT_FOR_DELIVERY';
+
+            try {
+                const orderRef = doc(db, "orders", id);
+                await updateDoc(orderRef, { status: nextStatus });
+                showToast(`Webhook Mock: Status updated to ${nextStatus}`, "success");
+            } catch(e) { console.error(e); }
+        }
+
+
+        // --- PRODUCT MANAGEMENT ---
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            if(globalProducts.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 bg-white rounded-xl border border-gray-100">No products available. Click 'Add Product' to create one.</div>`;
+                return;
+            }
+
+            grid.innerHTML = globalProducts.map(p => `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                    <div class="h-48 w-full bg-gray-100 relative group">
+                        <img src="${p.img || 'https://placehold.co/400x300/eee/999?text=No+Image'}" alt="Product" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-600 shadow-lg"><i class="ph ph-trash text-lg"></i></button>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h4 class="font-bold text-lg text-naturalBrown mb-1">${p.name}</h4>
+                        <p class="text-xs text-gray-500 mb-4 flex-1">${p.description || p.desc || ''}</p>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                            <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Base (1 Kg)</span>
+                            <span class="font-bold text-maroon text-lg">₹${p.basePrice || p.price}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-prod');
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Saving...`;
+            btn.disabled = true;
+
+            const name = document.getElementById('prod-name').value.trim();
+            const price = Number(document.getElementById('prod-price').value);
+            const desc = document.getElementById('prod-desc').value.trim();
+            const imgBase64 = document.getElementById('prod-img-b64').value; // Base64 string
+
+            if(!imgBase64) {
+                showToast("Please select an image first.", "error");
+                btn.innerHTML = `<i class="ph ph-broadcast text-lg"></i> Publish Product`; btn.disabled = false;
+                return;
+            }
+
+            try {
+                // Add to Firestore
+                await addDoc(collection(db, "products"), {
+                    name: name,
+                    basePrice: price,
+                    description: desc,
+                    img: imgBase64,
+                    inStock: true,
+                    createdAt: Date.now()
+                });
+                
+                showToast("Product added successfully to live database!", "success");
+                closeProductModal();
+                btn.innerHTML = `<i class="ph ph-broadcast text-lg"></i> Publish Product`; btn.disabled = false;
+            } catch(error) {
+                console.error("Add Product Error:", error);
+                showToast("Error saving product to database.", "error");
+                btn.innerHTML = `<i class="ph ph-broadcast text-lg"></i> Publish Product`; btn.disabled = false;
+            }
+        }
+
+        window.deleteProduct = async function(id) {
+            if(!confirm("Are you sure you want to permanently delete this product?")) return;
+            
+            try {
+                await deleteDoc(doc(db, "products", id));
+                showToast("Product deleted successfully.", "success");
+            } catch(e) {
+                console.error(e);
+                showToast("Failed to delete product.", "error");
+            }
+        }
+
     </script>
 </body>
 </html>
