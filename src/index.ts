@@ -1,7 +1,17 @@
 export interface Env {
-  // Environment variables and secrets
+  // Firebase Secrets
+  FIREBASE_CLIENT_EMAIL: string;
+  FIREBASE_PRIVATE_KEY: string;
+  FIREBASE_PROJECT_ID: string;
+
+  // Razorpay Secrets
   RAZORPAY_KEY_ID: string;
   RAZORPAY_KEY_SECRET: string;
+
+  // Shiprocket Secrets
+  SHIPROCKET_EMAIL: string;
+  SHIPROCKET_PASSWORD: string;
+
   CORS_ORIGIN: string;
 }
 
@@ -11,25 +21,25 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
-    // CORS Headers for secure communication with your HTML frontend
+    // -----------------------------------------------------
+    // CORS HEADERS (वेबसाइट को सर्वर से बात करने की आज़ादी)
+    // -----------------------------------------------------
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     };
 
-    // Handle preflight requests
     if (method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
 
     try {
       // =========================================================
-      // 1. PAYMENT VERIFICATION API
+      // 1. RAZORPAY: PAYMENT VERIFICATION API
       // =========================================================
       if (path === '/api/payment/verify' && method === 'POST') {
-        const body = await request.json() as any;
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await request.json() as any;
 
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
           return new Response(JSON.stringify({ success: false, error: "Missing parameters" }), { status: 400, headers: corsHeaders });
@@ -39,11 +49,8 @@ export default {
         const encoder = new TextEncoder();
         const data = encoder.encode(razorpay_order_id + "|" + razorpay_payment_id);
         const key = await crypto.subtle.importKey(
-          "raw", 
-          encoder.encode(env.RAZORPAY_KEY_SECRET),
-          { name: "HMAC", hash: "SHA-256" }, 
-          false, 
-          ["sign"]
+          "raw", encoder.encode(env.RAZORPAY_KEY_SECRET),
+          { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
         );
         
         const signatureBuffer = await crypto.subtle.sign("HMAC", key, data);
@@ -51,63 +58,92 @@ export default {
         const generatedSignature = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
         if (generatedSignature === razorpay_signature) {
-          // Signature matches! Payment is authentic.
-          return new Response(JSON.stringify({ 
-            success: true, 
-            message: "Payment verified successfully securely on the server." 
-          }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          return new Response(JSON.stringify({ success: true, message: "Payment Verified" }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         } else {
-          // Fake or tampered payment
-          return new Response(JSON.stringify({ 
-            success: false, 
-            error: "Invalid signature. Payment verification failed." 
-          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          return new Response(JSON.stringify({ success: false, error: "Invalid signature" }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
       }
 
       // =========================================================
-      // 2. AUTO REFUND API (Admin Only)
+      // 2. RAZORPAY: AUTO REFUND API
       // =========================================================
-      if (path === '/api/admin/refund/initiate' && method === 'POST') {
-        const body = await request.json() as any;
-        const { payment_id, amount, admin_token } = body;
+      if (path === '/api/admin/refund' && method === 'POST') {
+        const { payment_id, amount } = await request.json() as any;
+        if (!payment_id) return new Response(JSON.stringify({ success: false, error: "Payment ID required" }), { status: 400, headers: corsHeaders });
 
-        if (!payment_id) {
-          return new Response(JSON.stringify({ success: false, error: "Payment ID required" }), { status: 400, headers: corsHeaders });
-        }
-
-        // NOTE: In production, verify the `admin_token` with Firebase Auth REST API here 
-        // to ensure the person making this request is actually the Admin.
-
-        // Call Razorpay Refund API
         const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
-        
-        // Amount is sent in paise to Razorpay
         const refundPayload: any = {};
-        if (amount) refundPayload.amount = Math.round(amount * 100); 
+        if (amount) refundPayload.amount = Math.round(amount * 100); // Amount in paise
 
         const rzpResponse = await fetch(`https://api.razorpay.com/v1/payments/${payment_id}/refund`, {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Authorization': authHeader 
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
           body: JSON.stringify(refundPayload)
         });
 
         const rzpData = await rzpResponse.json() as any;
-
         if (rzpResponse.ok) {
-          return new Response(JSON.stringify({ 
-            success: true, 
-            message: "Refund initiated successfully via Razorpay.",
-            refund_id: rzpData.id
-          }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          return new Response(JSON.stringify({ success: true, refund_id: rzpData.id }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         } else {
-          return new Response(JSON.stringify({ 
-            success: false, 
-            error: rzpData.error?.description || "Razorpay refund failed." 
-          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          return new Response(JSON.stringify({ success: false, error: rzpData.error?.description }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+      }
+
+      // =========================================================
+      // HELPER: GET SHIPROCKET TOKEN
+      // =========================================================
+      const getShiprocketToken = async () => {
+        const authRes = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: env.SHIPROCKET_EMAIL, password: env.SHIPROCKET_PASSWORD })
+        });
+        if (!authRes.ok) throw new Error("Shiprocket Authentication Failed");
+        const authData = await authRes.json() as any;
+        return authData.token;
+      };
+
+      // =========================================================
+      // 3. SHIPROCKET: CHECK COURIER SERVICEABILITY
+      // =========================================================
+      if (path === '/api/shiprocket/serviceability' && method === 'POST') {
+        const { delivery_postcode, weight, cod } = await request.json() as any;
+        
+        // Use your pickup pincode here (Deoghar: 814112)
+        const pickup_postcode = "814112"; 
+        const token = await getShiprocketToken();
+
+        const courierRes = await fetch(`https://apiv2.shiprocket.in/v1/external/courier/serviceability/?pickup_postcode=${pickup_postcode}&delivery_postcode=${delivery_postcode}&weight=${weight}&cod=${cod || 0}`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const courierData = await courierRes.json() as any;
+        if (courierData.status === 200) {
+          return new Response(JSON.stringify({ success: true, data: courierData.data }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          return new Response(JSON.stringify({ success: false, error: "Service not available for this PIN code" }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+      }
+
+      // =========================================================
+      // 4. SHIPROCKET: CREATE ORDER & AWB
+      // =========================================================
+      if (path === '/api/shiprocket/create-order' && method === 'POST') {
+        const orderDetails = await request.json() as any;
+        const token = await getShiprocketToken();
+
+        const createRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify(orderDetails)
+        });
+
+        const createData = await createRes.json() as any;
+        if (createRes.ok && createData.order_id) {
+          return new Response(JSON.stringify({ success: true, shiprocket_order_id: createData.order_id, shipment_id: createData.shipment_id }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          return new Response(JSON.stringify({ success: false, error: "Failed to generate Shiprocket Order", details: createData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
       }
 
@@ -121,7 +157,7 @@ export default {
 
     } catch (error: any) {
       console.error("Worker Error:", error);
-      return new Response(JSON.stringify({ error: "Internal Server Error", details: error.message }), { 
+      return new Response(JSON.stringify({ success: false, error: "Internal Server Error", details: error.message }), { 
         status: 500, 
         headers: { 'Content-Type': 'application/json', ...corsHeaders } 
       });
