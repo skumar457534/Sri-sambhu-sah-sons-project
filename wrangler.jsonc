@@ -1,12 +1,12 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "peda-store-api",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-08-29",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "vars": {
-    "CORS_ORIGIN": "*"
-  }
+"$schema": "node_modules/wrangler/config-schema.json",
+"name": "peda-store-api",
+"main": "src/index.ts",
+"compatibility_date": "2024-03-20",
+"vars": {
+"CORS_ORIGIN": "*"
+}
+// Secrets like RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET
+// should not be written here. You will add them securely via CLI:
+// npx wrangler secret put RAZORPAY_KEY_ID
 }
