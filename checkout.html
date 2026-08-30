@@ -47,16 +47,40 @@
             transform: scale(1);
         }
     </style>
-</head>
-<body class="bg-gray-50 text-naturalBrown font-sans antialiased pb-20 lg:pb-0">
 
-    <!-- CHECKOUT HEADER (Minimal to avoid distractions) -->
+    <!-- REAL RAZORPAY SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body class="bg-gray-50 text-naturalBrown font-sans antialiased pb-20 lg:pb-0 relative">
+
+    <!-- SAVING ORDER OVERLAY (Shows after Razorpay Success) -->
+    <div id="saving-overlay" class="fixed inset-0 bg-white/90 z-[100] hidden flex-col items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center border border-gray-100 max-w-sm w-full">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-xl mb-2">Payment Received!</h3>
+            <div class="flex flex-col items-center gap-2 text-gray-500">
+                <i class="ph ph-spinner-gap animate-spin text-2xl text-maroon"></i>
+                <p class="text-sm font-medium">Securing your order...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT HEADER -->
     <header class="bg-white border-b border-golden/20 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand & Logo -->
             <div class="flex-shrink-0 flex items-center gap-3">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
-                    <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20" />
+                        <path d="M12 2l-2.5 3.5" />
+                        <path d="M12 2l2.5 3.5" />
+                        <path d="M5 8v2c0 3.5 3 6 7 6s7-2.5 7-6V8" />
+                        <path d="M5 8l-2 2.5" />
+                        <path d="M19 8l2 2.5" />
+                    </svg>
                 </div>
                 <a href="index.html" class="flex flex-col">
                     <span class="font-serif font-bold text-xl md:text-2xl text-maroon leading-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
@@ -75,7 +99,7 @@
     <!-- MAIN CHECKOUT LAYOUT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
-        <!-- Empty Cart Notice (Hidden by default) -->
+        <!-- Empty Cart Notice -->
         <div id="empty-cart-notice" class="hidden text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
             <i class="ph ph-shopping-cart text-6xl text-gray-300 mb-4 inline-block"></i>
             <h2 class="text-2xl font-serif font-bold text-naturalBrown mb-2">Your Cart is Empty</h2>
@@ -139,7 +163,6 @@
 
                 <!-- Step 2: Courier Selection -->
                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
-                    <!-- Overlay to block if PIN is empty -->
                     <div id="courier-overlay" class="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-10 flex items-center justify-center transition-all">
                         <p class="text-sm font-medium text-gray-600 bg-white px-5 py-3 rounded-full shadow-md border border-gray-100 flex items-center gap-2">
                             <i class="ph-fill ph-info text-golden text-lg"></i> Enter PIN code to see delivery options
@@ -157,7 +180,7 @@
                     </div>
 
                     <div id="courier-options" class="space-y-4 hidden">
-                        <!-- Options injected via JS based on PIN check -->
+                        <!-- Options injected via JS -->
                     </div>
                 </div>
 
@@ -171,7 +194,6 @@
                         <a href="our_peda.html" class="text-xs font-sans text-maroon hover:text-saffron font-medium">Edit Cart</a>
                     </h2>
                     
-                    <!-- Dynamic Cart Items Container -->
                     <div id="checkout-cart-items" class="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2">
                         <!-- Items injected by JS -->
                     </div>
@@ -197,8 +219,8 @@
                         Please fill all required fields and select a courier.
                     </div>
 
-                    <!-- Payment Button -->
-                    <button type="button" onclick="initiatePayment()" id="pay-btn" class="w-full bg-maroon text-cream py-4 rounded-xl font-bold hover:bg-maroon/90 transition-all shadow-md mt-6 flex items-center justify-center gap-2 group">
+                    <!-- REAL PAYMENT BUTTON -->
+                    <button type="button" onclick="initiateRealPayment()" id="pay-btn" class="w-full bg-maroon text-cream py-4 rounded-xl font-bold hover:bg-maroon/90 transition-all shadow-md mt-6 flex items-center justify-center gap-2 group">
                         <i class="ph ph-shield-check text-xl"></i> 
                         Pay Securely
                         <i class="ph ph-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
@@ -241,7 +263,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info (Single WhatsApp Number Only) -->
+                <!-- Contact Info -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
@@ -264,29 +286,12 @@
         </div>
     </footer>
 
-    <!-- MOCK RAZORPAY MODAL (For Simulation) -->
-    <div id="razorpay-modal" class="fixed inset-0 bg-black/70 z-[110] hidden flex-col items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="rzp-box">
-            <div class="bg-[#02042b] p-4 text-center border-b-4 border-blue-500">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" alt="Razorpay" class="h-6 mx-auto invert brightness-0">
-            </div>
-            <div class="p-8 text-center bg-gray-50" id="rzp-status-box">
-                <i class="ph ph-spinner-gap animate-spin text-4xl text-blue-600 mb-4 inline-block"></i>
-                <h3 class="font-bold text-gray-800 text-lg mb-1">Processing Payment...</h3>
-                <p class="text-xs text-gray-500 mb-4">Please do not close or refresh this page.</p>
-                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2 overflow-hidden">
-                    <div class="bg-blue-600 h-1.5 rounded-full w-2/3 animate-pulse"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
+    <!-- Firebase & Functional Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
             authDomain: "srishambhushaandsons.firebaseapp.com",
@@ -298,59 +303,47 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Pre-fill email if user is logged in
+        let currentUser = null;
         onAuthStateChanged(auth, (user) => {
-            if (user && user.email) {
+            if (user) {
+                currentUser = user;
                 const emailInput = document.getElementById('cust-email');
-                if (!emailInput.value) {
-                    emailInput.value = user.email;
-                }
+                if (!emailInput.value) emailInput.value = user.email;
             }
         });
-    </script>
 
-    <script>
-        // DOM Elements
+        // DOM Elements & State
         const pincodeInput = document.getElementById('pincode-input');
         const cityInput = document.getElementById('city-input');
         const stateInput = document.getElementById('state-input');
         const courierOverlay = document.getElementById('courier-overlay');
         const courierLoading = document.getElementById('courier-loading');
         const courierOptionsBox = document.getElementById('courier-options');
-        
-        const summarySubtotalEl = document.getElementById('summary-subtotal');
-        const summaryShippingEl = document.getElementById('summary-shipping');
-        const summaryTotalEl = document.getElementById('summary-total');
-        const shippingLabel = document.getElementById('shipping-label');
-        const cartItemsContainer = document.getElementById('checkout-cart-items');
-        
         const formError = document.getElementById('form-error');
 
-        // State Variables
         let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
         let subtotalAmount = 0;
         let selectedShippingAmount = 0;
 
-        // Initialize Checkout Page
+        // Init Check
         function initCheckout() {
             if (cart.length === 0) {
                 document.getElementById('checkout-content').classList.add('hidden');
                 document.getElementById('empty-cart-notice').classList.remove('hidden');
                 return;
             }
-
             renderCartItems();
             updateTotals();
         }
 
-        // Render Cart Items
+        // Render Cart UI
         function renderCartItems() {
             subtotalAmount = 0;
-            cartItemsContainer.innerHTML = cart.map(item => {
+            document.getElementById('checkout-cart-items').innerHTML = cart.map(item => {
                 const itemTotal = item.price * item.qty;
                 subtotalAmount += itemTotal;
-                
                 return `
                     <div class="flex items-start gap-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="w-16 h-16 bg-white rounded-lg overflow-hidden shrink-0 border border-gray-200">
@@ -369,34 +362,29 @@
             }).join('');
         }
 
-        // Update Financial Totals
         function updateTotals() {
-            summarySubtotalEl.innerText = `₹${subtotalAmount}`;
-            
+            document.getElementById('summary-subtotal').innerText = `₹${subtotalAmount}`;
             if(selectedShippingAmount > 0) {
-                summaryShippingEl.innerText = `₹${selectedShippingAmount}`;
-                summaryTotalEl.innerText = `₹${subtotalAmount + selectedShippingAmount}`;
-                shippingLabel.innerText = '';
+                document.getElementById('summary-shipping').innerText = `₹${selectedShippingAmount}`;
+                document.getElementById('summary-total').innerText = `₹${subtotalAmount + selectedShippingAmount}`;
+                document.getElementById('shipping-label').innerText = '';
                 document.getElementById('pay-btn').innerHTML = `<i class="ph ph-shield-check text-xl"></i> Pay ₹${subtotalAmount + selectedShippingAmount} <i class="ph ph-arrow-right ml-1"></i>`;
             } else {
-                summaryShippingEl.innerText = '--';
-                summaryTotalEl.innerText = `₹${subtotalAmount}`;
-                shippingLabel.innerText = '(Select Courier)';
+                document.getElementById('summary-shipping').innerText = '--';
+                document.getElementById('summary-total').innerText = `₹${subtotalAmount}`;
+                document.getElementById('shipping-label').innerText = '(Select Courier)';
                 document.getElementById('pay-btn').innerHTML = `<i class="ph ph-shield-check text-xl"></i> Pay Securely`;
             }
         }
 
-        // Mock Shiprocket PIN Check
+        // PIN Code Handling
         pincodeInput.addEventListener('input', (e) => {
-            const val = e.target.value.replace(/\D/g, ''); // Ensure only numbers
+            const val = e.target.value.replace(/\D/g, '');
             e.target.value = val;
 
             if(val.length === 6) {
-                // Auto-fill mock city/state based on valid PIN length
                 cityInput.value = val.startsWith('814') ? 'Deoghar' : 'City Name';
                 stateInput.value = val.startsWith('814') ? 'Jharkhand' : 'State Name';
-
-                // Trigger Courier Fetch
                 courierOverlay.classList.add('opacity-0');
                 
                 setTimeout(() => {
@@ -404,29 +392,24 @@
                     courierLoading.classList.remove('hidden');
                     courierOptionsBox.classList.add('hidden');
                     
-                    // Simulate API Delay
                     setTimeout(() => {
                         generateCourierOptions();
                         courierLoading.classList.add('hidden');
                         courierOptionsBox.classList.remove('hidden');
-                    }, 1000);
+                    }, 800);
                 }, 300);
             } else {
-                // Reset if PIN is incomplete
                 courierOverlay.classList.remove('hidden');
                 setTimeout(() => courierOverlay.classList.remove('opacity-0'), 10);
                 courierOptionsBox.classList.add('hidden');
-                
                 cityInput.value = '';
                 stateInput.value = '';
-                
                 selectedShippingAmount = 0;
                 updateTotals();
             }
         });
 
         function generateCourierOptions() {
-            // Mock dynamic couriers
             const couriers = [
                 { id: 'delhivery', name: 'Delhivery Surface', price: 110, date: '3-4 Days' },
                 { id: 'bluedart', name: 'Blue Dart Express', price: 150, date: '1-2 Days (Fastest)' },
@@ -435,7 +418,7 @@
 
             courierOptionsBox.innerHTML = couriers.map((c, index) => `
                 <label class="cursor-pointer relative block">
-                    <input type="radio" name="courier" value="${c.price}" class="courier-radio sr-only" onchange="setShipping(${c.price})" ${index === 0 ? 'checked' : ''}>
+                    <input type="radio" name="courier" value="${c.price}" class="courier-radio sr-only" onchange="window.setShipping(${c.price})" ${index === 0 ? 'checked' : ''}>
                     <div class="border-2 border-gray-100 rounded-xl p-4 transition-all flex items-center justify-between hover:border-maroon/30 shadow-sm">
                         <div class="flex items-center gap-4">
                             <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
@@ -450,30 +433,27 @@
                     </div>
                 </label>
             `).join('');
-
-            // Auto-select first option
-            setShipping(couriers[0].price);
+            window.setShipping(couriers[0].price);
         }
 
-        // Triggered by radio button selection
         window.setShipping = function(amount) {
             selectedShippingAmount = amount;
             updateTotals();
             formError.classList.add('hidden');
         }
 
-        // Razorpay Payment Flow (Simulation)
-        window.initiatePayment = function() {
+        // ==========================================
+        // REAL RAZORPAY & FIRESTORE INTEGRATION
+        // ==========================================
+        window.initiateRealPayment = async function() {
             formError.classList.add('hidden');
             const form = document.getElementById('address-form');
 
-            // 1. Validate Form Details
             if(!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // 2. Validate Courier Selection
             const selectedCourier = document.querySelector('input[name="courier"]:checked');
             if(!selectedCourier || selectedShippingAmount === 0) {
                 formError.innerText = "Please ensure PIN code is entered and a courier is selected.";
@@ -481,48 +461,83 @@
                 return;
             }
 
-            // 3. Proceed to Mock Payment UI
-            const modal = document.getElementById('razorpay-modal');
-            const rzpBox = document.getElementById('rzp-box');
-            const rzpStatus = document.getElementById('rzp-status-box');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            setTimeout(() => rzpBox.classList.remove('scale-95'), 50);
+            const finalTotal = subtotalAmount + selectedShippingAmount;
+            const customerName = document.getElementById('cust-name').value;
+            const customerEmail = document.getElementById('cust-email').value;
+            const customerPhone = document.getElementById('cust-phone').value;
 
-            // Simulate Network / Payment Processing Delay
-            setTimeout(() => {
-                // Success State
-                rzpStatus.innerHTML = `
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
-                        <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
-                    </div>
-                    <h3 class="font-bold text-gray-800 text-xl mb-1">Payment Successful!</h3>
-                    <p class="text-sm text-gray-500 mb-6">Your order has been placed securely.</p>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6 text-left">
-                        <p class="text-xs text-gray-500 uppercase font-bold mb-1">Order ID</p>
-                        <p class="font-mono font-bold text-naturalBrown text-lg">ORD-${Math.floor(Math.random() * 9000) + 1000}</p>
-                    </div>
+            // RAZORPAY CONFIGURATION
+            var options = {
+                "key": "rzp_test_TVYhXZ7PKxs2fp", // YOUR REAL TEST API KEY
+                "amount": finalTotal * 100, // Amount is in paise
+                "currency": "INR",
+                "name": "Sri Shambhu Sha & Sons",
+                "description": "Authentic Deoghar Peda Order",
+                "image": "images/icon.jpg",
+                "handler": async function (response) {
+                    // This function fires only if payment is SUCCESSFUL.
+                    document.getElementById('saving-overlay').classList.remove('hidden');
+                    document.getElementById('saving-overlay').classList.add('flex');
 
-                    <button onclick="completeOrder()" class="w-full bg-maroon text-cream py-3 rounded-lg font-bold hover:bg-maroon/90 transition-colors shadow-md">
-                        Track My Order
-                    </button>
-                `;
-            }, 3000);
+                    try {
+                        // Gather Order Data
+                        const orderData = {
+                            customerName: customerName,
+                            customerPhone: customerPhone,
+                            customerEmail: customerEmail,
+                            shippingAddress: {
+                                line1: document.getElementById('cust-address1').value,
+                                line2: document.getElementById('cust-address2').value,
+                                city: cityInput.value,
+                                state: stateInput.value,
+                                pincode: pincodeInput.value
+                            },
+                            items: cart,
+                            subtotal: subtotalAmount,
+                            shippingFee: selectedShippingAmount,
+                            amount: finalTotal,
+                            status: 'PENDING',
+                            paymentStatus: 'PAID',
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            createdAt: new Date().toISOString(),
+                            userId: currentUser ? currentUser.uid : 'GUEST'
+                        };
+
+                        // Save to Firebase Database
+                        await addDoc(collection(db, "orders"), orderData);
+
+                        // Clear cart and redirect
+                        localStorage.removeItem('shriShambhuCart');
+                        window.location.href = "track_order.html";
+
+                    } catch (error) {
+                        console.error("Database Saving Error:", error);
+                        alert("Payment successful but failed to save order details. Please contact support with payment ID: " + response.razorpay_payment_id);
+                        document.getElementById('saving-overlay').classList.add('hidden');
+                        document.getElementById('saving-overlay').classList.remove('flex');
+                    }
+                },
+                "prefill": {
+                    "name": customerName,
+                    "email": customerEmail,
+                    "contact": customerPhone
+                },
+                "theme": {
+                    "color": "#7B1818" // Maroon Theme
+                }
+            };
+
+            // Open Razorpay Popup
+            var rzp = new Razorpay(options);
+            
+            rzp.on('payment.failed', function (response){
+                formError.innerText = "Payment Failed: " + response.error.description;
+                formError.classList.remove('hidden');
+            });
+
+            rzp.open();
         }
 
-        // Finalize order and clear cart
-        window.completeOrder = function() {
-            // Empty the local cart
-            localStorage.removeItem('shriShambhuCart');
-            
-            // Redirect to tracking page
-            window.location.href = "track_order.html";
-        }
-
-        // Run on load
         initCheckout();
     </script>
 </body>
