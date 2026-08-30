@@ -74,7 +74,7 @@
                 <form id="admin-login-form" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Admin Email</label>
-                        <input type="email" id="admin-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="admin@srishambhusha.com">
+                        <input type="email" id="admin-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="Enter strictly authorized email">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
@@ -200,9 +200,9 @@
                         </button>
                     </div>
 
-                    <!-- Add Product Form -->
+                    <!-- Add / Edit Product Form -->
                     <div id="product-form-container" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 hidden transition-all">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">New Product Entry</h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2" id="form-title">Product Entry</h3>
                         <form id="product-form" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -399,23 +399,11 @@
             }
         }
 
-        function toggleProductForm() {
-            const form = document.getElementById('product-form-container');
-            if(form.classList.contains('hidden')) {
-                form.classList.remove('hidden');
-                document.getElementById('product-form').reset();
-                clearImagePreview();
-            } else {
-                form.classList.add('hidden');
-            }
-        }
-
         // Image Selection (Base64 conversion)
         function handleImageSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
             
-            // Limit size to ~1MB to avoid Firestore limits
             if(file.size > 1048576) {
                 showToast("Image is too large. Please use an image under 1MB.", "error");
                 event.target.value = "";
@@ -468,9 +456,9 @@
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
         let listenersInitialized = false;
+        let editingProductId = null; // Keeps track if we are editing an existing product
 
         // --- 1. STRICT AUTHENTICATION LOGIC ---
-        
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('admin-email').value.trim();
@@ -482,38 +470,30 @@
             btn.disabled = true;
 
             try {
-                // Attempt standard login first
                 await signInWithEmailAndPassword(auth, email, password);
-                // The onAuthStateChanged listener handles the Strict Admin check
+                // onAuthStateChanged will handle verification
             } catch (error) {
                 console.error(error);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                
-                let errMsg = "Login failed. Check credentials.";
-                if(error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password'){
-                    errMsg = "Invalid Admin Email or Password.";
-                }
-                showToast(errMsg, "error");
+                showToast("Invalid Admin Email or Password.", "error");
             }
         });
 
-        // The Gatekeeper: Checks if logged in user is actually an admin in the database
         onAuthStateChanged(auth, async (user) => {
             const loginScreen = document.getElementById('admin-login-screen');
             const dashboardScreen = document.getElementById('admin-dashboard-screen');
 
             if (user) {
                 try {
-                    // CRITICAL SECURITY CHECK: Lookup UID in 'admins' collection
+                    // Check if UID exists in 'admins' collection
                     const adminDocRef = doc(db, "admins", user.uid);
                     const adminSnap = await getDoc(adminDocRef);
 
                     if (adminSnap.exists()) {
-                        // User is verified Admin
+                        // Verified Admin
                         document.getElementById('admin-user-email').innerText = user.email;
                         
-                        // Switch UI
                         loginScreen.classList.add('hidden');
                         dashboardScreen.classList.remove('hidden');
                         dashboardScreen.classList.add('flex');
@@ -524,60 +504,39 @@
                             showToast("Welcome to Secure Admin Panel", "success");
                         }
                     } else {
-                        // NORMAL CUSTOMER TRYING TO ACCESS ADMIN
+                        // Normal user trying to access admin
                         await signOut(auth);
-                        showToast("Access Denied: You do not have Admin permissions.", "error");
-                        
-                        // Force UI to login state
-                        dashboardScreen.classList.add('hidden');
-                        dashboardScreen.classList.remove('flex');
-                        loginScreen.classList.remove('hidden');
-                        
-                        const btn = document.getElementById('btn-admin-login');
-                        btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                        btn.disabled = false;
+                        showToast("Access Denied: You are not an Admin.", "error");
+                        resetLoginUI();
                     }
                 } catch (dbError) {
                     console.error("Verification Error:", dbError);
                     await signOut(auth);
-                    
-                    if(dbError.code === 'permission-denied') {
-                        showToast("Access Blocked by Security Rules.", "error");
-                    } else {
-                        showToast("Verification failed. Try again.", "error");
-                    }
-                    
-                    dashboardScreen.classList.add('hidden');
-                    dashboardScreen.classList.remove('flex');
-                    loginScreen.classList.remove('hidden');
-                    
-                    const btn = document.getElementById('btn-admin-login');
-                    btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                    btn.disabled = false;
+                    showToast("Access Blocked by Security Rules.", "error");
+                    resetLoginUI();
                 }
             } else {
-                // Completely logged out
-                dashboardScreen.classList.add('hidden');
-                dashboardScreen.classList.remove('flex');
-                loginScreen.classList.remove('hidden');
-                
-                document.getElementById('admin-login-form').reset();
-                const btn = document.getElementById('btn-admin-login');
-                btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
-                btn.disabled = false;
+                resetLoginUI();
             }
         });
 
+        function resetLoginUI() {
+            document.getElementById('admin-dashboard-screen').classList.add('hidden');
+            document.getElementById('admin-dashboard-screen').classList.remove('flex');
+            document.getElementById('admin-login-screen').classList.remove('hidden');
+            document.getElementById('admin-login-form').reset();
+            const btn = document.getElementById('btn-admin-login');
+            btn.innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
+            btn.disabled = false;
+        }
+
         window.logoutAdmin = function() {
-            signOut(auth).then(() => {
-                showToast("Logged out successfully.", "success");
-                // The onAuthStateChanged listener handles the UI transition automatically
-            });
+            signOut(auth).then(() => showToast("Logged out successfully.", "success"));
         }
 
         // --- 2. REAL-TIME LISTENERS ---
         function initRealtimeListeners() {
-            // Listen to Orders Collection
+            // Listen to Orders
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 globalOrders = [];
                 snapshot.forEach((doc) => {
@@ -593,11 +552,10 @@
                 updateOrderStats();
                 renderOrders();
             }, (error) => {
-                console.error("Orders listener error:", error);
-                if(error.code !== 'permission-denied') showToast("Error reading orders data.", "error");
+                if(error.code !== 'permission-denied') console.error(error);
             });
 
-            // Listen to Products Collection
+            // Listen to Products
             onSnapshot(collection(db, "products"), (snapshot) => {
                 globalProducts = [];
                 snapshot.forEach((doc) => {
@@ -605,8 +563,7 @@
                 });
                 renderProducts();
             }, (error) => {
-                console.error("Products listener error:", error);
-                if(error.code !== 'permission-denied') showToast("Error reading products data.", "error");
+                if(error.code !== 'permission-denied') console.error(error);
             });
         }
 
@@ -620,7 +577,6 @@
 
         window.filterOrders = function(status) {
             currentOrderFilter = status;
-            
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('bg-maroon', 'text-cream');
                 btn.classList.add('text-gray-600', 'hover:bg-gray-50');
@@ -628,17 +584,16 @@
             const activeBtn = document.getElementById(`filter-${status}`);
             activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
             activeBtn.classList.add('bg-maroon', 'text-cream');
-            
             renderOrders();
         }
 
         function renderOrders() {
             const container = document.getElementById('orders-container');
-            
             let filtered = globalOrders;
+            
             if (currentOrderFilter !== 'ALL') {
                 if(currentOrderFilter === 'SHIPPED') {
-                    filtered = globalOrders.filter(o => o.status === 'SHIPPED' || o.status === 'IN_TRANSIT' || o.status === 'OUT_FOR_DELIVERY' || o.status === 'DELIVERED');
+                    filtered = globalOrders.filter(o => ['SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
                 } else {
                     filtered = globalOrders.filter(o => (o.status || 'PENDING') === currentOrderFilter);
                 }
@@ -648,7 +603,7 @@
                 container.innerHTML = `
                     <div class="bg-gray-50 p-8 text-center rounded-xl border border-gray-200 border-dashed text-gray-500">
                         <i class="ph ph-package text-4xl mb-3 opacity-50"></i>
-                        <p>No orders found for this filter.</p>
+                        <p>No orders found.</p>
                     </div>`;
                 return;
             }
@@ -760,22 +715,12 @@
 
         window.updateOrderStatus = async function(newStatus) {
             if(!actionOrderId) return;
-            
-            if(newStatus === 'REJECTED' && !confirm("Are you sure you want to reject this order?")) {
-                return;
-            }
+            if(newStatus === 'REJECTED' && !confirm("Are you sure you want to reject this order?")) return;
             
             try {
-                const docRef = doc(db, "orders", actionOrderId);
-                
                 let updateData = { status: newStatus };
-                if(newStatus === 'ACCEPTED') {
-                    // Mocking AWB generation
-                    updateData.awb = `SR-${Math.floor(Math.random()*900000) + 100000}`;
-                }
-
-                await updateDoc(docRef, updateData);
-                
+                if(newStatus === 'ACCEPTED') updateData.awb = `SR-${Math.floor(Math.random()*900000) + 100000}`;
+                await updateDoc(doc(db, "orders", actionOrderId), updateData);
                 showToast(`Order marked as ${newStatus}`, "success");
                 closeOrderModal();
             } catch(e) {
@@ -784,7 +729,47 @@
             }
         }
 
-        // --- 5. PRODUCTS LOGIC ---
+        // --- 5. PRODUCTS & EDIT LOGIC ---
+        window.toggleProductForm = function() {
+            const form = document.getElementById('product-form-container');
+            if(form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                document.getElementById('form-title').innerText = "New Product Entry";
+                document.getElementById('btn-save-prod').innerHTML = `<i class="ph ph-floppy-disk"></i> Save Product`;
+                document.getElementById('product-form').reset();
+                clearImagePreview();
+                editingProductId = null;
+            } else {
+                form.classList.add('hidden');
+                editingProductId = null;
+            }
+        }
+
+        window.editProduct = function(id) {
+            const product = globalProducts.find(p => p.id === id);
+            if(!product) return;
+
+            editingProductId = id;
+            document.getElementById('product-form-container').classList.remove('hidden');
+            document.getElementById('form-title').innerText = "Edit Product Details";
+            document.getElementById('btn-save-prod').innerHTML = `<i class="ph ph-pencil-simple"></i> Update Product`;
+
+            // Fill Data
+            document.getElementById('prod-name').value = product.name || '';
+            document.getElementById('prod-price').value = product.basePrice || product.price || '';
+            document.getElementById('prod-desc').value = product.desc || '';
+            
+            if (product.img) {
+                document.getElementById('prod-img-b64').value = product.img;
+                document.getElementById('image-preview').src = product.img;
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('image-preview-container').classList.remove('hidden');
+            }
+            
+            // Scroll to form
+            document.getElementById('product-form-container').scrollIntoView({behavior: 'smooth'});
+        }
+
         document.getElementById('product-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -804,26 +789,33 @@
             btn.disabled = true;
 
             try {
-                // Push new product to Firestore
-                await addDoc(collection(db, "products"), {
-                    name: name,
-                    basePrice: price,
-                    desc: desc,
-                    img: b64,
-                    inStock: true,
-                    order: 99,
-                    createdAt: new Date().toISOString()
-                });
-                
-                showToast("Product added successfully to database.", "success");
-                toggleProductForm();
+                if (editingProductId) {
+                    // Update existing
+                    await updateDoc(doc(db, "products", editingProductId), {
+                        name: name,
+                        basePrice: price,
+                        desc: desc,
+                        img: b64
+                    });
+                    showToast("Product updated successfully.", "success");
+                } else {
+                    // Create new
+                    await addDoc(collection(db, "products"), {
+                        name: name,
+                        basePrice: price,
+                        desc: desc,
+                        img: b64,
+                        inStock: true,
+                        order: 99,
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast("Product added successfully.", "success");
+                }
+                document.getElementById('product-form-container').classList.add('hidden');
+                editingProductId = null;
             } catch(error) {
                 console.error("Save Product Error:", error);
-                if(error.code === 'permission-denied') {
-                    showToast("Permission Denied: Ensure Firebase Rules are updated.", "error");
-                } else {
-                    showToast("Failed to save product. Check console.", "error");
-                }
+                showToast("Failed to save product. Check permissions.", "error");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -837,7 +829,7 @@
                 container.innerHTML = `
                     <div class="col-span-full bg-gray-50 p-8 text-center rounded-xl border border-gray-200 border-dashed text-gray-500">
                         <i class="ph ph-empty text-4xl mb-3 opacity-50"></i>
-                        <p>No products in database. Add a product to show on website.</p>
+                        <p>No products in database.</p>
                     </div>`;
                 return;
             }
@@ -854,6 +846,9 @@
                         <div class="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
                             <span class="font-bold text-maroon">₹${prod.basePrice || prod.price || 0} <span class="text-xs text-gray-500 font-normal">/kg</span></span>
                             <div class="flex gap-2">
+                                <button onclick="editProduct('${prod.id}')" class="p-1.5 text-gray-400 hover:text-green-500 bg-gray-50 rounded hover:bg-green-50 transition-colors" title="Edit Product">
+                                    <i class="ph ph-pencil-simple text-xl"></i>
+                                </button>
                                 <button onclick="toggleStock('${prod.id}', ${prod.inStock})" class="p-1.5 text-gray-400 hover:text-blue-500 bg-gray-50 rounded hover:bg-blue-50 transition-colors" title="${prod.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}">
                                     <i class="ph-fill ${prod.inStock ? 'ph-toggle-right text-green-500' : 'ph-toggle-left'} text-xl"></i>
                                 </button>
@@ -870,21 +865,17 @@
         window.toggleStock = async function(id, currentStatus) {
             try {
                 await updateDoc(doc(db, "products", id), { inStock: !currentStatus });
-                showToast(`Product marked as ${!currentStatus ? 'In Stock' : 'Out of Stock'}.`, "success");
             } catch(e) {
-                console.error(e);
                 showToast("Failed to update stock status.", "error");
             }
         }
 
         window.deleteProduct = async function(id) {
-            if(!confirm("Are you sure you want to permanently delete this product? It will be removed from the public website immediately.")) return;
-            
+            if(!confirm("Are you sure you want to permanently delete this product?")) return;
             try {
                 await deleteDoc(doc(db, "products", id));
                 showToast("Product deleted successfully.", "success");
             } catch(e) {
-                console.error(e);
                 showToast("Failed to delete product.", "error");
             }
         }
