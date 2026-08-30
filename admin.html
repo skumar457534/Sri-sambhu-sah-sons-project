@@ -905,24 +905,73 @@
             document.getElementById('shiprocket-load-text').innerText = "Generating AWB via API...";
             
             try {
-                await new Promise(r => setTimeout(r, 1500));
-                const generatedAWB = 'SR-' + Math.floor(Math.random() * 9000000 + 1000000);
+                const o = globalOrders.find(x => x.id === actionOrderId);
                 
+                // Real Shiprocket API Call
+                const shipRes = await fetch("https://peda-store-api.skumar457534.workers.dev/api/shiprocket/create-order", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: actionOrderId,
+                        order_date: new Date(o.createdAt).toISOString().split('T')[0],
+                        pickup_location: "Primary", // Or your Shiprocket registered pickup location name
+                        billing_customer_name: o.customerName || "Guest",
+                        billing_last_name: "",
+                        billing_address: o.shippingAddress?.line1 || "N/A",
+                        billing_address_2: o.shippingAddress?.line2 || "",
+                        billing_city: o.shippingAddress?.city || "Deoghar",
+                        billing_pincode: o.shippingAddress?.pincode || "814112",
+                        billing_state: o.shippingAddress?.state || "Jharkhand",
+                        billing_country: "India",
+                        billing_email: o.email || "support@srishambhushaandsons.in",
+                        billing_phone: o.phone || "0000000000",
+                        shipping_is_billing: true,
+                        order_items: o.items.map(item => ({
+                            name: item.name,
+                            sku: item.id,
+                            units: item.qty,
+                            selling_price: item.price,
+                            discount: "",
+                            tax: ""
+                        })),
+                        payment_method: "Prepaid",
+                        shipping_charges: o.shippingFee || 0,
+                        giftwrap_charges: 0,
+                        transaction_charges: 0,
+                        total_discount: 0,
+                        sub_total: o.amount || 0,
+                        length: 10,
+                        breadth: 10,
+                        height: 10,
+                        weight: 1
+                    })
+                });
+                
+                const shipData = await shipRes.json();
+                
+                if(!shipData.success) throw new Error(shipData.error || "Failed to create shipment");
+                
+                // Usually Shiprocket returns shipment_id and order_id. We'll mark the AWB status logic here.
+                const generatedAWB = 'SR-SHIP-' + shipData.shipment_id; 
+                
+                // Update Firestore Live Data
                 const orderRef = doc(db, "orders", actionOrderId);
                 await updateDoc(orderRef, {
                     status: 'ACCEPTED',
-                    awb: generatedAWB
+                    awb: generatedAWB,
+                    shiprocketOrderId: shipData.shiprocket_order_id,
+                    shiprocketShipmentId: shipData.shipment_id
                 });
 
                 document.getElementById('new-awb').innerText = generatedAWB;
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shipment-success').classList.remove('hidden');
-                showToast("Order Accepted & AWB Generated successfully!");
+                showToast("Order Accepted & Synced with Shiprocket!");
                 
             } catch(e) {
                 console.error(e);
                 closeModals();
-                showToast("Failed to generate AWB. Check console.", "error");
+                showToast("Failed to connect to Shiprocket. Check console.", "error");
             }
         });
 
@@ -943,26 +992,37 @@
             btn.disabled = true;
 
             try {
+                const o = globalOrders.find(x => x.id === actionOrderId);
+                
+                // Call Cloudflare Refund API
+                const refundRes = await fetch("https://peda-store-api.skumar457534.workers.dev/api/admin/refund", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_id: o.razorpayPaymentId,
+                        amount: o.amount
+                    })
+                });
+                
+                const refundData = await refundRes.json();
+                if(!refundData.success) throw new Error(refundData.error || "Refund API Failed");
+
+                // Update status in Firestore
                 const orderRef = doc(db, "orders", actionOrderId);
                 await updateDoc(orderRef, {
                     status: 'REJECTED',
-                    paymentStatus: 'REFUND_INITIATED'
+                    paymentStatus: 'REFUND_COMPLETED',
+                    refundId: refundData.refund_id
                 });
 
                 closeModals();
-                showToast("Order Rejected. Refund Initiated via API.", "success");
+                showToast("Order Rejected & Refund Processed Successfully via API.", "success");
                 btn.innerHTML = `Confirm Reject`; btn.disabled = false;
-
-                // MOCK WEBHOOK: Auto complete refund
-                setTimeout(async () => {
-                    await updateDoc(orderRef, { paymentStatus: 'REFUND_COMPLETED' });
-                    showToast(`Refund Completed successfully for order ${actionOrderId}!`, "success");
-                }, 3000);
 
             } catch(e) {
                 console.error(e);
                 btn.innerHTML = `Confirm Reject`; btn.disabled = false;
-                showToast("Failed to reject order.", "error");
+                showToast("Failed to process refund: " + e.message, "error");
             }
         });
 
