@@ -36,6 +36,24 @@ export default {
 
     try {
       // =========================================================
+      // 0. RAZORPAY: CREATE ORDER API (NEW)
+      // =========================================================
+      if (path === '/api/payment/create-order' && method === 'POST') {
+        const { amount } = await request.json() as any;
+        if (!amount) return new Response(JSON.stringify({ error: "Amount required" }), { status: 400, headers: corsHeaders });
+
+        const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
+        const rzpResponse = await fetch("https://api.razorpay.com/v1/orders", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+          body: JSON.stringify({ amount: Math.round(amount * 100), currency: "INR", receipt: "receipt_" + Date.now() })
+        });
+        
+        const rzpData = await rzpResponse.json();
+        return new Response(JSON.stringify(rzpData), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+
+      // =========================================================
       // 1. RAZORPAY: PAYMENT VERIFICATION API
       // =========================================================
       if (path === '/api/payment/verify' && method === 'POST') {
