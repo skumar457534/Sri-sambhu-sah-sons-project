@@ -52,16 +52,16 @@
     <!-- ========================================== -->
     <!-- 1. ADMIN LOGIN SCREEN (Visible by default) -->
     <!-- ========================================== -->
-    <div id="admin-login-screen" class="fixed inset-0 bg-cream z-[400] flex items-center justify-center p-4">
+    <div id="admin-login-screen" class="fixed inset-0 bg-cream z-[400] flex items-center justify-center p-4 transition-opacity duration-300">
         <!-- Background Decor -->
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-maroon/5 rounded-full blur-3xl z-0"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-golden/10 rounded-full blur-3xl z-0"></div>
 
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-golden/20 z-10 overflow-hidden flex flex-col">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-golden/20 z-10 overflow-hidden flex flex-col transform transition-transform" id="login-box">
             <div class="bg-maroon p-6 text-center border-b-[4px] border-golden">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-white to-cream mx-auto flex items-center justify-center shadow-lg mb-3 border-2 border-golden/50">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-maroon to-red-900 mx-auto flex items-center justify-center shadow-lg mb-3 border-2 border-golden/50">
                     <!-- Trishul Icon -->
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7B1818" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2v20" />
                         <path d="M12 2l-2.5 3.5" />
                         <path d="M12 2l2.5 3.5" />
@@ -78,7 +78,7 @@
                 <form id="admin-login-form" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Admin Email</label>
-                        <input type="email" id="admin-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="Enter admin email">
+                        <input type="email" id="admin-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="admin@srishambhusha.com">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
@@ -86,11 +86,11 @@
                     </div>
                     
                     <button type="submit" id="btn-admin-login" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold shadow-md hover:bg-maroon/90 transition-colors flex justify-center items-center gap-2 mt-4">
-                        Secure Login <i class="ph ph-lock-key"></i>
+                        Verify & Login <i class="ph ph-shield-check"></i>
                     </button>
                 </form>
-                <div class="mt-6 p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600 text-center">
-                    <i class="ph-fill ph-shield-warning text-sm align-middle"></i> Protected Area. Only authorized database admins may enter.
+                <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500 text-center">
+                    <i class="ph-fill ph-lock-key text-sm align-middle text-maroon"></i> Access restricted to verified database administrators.
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
     <!-- ========================================== -->
     <!-- 2. ADMIN DASHBOARD SCREEN (Hidden until Login)-->
     <!-- ========================================== -->
-    <div id="admin-dashboard-screen" class="hidden w-full h-full flex-col lg:flex-row">
+    <div id="admin-dashboard-screen" class="hidden w-full h-full flex-col lg:flex-row opacity-0 transition-opacity duration-500">
         <!-- MOBILE SIDEBAR OVERLAY -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
 
@@ -145,8 +145,8 @@
                     <h1 class="font-bold text-lg text-gray-800" id="topbar-title">Manage Orders</h1>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-maroon text-cream flex items-center justify-center">
-                        <i class="ph-fill ph-shield-check"></i>
+                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center border border-green-200" title="Database Connected">
+                        <i class="ph-fill ph-database"></i>
                     </div>
                 </div>
             </header>
@@ -480,7 +480,6 @@
 
         // --- AUTHENTICATION & ADMIN VERIFICATION LOGIC ---
         
-        // Handle Form Submission
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('admin-email').value.trim();
@@ -494,7 +493,7 @@
             try {
                 // Attempt Login
                 await signInWithEmailAndPassword(auth, email, password);
-                // The onAuthStateChanged listener handles the database verification and screen switch
+                // onAuthStateChanged handles the DB verification & redirect
             } catch (error) {
                 console.error(error);
                 btn.innerHTML = originalText;
@@ -517,10 +516,18 @@
                     const adminSnap = await getDoc(adminDocRef);
 
                     if (adminSnap.exists()) {
-                        // User is verified Admin
-                        document.getElementById('admin-login-screen').classList.add('hidden');
-                        document.getElementById('admin-dashboard-screen').classList.remove('hidden');
-                        document.getElementById('admin-dashboard-screen').classList.add('flex');
+                        // User is verified Admin - Instant Transition to Dashboard
+                        const loginScreen = document.getElementById('admin-login-screen');
+                        const dashboardScreen = document.getElementById('admin-dashboard-screen');
+                        
+                        loginScreen.classList.add('opacity-0');
+                        setTimeout(() => {
+                            loginScreen.classList.add('hidden');
+                            dashboardScreen.classList.remove('hidden');
+                            dashboardScreen.classList.add('flex');
+                            // Small delay for fade in effect
+                            setTimeout(() => dashboardScreen.classList.remove('opacity-0'), 50);
+                        }, 300);
                         
                         document.getElementById('admin-user-email').innerText = user.email;
                         
@@ -531,26 +538,35 @@
                         }
                         showToast("Welcome to Secure Admin Panel", "success");
                     } else {
-                        // Logged in via Firebase Auth, but NOT in the 'admins' collection
+                        // Logged in via Auth, but NOT in 'admins' collection
                         await signOut(auth);
-                        showToast("Access Denied: You are not an authorized database admin.", "error");
+                        showToast("Access Denied: You do not have Database Admin permissions.", "error");
                         
-                        document.getElementById('btn-admin-login').innerHTML = `Secure Login <i class="ph ph-lock-key"></i>`;
+                        document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
                         document.getElementById('btn-admin-login').disabled = false;
                     }
                 } catch (dbError) {
                     console.error("Verification Error:", dbError);
                     await signOut(auth);
-                    showToast("Error verifying admin permissions.", "error");
+                    
+                    // Specific check for Firestore Rules error
+                    if(dbError.code === 'permission-denied') {
+                        showToast("Permission Denied: Please update Firestore Security Rules as instructed.", "error");
+                    } else {
+                        showToast("Error verifying admin permissions.", "error");
+                    }
+                    
+                    document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
+                    document.getElementById('btn-admin-login').disabled = false;
                 }
             } else {
-                // Not logged in at all
-                document.getElementById('admin-login-screen').classList.remove('hidden');
-                document.getElementById('admin-dashboard-screen').classList.add('hidden');
+                // Not logged in at all - Reset to login screen
+                document.getElementById('admin-login-screen').classList.remove('hidden', 'opacity-0');
+                document.getElementById('admin-dashboard-screen').classList.add('hidden', 'opacity-0');
                 document.getElementById('admin-dashboard-screen').classList.remove('flex');
                 
                 document.getElementById('admin-login-form').reset();
-                document.getElementById('btn-admin-login').innerHTML = `Secure Login <i class="ph ph-lock-key"></i>`;
+                document.getElementById('btn-admin-login').innerHTML = `Verify & Login <i class="ph ph-shield-check"></i>`;
                 document.getElementById('btn-admin-login').disabled = false;
             }
         });
@@ -563,7 +579,6 @@
 
         // --- REAL-TIME LISTENERS ---
         function initRealtimeListeners() {
-            
             // Listen to Orders Collection
             onSnapshot(collection(db, "orders"), (snapshot) => {
                 globalOrders = [];
@@ -571,7 +586,6 @@
                     globalOrders.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // Sort by date (newest first) based on timestamp or string fallback
                 globalOrders.sort((a, b) => {
                     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
                     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -582,7 +596,8 @@
                 renderOrders();
             }, (error) => {
                 console.error("Orders listener error:", error);
-                showToast("Error reading orders database.", "error");
+                if(error.code === 'permission-denied') showToast("Rules Error: Cannot read Orders.", "error");
+                else showToast("Error reading orders database.", "error");
             });
 
             // Listen to Products Collection
@@ -594,7 +609,8 @@
                 renderProducts();
             }, (error) => {
                 console.error("Products listener error:", error);
-                showToast("Error reading products database.", "error");
+                if(error.code === 'permission-denied') showToast("Rules Error: Cannot read Products.", "error");
+                else showToast("Error reading products database.", "error");
             });
         }
 
@@ -609,7 +625,6 @@
         window.filterOrders = function(status) {
             currentOrderFilter = status;
             
-            // Update filter button UI
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('bg-maroon', 'text-cream');
                 btn.classList.add('text-gray-600', 'hover:bg-gray-50');
@@ -701,7 +716,6 @@
             }
             document.getElementById('modal-cust-address').innerHTML = addressHtml;
             
-            // Items
             const itemsList = document.getElementById('modal-items-list');
             if (order.items && Array.isArray(order.items)) {
                 itemsList.innerHTML = order.items.map(item => `
@@ -717,12 +731,11 @@
                     </div>
                 `).join('');
             } else {
-                itemsList.innerHTML = "<p class="text-sm text-gray-500">No item details.</p>";
+                itemsList.innerHTML = "<p class='text-sm text-gray-500'>No item details.</p>";
             }
             
             document.getElementById('modal-total-amt').innerText = `₹${order.amount || 0}`;
 
-            // Buttons Logic
             const actionsDiv = document.getElementById('modal-actions');
             const status = order.status || 'PENDING';
             
@@ -763,7 +776,6 @@
             try {
                 const docRef = doc(db, "orders", actionOrderId);
                 
-                // If accepting, we generate a mock AWB for UI flow testing
                 let updateData = { status: newStatus };
                 if(newStatus === 'ACCEPTED') {
                     updateData.awb = `SR-${Math.floor(Math.random()*900000) + 100000}`;
@@ -775,7 +787,8 @@
                 closeOrderModal();
             } catch(e) {
                 console.error(e);
-                showToast("Failed to update order.", "error");
+                if(e.code === 'permission-denied') showToast("Permission Denied updating order.", "error");
+                else showToast("Failed to update order.", "error");
             }
         }
 
@@ -794,6 +807,7 @@
             btn.disabled = true;
 
             try {
+                // Push to Firestore
                 await addDoc(collection(db, "products"), {
                     name: name,
                     basePrice: price,
@@ -805,10 +819,15 @@
                 });
                 
                 showToast("Product added successfully to database.", "success");
-                toggleProductForm();
+                toggleProductForm(); // Hide form on success
             } catch(error) {
-                console.error(error);
-                showToast("Failed to save product to database.", "error");
+                console.error("Save Product Error:", error);
+                // EXPLICIT SECURITY RULES ERROR MESSAGE
+                if(error.code === 'permission-denied') {
+                    showToast("Save Failed! Please update Firestore Security Rules as instructed.", "error");
+                } else {
+                    showToast("Failed to save product to database.", "error");
+                }
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -858,12 +877,12 @@
                 showToast(`Product marked as ${!currentStatus ? 'In Stock' : 'Out of Stock'}.`, "success");
             } catch(e) {
                 console.error(e);
-                showToast("Failed to update stock status.", "error");
+                if(e.code === 'permission-denied') showToast("Rules Error updating stock.", "error");
+                else showToast("Failed to update stock status.", "error");
             }
         }
 
         window.deleteProduct = async function(id) {
-            // Using confirm for permanent destructive actions is necessary for admin safety.
             if(!confirm("Are you sure you want to permanently delete this product? It will be removed from the public website immediately.")) return;
             
             try {
@@ -871,7 +890,8 @@
                 showToast("Product deleted successfully.", "success");
             } catch(e) {
                 console.error(e);
-                showToast("Failed to delete product.", "error");
+                if(e.code === 'permission-denied') showToast("Rules Error deleting product.", "error");
+                else showToast("Failed to delete product.", "error");
             }
         }
     </script>
