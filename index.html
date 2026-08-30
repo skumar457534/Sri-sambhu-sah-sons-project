@@ -55,7 +55,6 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo & Brand -->
                 <div class="flex-shrink-0 flex items-center gap-3">
-                    <!-- Updated Dynamic Logo Image -->
                     <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
                         <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                     </div>
@@ -157,7 +156,7 @@
             </div>
             
             <div class="flex flex-col gap-3">
-                <a href="login.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-sign-in"></i> Login / Signup Now
                 </a>
                 <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
@@ -213,7 +212,7 @@
                 </div>
             </div>
 
-            <!-- Slider Controls (Updated to smaller size to prevent text blocking) -->
+            <!-- Slider Controls -->
             <button onclick="prevSlide()" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 bg-black/20 hover:bg-maroon text-white p-2 rounded-full backdrop-blur-sm transition-all border border-white/20">
                 <i class="ph ph-caret-left text-xl"></i>
             </button>
@@ -228,7 +227,7 @@
         </div>
     </section>
 
-    <!-- PRODUCT SECTION (Strictly from Firebase) -->
+    <!-- PRODUCT SECTION -->
     <section id="products" class="py-20 bg-cream border-t border-golden/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -266,7 +265,6 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-14 mt-8">
-                <!-- Steps omitted for brevity but they are visually identical to previous iterations -->
                 <div class="relative bg-cream p-8 rounded-2xl shadow-sm border border-golden/20 hover:shadow-lg transition-all duration-300 group text-center pt-12">
                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-maroon text-cream font-serif font-bold text-2xl flex items-center justify-center rounded-full border-4 border-white shadow-md">1</div>
                     <div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-maroon shadow-inner"><i class="ph ph-shopping-bag text-3xl"></i></div>
@@ -356,7 +354,7 @@
         </div>
     </footer>
 
-    <!-- FLOATING MAP / VISIT SHOP BUTTON (Updated Map Link) -->
+    <!-- FLOATING MAP / VISIT SHOP BUTTON -->
     <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-9 h-9" />
         <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
@@ -364,7 +362,7 @@
         </span>
     </a>
 
-    <!-- UI SCRIPTS (Slider, Mobile Menu, Cart Toggle) -->
+    <!-- UI SCRIPTS -->
     <script>
         // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -395,7 +393,6 @@
             if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
         });
 
-        // Header scroll effect
         const header = document.querySelector('header');
         window.addEventListener('scroll', () => {
             closeMobileMenu(); 
@@ -439,21 +436,10 @@
             document.getElementById('guest-checkout-modal').classList.add('hidden');
             document.getElementById('guest-checkout-modal').classList.remove('flex');
         }
-
-        // Global functions exposed for HTML elements (Price update, etc.)
-        window.updatePrice = function(selectElement, productId) {
-            const customEvent = new CustomEvent('priceChanged', { detail: { selectElement, productId } });
-            document.dispatchEvent(customEvent);
-        }
-        window.triggerAddToCart = function(productId) {
-            const customEvent = new CustomEvent('addToCartTrigger', { detail: { productId } });
-            document.dispatchEvent(customEvent);
-        }
     </script>
 
-    <!-- FIREBASE, AUTH & CART LOGIC (Strictly Dynamic) -->
+    <!-- FIREBASE & CORE LOGIC -->
     <script type="module">
-        // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -472,8 +458,16 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        let loadedProducts = [];
+        window.loadedProducts = [];
+        window.productSelections = {}; // Stores { productId: currentWeightInGrams }
         let currentUser = null;
+
+        // Formatter: Converts Grams to readable strings
+        window.formatWeight = function(grams) {
+            if (grams < 1000) return grams + 'g';
+            let kg = grams / 1000;
+            return kg % 1 === 0 ? kg + ' Kg' : kg + ' Kg'; 
+        }
 
         // AUTHENTICATION LISTENER
         onAuthStateChanged(auth, (user) => {
@@ -498,62 +492,49 @@
         // CHECKOUT FLOW WITH AUTH CHECK
         window.proceedToCheckoutFlow = function() {
             if (currentUser) {
-                // Logged in, proceed directly
                 window.location.href = "checkout.html";
             } else {
-                // Not logged in, show Guest Checkout Modal
                 document.getElementById('guest-checkout-modal').classList.remove('hidden');
                 document.getElementById('guest-checkout-modal').classList.add('flex');
-                toggleCart(); // Close cart drawer to focus on modal
+                toggleCart(); 
             }
         }
 
-        // Format Base Price to variants
-        function generateVariants(basePrice) {
-            return [
-                { weight: "250g", price: Math.round(basePrice * 0.25) },
-                { weight: "500g", price: Math.round(basePrice * 0.50), default: true },
-                { weight: "1 Kg", price: basePrice }
-            ];
-        }
-
+        // Fetch Products from Database
         async function fetchProducts() {
             const grid = document.getElementById('home-product-grid');
             const loading = document.getElementById('product-loading');
             
             try {
-                // Strictly fetch from real database
                 const q = query(collection(db, "products"), where("inStock", "==", true));
                 const querySnapshot = await getDocs(q);
                 
-                loadedProducts = [];
+                window.loadedProducts = [];
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    loadedProducts.push({
+                    window.loadedProducts.push({
                         id: doc.id,
                         name: data.name,
                         desc: data.desc || data.description,
                         img: data.img || data.image,
-                        options: generateVariants(data.basePrice || data.price)
+                        basePrice: data.basePrice || data.price, // Price per 1Kg (1000g)
+                        order: data.order || 99
                     });
                 });
             } catch (error) {
                 console.error("Firebase Read Error:", error);
             }
 
-            // Render Products
             loading.classList.add('hidden');
             grid.classList.remove('hidden');
             
-            if(loadedProducts.length > 0) {
-                grid.innerHTML = loadedProducts.map(product => {
-                    let defaultOptIndex = product.options.findIndex(opt => opt.default);
-                    if (defaultOptIndex === -1) defaultOptIndex = 0;
-                    const defaultPrice = product.options[defaultOptIndex].price;
-                    
-                    const optionsHTML = product.options.map((opt, i) => 
-                        `<option value="${i}" ${i === defaultOptIndex ? 'selected' : ''}>${opt.weight}</option>`
-                    ).join('');
+            window.loadedProducts.sort((a, b) => a.order - b.order);
+
+            if(window.loadedProducts.length > 0) {
+                grid.innerHTML = window.loadedProducts.map(product => {
+                    // Set default to 500g
+                    window.productSelections[product.id] = 500;
+                    const defaultPrice = Math.round((product.basePrice / 1000) * 500);
 
                     return `
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
@@ -566,10 +547,19 @@
                                 
                                 <div class="flex justify-between items-end mb-6">
                                     <div class="w-1/2 pr-2">
-                                        <label class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Select Weight</label>
-                                        <select id="select-${product.id}" class="w-full bg-cream border border-gray-200 rounded-md p-2.5 text-sm text-naturalBrown focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon font-medium cursor-pointer" onchange="window.updatePrice(this, '${product.id}')">
-                                            ${optionsHTML}
-                                        </select>
+                                        <label class="block text-xs text-gray-500 mb-1.5 font-medium uppercase tracking-wide">Select Weight</label>
+                                        
+                                        <!-- NEW: +/- Weight Selector -->
+                                        <div class="flex items-center bg-cream border border-gray-200 rounded-md shadow-sm h-11">
+                                            <button type="button" class="w-10 h-full text-gray-400 hover:text-maroon hover:bg-gray-100 flex items-center justify-center transition-colors rounded-l-md" onclick="window.updateProductWeight('${product.id}', 'minus')">
+                                                <i class="ph ph-minus font-bold"></i>
+                                            </button>
+                                            <span class="flex-1 text-center text-sm font-bold text-naturalBrown min-w-[70px]" id="weight-display-${product.id}">500g</span>
+                                            <button type="button" class="w-10 h-full text-gray-400 hover:text-maroon hover:bg-gray-100 flex items-center justify-center transition-colors rounded-r-md" onclick="window.updateProductWeight('${product.id}', 'plus')">
+                                                <i class="ph ph-plus font-bold"></i>
+                                            </button>
+                                        </div>
+
                                     </div>
                                     <div class="text-right">
                                         <span class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Price</span>
@@ -584,37 +574,43 @@
                     `;
                 }).join('');
             } else {
-                // Absolutely NO fake data here. Shows Empty State if DB is empty.
-                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 text-lg py-10 bg-white border border-gray-100 rounded-xl">No products available currently. We are updating our menu.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 text-lg py-10 bg-white border border-gray-100 rounded-xl shadow-sm">No products available currently. We are updating our menu.</p>`;
             }
         }
 
-        // --- CART LOGIC ---
-        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+        // Handle +/- Weight changes
+        window.updateProductWeight = function(productId, action) {
+            const product = window.loadedProducts.find(p => p.id === productId);
+            if(!product) return;
 
-        function saveCart() {
-            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
-            renderCartUI();
+            let currentGrams = window.productSelections[productId] || 500;
+
+            if (action === 'plus' && currentGrams < 10000) { // Max 10kg
+                currentGrams += 250;
+            } else if (action === 'minus' && currentGrams > 250) { // Min 250g
+                currentGrams -= 250;
+            }
+
+            window.productSelections[productId] = currentGrams;
+
+            // Update UI
+            document.getElementById(`weight-display-${productId}`).innerText = window.formatWeight(currentGrams);
+            
+            // Calculate new price based on Base Price (1kg)
+            const newPrice = Math.round((product.basePrice / 1000) * currentGrams);
+            document.getElementById(`price-${productId}`).innerText = `₹${newPrice}`;
         }
 
-        document.addEventListener('priceChanged', (e) => {
-            const { selectElement, productId } = e.detail;
-            const product = loadedProducts.find(p => p.id === productId);
-            if (product) {
-                const newPrice = product.options[selectElement.value].price;
-                document.getElementById(`price-${productId}`).innerText = `₹${newPrice}`;
-            }
-        });
-
-        document.addEventListener('addToCartTrigger', (e) => {
-            const { productId } = e.detail;
-            const product = loadedProducts.find(p => p.id === productId);
+        // Add to Cart triggered from Button
+        window.triggerAddToCart = function(productId) {
+            const product = window.loadedProducts.find(p => p.id === productId);
             if (!product) return;
 
-            const selectEl = document.getElementById(`select-${productId}`);
-            const selectedOpt = product.options[selectEl.value];
+            const currentGrams = window.productSelections[productId] || 500;
+            const weightStr = window.formatWeight(currentGrams);
+            const itemPrice = Math.round((product.basePrice / 1000) * currentGrams);
             
-            const existingItem = cart.find(item => item.id === productId && item.weight === selectedOpt.weight);
+            const existingItem = cart.find(item => item.id === productId && item.weight === weightStr);
             
             if (existingItem) {
                 existingItem.qty += 1;
@@ -623,8 +619,8 @@
                     id: product.id,
                     name: product.name,
                     img: product.img,
-                    weight: selectedOpt.weight,
-                    price: selectedOpt.price,
+                    weight: weightStr,
+                    price: itemPrice,
                     qty: 1
                 });
             }
@@ -634,9 +630,17 @@
             if(!drawer.classList.contains('cart-open')) {
                 window.toggleCart();
             }
-        });
+        };
 
-        function renderCartUI() {
+        // --- CART LOGIC ---
+        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
+            renderCartUI();
+        }
+
+        window.renderCartUI = function() {
             const itemsContainer = document.getElementById('cart-items');
             const subtotalEl = document.getElementById('cart-subtotal');
             const badgeEl = document.getElementById('cart-badge');
