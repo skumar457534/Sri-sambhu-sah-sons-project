@@ -131,11 +131,11 @@
                             </div>
                             <div class="col-span-1 md:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
-                                <input type="text" id="city-input" required readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-3 focus:outline-none text-gray-600 transition-all cursor-not-allowed" placeholder="Auto-filled">
+                                <input type="text" id="city-input" required class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="e.g. Deoghar">
                             </div>
                             <div class="col-span-1 md:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">State *</label>
-                                <input type="text" id="state-input" required readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-3 focus:outline-none text-gray-600 transition-all cursor-not-allowed" placeholder="Auto-filled">
+                                <input type="text" id="state-input" required class="w-full bg-gray-50 border border-gray-200 rounded-md p-3 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="e.g. Jharkhand">
                             </div>
                         </div>
                     </form>
@@ -157,11 +157,11 @@
 
                     <div id="courier-loading" class="hidden text-center py-6">
                         <i class="ph ph-spinner-gap animate-spin text-3xl text-maroon mb-3 inline-block"></i>
-                        <p class="text-sm font-medium text-gray-500">Checking Serviceability...</p>
+                        <p class="text-sm font-medium text-gray-500">Checking Live Shiprocket Rates...</p>
                     </div>
 
                     <div id="courier-options" class="space-y-4 hidden">
-                        <!-- Options injected via JS based on PIN check -->
+                        <!-- Options injected via API -->
                     </div>
                 </div>
 
@@ -220,7 +220,7 @@
         </div>
     </main>
 
-    <!-- PROCESSING OVERLAY (Shown after payment while saving to DB) -->
+    <!-- PROCESSING OVERLAY -->
     <div id="razorpay-modal" class="fixed inset-0 bg-black/70 z-[110] hidden flex-col items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="rzp-box">
             <div class="p-8 text-center bg-gray-50" id="rzp-status-box">
@@ -401,13 +401,20 @@
             if(val.length === 6) {
                 courierOverlay.classList.add('opacity-0');
                 
+                // Fetch City/State instantly using India Post API so it's never empty
+                fetch(`https://api.postalpincode.in/pincode/${val}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data[0].Status === 'Success') {
+                        cityInput.value = data[0].PostOffice[0].District;
+                        stateInput.value = data[0].PostOffice[0].State;
+                    }
+                }).catch(e => console.log("Postal API Error", e));
+
                 setTimeout(() => {
                     courierOverlay.classList.add('hidden');
                     courierLoading.classList.remove('hidden');
                     courierOptionsBox.classList.add('hidden');
-                    
-                    cityInput.value = '';
-                    stateInput.value = '';
                     
                     fetchRealCourierOptions(val);
                 }, 300);
@@ -444,7 +451,7 @@
                 
                 if (result.success && result.data && result.data.available_courier_companies) {
                     
-                    // Auto fill city and state from Shiprocket Real Data
+                    // Overwrite city/state with Shiprocket's precise data if available
                     if(result.data.city) cityInput.value = result.data.city;
                     if(result.data.state) stateInput.value = result.data.state;
 
@@ -477,12 +484,13 @@
                     window.setShipping(couriers[0].price);
 
                 } else {
+                    // EXPORT EXACT SHIPROCKET ERROR TO BE SHOWN
                     throw new Error(result.error || "No couriers available for this PIN");
                 }
             } catch (error) {
                 console.error("Shiprocket Error:", error);
-                // Production-ready error handling
-                courierOptionsBox.innerHTML = `<div class="text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 font-medium flex items-start gap-2"><i class="ph-fill ph-warning-circle text-lg"></i> <span>Delivery not available for this PIN code or service is currently busy. Please verify the PIN or try again later.</span></div>`;
+                // SHOW EXACT ERROR ON SCREEN (e.g. Account Locked, Invalid PIN)
+                courierOptionsBox.innerHTML = `<div class="text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 font-medium flex items-start gap-2"><i class="ph-fill ph-warning-circle text-lg"></i> <span>Shiprocket: ${error.message}</span></div>`;
                 selectedShippingAmount = 0;
                 updateTotals();
             } finally {
