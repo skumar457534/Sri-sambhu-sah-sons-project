@@ -260,8 +260,13 @@
                         </div>
                     </div>
                     
+                    <!-- NEW: Live Location Scans (Shiprocket Tracking) -->
+                    <div id="live-location-container" class="hidden bg-gray-50 border-t border-gray-200 p-6 md:p-8">
+                        <!-- Fetched from API -->
+                    </div>
+
                     <!-- Support Alert -->
-                    <div class="bg-gray-50 p-4 border-t border-gray-100 flex items-center gap-3">
+                    <div class="bg-gray-50 p-4 border-t border-gray-200 flex items-center gap-3">
                         <i class="ph-fill ph-info text-golden text-xl"></i>
                         <p class="text-xs text-gray-500">For any issues with your delivery, please contact our support at <span class="text-maroon font-medium">7295021513</span>.</p>
                     </div>
@@ -652,6 +657,13 @@
 
                 renderTimeline(displayId, orderData.status || 'PENDING', orderData.awb, orderData.createdAt);
 
+                // Fetch Live Detailed Tracking if AWB exists
+                if (orderData.awb && orderData.status !== 'REJECTED') {
+                    fetchLiveShiprocketTracking(orderData.awb);
+                } else {
+                    document.getElementById('live-location-container').classList.add('hidden');
+                }
+
                 if(window.innerWidth < 768) {
                     resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -775,6 +787,57 @@
                 </div>`;
 
             container.innerHTML = html;
+        }
+
+        // --- NEW: FETCH LIVE SHIPROCKET SCANS ---
+        async function fetchLiveShiprocketTracking(awb) {
+            const container = document.getElementById('live-location-container');
+            container.innerHTML = `<div class="text-center text-gray-500 text-sm"><i class="ph ph-spinner animate-spin text-xl text-maroon mb-2 inline-block"></i><br>Fetching live location from Courier...</div>`;
+            container.classList.remove('hidden');
+
+            try {
+                // Call Cloudflare API
+                const res = await fetch(`https://peda-store-api.skumar457534.workers.dev/api/shiprocket/track?awb=${awb}`);
+                const responseData = await res.json();
+
+                if (responseData.success && responseData.data && responseData.data.tracking_data) {
+                    const trackingData = responseData.data.tracking_data;
+                    
+                    if (trackingData.error) {
+                        container.innerHTML = `<p class="text-sm text-gray-500">Live tracking will update once the courier picks up the package.</p>`;
+                        return;
+                    }
+
+                    const activities = trackingData.shipment_track_activities || [];
+                    
+                    if (activities.length > 0) {
+                        let html = '<h4 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-5 flex items-center gap-2"><i class="ph-fill ph-map-pin"></i> Live Tracking Scans</h4><div class="space-y-5">';
+                        
+                        // Loop through the latest 5 activities
+                        activities.slice(0, 5).forEach(act => {
+                            html += `
+                            <div class="flex gap-4 items-start">
+                                <div class="w-2.5 h-2.5 mt-1.5 rounded-full bg-saffron shrink-0 shadow-[0_0_8px_rgba(244,140,6,0.6)]"></div>
+                                <div>
+                                    <p class="font-bold text-naturalBrown text-sm">${act.location || 'In Transit'}</p>
+                                    <p class="text-gray-600 text-sm">${act.activity}</p>
+                                    <p class="text-xs text-gray-400 mt-1 font-medium">${act.date}</p>
+                                </div>
+                            </div>`;
+                        });
+                        
+                        html += '</div>';
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = `<p class="text-sm text-gray-500">No live scans available yet. Please check back later.</p>`;
+                    }
+                } else {
+                    container.innerHTML = `<p class="text-sm text-gray-500">Live tracking not available at this moment.</p>`;
+                }
+            } catch (error) {
+                console.error("Live Tracking API Error:", error);
+                container.innerHTML = `<p class="text-sm text-red-500">Unable to connect to courier server right now.</p>`;
+            }
         }
 
         // Back to tracking input
