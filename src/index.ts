@@ -12,6 +12,9 @@ export interface Env {
   SHIPROCKET_EMAIL: string;
   SHIPROCKET_PASSWORD: string;
 
+  // Brevo Email API
+  BREVO_API_KEY: string;
+
   CORS_ORIGIN: string;
 }
 
@@ -158,7 +161,7 @@ export default {
         if (courierData.status === 200) {
           return new Response(JSON.stringify({ success: true, data: courierData.data }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         } else {
-          return new Response(JSON.stringify({ success: false, error: "Service not available for this PIN code" }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          return new Response(JSON.stringify({ success: false, error: courierData.message || "Service not available for this PIN code" }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
       }
 
@@ -223,6 +226,91 @@ export default {
         } else {
           return new Response(JSON.stringify({ success: false, error: "Label not ready yet or failed", details: labelData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
+      }
+
+      // =========================================================
+      // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
+      // =========================================================
+      if (path === '/api/shiprocket/webhook' && method === 'POST') {
+        // Just acknowledging the webhook for now.
+        // Full automation requires Firebase Admin setup.
+        return new Response("Webhook Received", { status: 200, headers: corsHeaders });
+      }
+
+      // =========================================================
+      // 8. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
+      // =========================================================
+      if (path === '/api/email/send' && method === 'POST') {
+        const { type, email, name, orderId, awb, amount } = await request.json() as any;
+
+        if (!env.BREVO_API_KEY) {
+           return new Response(JSON.stringify({ success: false, error: "Brevo API key not set" }), { status: 500, headers: corsHeaders });
+        }
+
+        let subject = "";
+        let htmlContent = "";
+
+        if (type === 'ACCEPT') {
+           subject = "Your Order is Accepted & Processing! 🚀";
+           htmlContent = `
+              <div style="font-family: Arial, sans-serif; max-w: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                  <div style="text-align: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 20px;">
+                      <h1 style="color: #7B1818; margin: 0;">Sri Shambhu Sha & Sons</h1>
+                      <p style="color: #D4AF37; margin: 0; font-size: 12px; letter-spacing: 2px;">DEOGHAR</p>
+                  </div>
+                  <h2 style="color: #333;">Hi ${name},</h2>
+                  <p style="color: #555; line-height: 1.5;">Thank you for your order! Your authentic Baba Dham Peda order has been <strong>successfully accepted</strong> and is currently being packed with care.</p>
+                  <div style="background-color: #fcfcfc; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #eee;">
+                      <p style="margin: 0 0 10px 0; color: #555;"><strong>Order ID:</strong> ${orderId}</p>
+                      <p style="margin: 0; color: #555;"><strong>Tracking AWB:</strong> <span style="color: #D4AF37; font-weight: bold; font-size: 16px;">${awb}</span></p>
+                  </div>
+                  <p style="color: #555;">As soon as our courier partner picks up and scans your package, you will automatically receive an SMS/Email with live tracking updates.</p>
+                  <div style="text-align: center; margin: 30px 0;">
+                      <a href="https://srishambhushaandsons.firebaseapp.com/track_order.html" style="background-color: #7B1818; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Track My Order</a>
+                  </div>
+                  <p style="font-size: 12px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">For any support, reply to this email or contact us via WhatsApp.</p>
+              </div>
+           `;
+        } else if (type === 'REJECT') {
+           subject = "Order Cancelled & Refund Initiated";
+           htmlContent = `
+              <div style="font-family: Arial, sans-serif; max-w: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                  <div style="text-align: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 15px; margin-bottom: 20px;">
+                      <h1 style="color: #7B1818; margin: 0;">Sri Shambhu Sha & Sons</h1>
+                      <p style="color: #D4AF37; margin: 0; font-size: 12px; letter-spacing: 2px;">DEOGHAR</p>
+                  </div>
+                  <h2 style="color: #333;">Hi ${name},</h2>
+                  <p style="color: #555; line-height: 1.5;">We are sorry to inform you that we are currently unable to fulfill your Order <strong>${orderId}</strong>.</p>
+                  <div style="background-color: #fff3f3; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffcdd2;">
+                      <p style="margin: 0 0 10px 0; color: #d32f2f;"><strong>Status:</strong> Cancelled</p>
+                      <p style="margin: 0; color: #d32f2f;"><strong>Refund:</strong> ₹${amount} has been successfully initiated.</p>
+                  </div>
+                  <p style="color: #555;">Your refund has been initiated to your original payment method via Razorpay and should reflect in your bank account within 3-5 business days.</p>
+                  <p style="font-size: 12px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">For any support, reply to this email or contact us via WhatsApp.</p>
+              </div>
+           `;
+        }
+
+        const emailPayload = {
+            // Using your exact requested email
+            sender: { name: "Sri Shambhu Sha & Sons", email: "skumar457534@gmail.com" }, 
+            to: [{ email: email, name: name }],
+            subject: subject,
+            htmlContent: htmlContent
+        };
+
+        const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+                "accept": "application/json",
+                "api-key": env.BREVO_API_KEY,
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(emailPayload)
+        });
+
+        const brevoData = await brevoRes.json();
+        return new Response(JSON.stringify({ success: brevoRes.ok, data: brevoData }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
       }
 
       // =========================================================
