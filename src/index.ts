@@ -166,6 +166,27 @@ export default {
       }
 
       // =========================================================
+      // 5. SHIPROCKET: LIVE TRACKING BY AWB (NEW)
+      // =========================================================
+      if (path === '/api/shiprocket/track' && method === 'GET') {
+        const awb = url.searchParams.get('awb');
+        if (!awb) return new Response(JSON.stringify({ success: false, error: "AWB required" }), { status: 400, headers: corsHeaders });
+        
+        try {
+            const token = await getShiprocketToken();
+            const trackRes = await fetch(`https://apiv2.shiprocket.in/v1/external/courier/track/awb/${awb}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const trackData = await trackRes.json() as any;
+            return new Response(JSON.stringify({ success: true, data: trackData }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } catch (error: any) {
+            return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+      }
+
+      // =========================================================
       // FALLBACK ROUTE
       // =========================================================
       return new Response(JSON.stringify({ error: "API Endpoint Not Found" }), { 
