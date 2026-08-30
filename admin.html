@@ -136,7 +136,6 @@
         <div class="flex-1 overflow-y-auto p-4 sm:p-8">
             <div class="max-w-7xl mx-auto space-y-8 relative">
 
-                <!-- DASHBOARD TAB -->
                 <div id="tab-dashboard" class="tab-content block">
                     <!-- STATS GRID -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -200,7 +199,6 @@
                     </div>
                 </div>
 
-                <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <!-- Order Header & Filters -->
@@ -239,7 +237,6 @@
                     </div>
                 </div>
 
-                <!-- PRODUCTS TAB -->
                 <div id="tab-products" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Product Catalog</h3>
@@ -255,7 +252,6 @@
                     </div>
                 </div>
 
-                <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
@@ -284,7 +280,6 @@
                     </div>
                 </div>
 
-                <!-- RATINGS TAB -->
                 <div id="tab-ratings" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Customer Ratings & Reviews</h3>
@@ -309,7 +304,6 @@
                     </div>
                 </div>
 
-                <!-- SETTINGS TAB -->
                 <div id="tab-settings" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-3xl">
                         <div class="p-6 border-b border-gray-200">
@@ -640,7 +634,7 @@
         // State variables
         let globalOrders = [];
         let globalProducts = [];
-        let globalRatings = []; // New for ratings
+        let globalRatings = []; 
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
 
@@ -915,7 +909,7 @@
                     body: JSON.stringify({
                         order_id: actionOrderId,
                         order_date: new Date(o.createdAt).toISOString().split('T')[0],
-                        pickup_location: "Primary", // Or your Shiprocket registered pickup location name
+                        pickup_location: "Primary", 
                         billing_customer_name: o.customerName || "Guest",
                         billing_last_name: "",
                         billing_address: o.shippingAddress?.line1 || "N/A",
@@ -964,10 +958,27 @@
                     shiprocketShipmentId: shipData.shipment_id
                 });
 
+                // Trigger Email via Brevo Cloudflare Worker
+                try {
+                    await fetch("https://peda-store-api.skumar457534.workers.dev/api/email/send", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'ACCEPT',
+                            email: o.customerEmail || o.email,
+                            name: o.customerName || 'Customer',
+                            orderId: o.id,
+                            awb: generatedAWB
+                        })
+                    });
+                } catch (mailErr) {
+                    console.error("Mail send failed", mailErr);
+                }
+
                 document.getElementById('new-awb').innerText = generatedAWB;
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shipment-success').classList.remove('hidden');
-                showToast("Order Accepted & Synced with Shiprocket!");
+                showToast("Order Accepted & Synced with Shiprocket! Email Sent.");
                 
             } catch(e) {
                 console.error(e);
@@ -1016,8 +1027,25 @@
                     refundId: refundData.refund_id
                 });
 
+                // Trigger Email via Brevo Cloudflare Worker
+                try {
+                    await fetch("https://peda-store-api.skumar457534.workers.dev/api/email/send", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'REJECT',
+                            email: o.customerEmail || o.email,
+                            name: o.customerName || 'Customer',
+                            orderId: o.id,
+                            amount: o.amount
+                        })
+                    });
+                } catch (mailErr) {
+                    console.error("Mail send failed", mailErr);
+                }
+
                 closeModals();
-                showToast("Order Rejected & Refund Processed Successfully via API.", "success");
+                showToast("Order Rejected & Refund Processed. Email Sent.", "success");
                 btn.innerHTML = `Confirm Reject`; btn.disabled = false;
 
             } catch(e) {
