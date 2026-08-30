@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up | Sri Shambhu Sha & Sons</title>
+    <meta name="description" content="Login or create an account to track your orders and manage addresses.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: "#FDFBF7",
+                        maroon: "#7B1818",
+                        golden: "#D4AF37",
+                        saffron: "#F48C06",
+                        naturalBrown: "#5C4033",
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FDFBF7; }
+        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        
+        .auth-tab.active {
+            border-bottom-color: #7B1818;
+            color: #7B1818;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-naturalBrown font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- MINIMAL HEADER -->
+    <header class="w-full top-0 z-50 bg-white border-b border-golden/20 shadow-sm shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Brand -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                        <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+                    </div>
+                    <a href="index.html" class="flex flex-col">
+                        <span class="font-serif font-bold text-lg md:text-xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha &amp; Sons</span>
+                    </a>
+                </div>
+
+                <!-- Back to Store -->
+                <a href="index.html" class="text-gray-500 hover:text-maroon font-medium flex items-center gap-2 transition-colors text-sm sm:text-base">
+                    <i class="ph ph-arrow-left"></i> <span class="hidden sm:inline">Back to Store</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN AUTH SECTION -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-maroon/5 rounded-full blur-3xl z-0"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-golden/10 rounded-full blur-3xl z-0"></div>
+
+        <!-- AUTH CARD -->
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 z-10 overflow-hidden flex flex-col">
+            
+            <!-- Custom Notification Banner (Hidden by default) -->
+            <div id="notification-banner" class="hidden w-full p-4 text-sm font-medium text-center transition-all duration-300">
+                <!-- Message injected by JS -->
+            </div>
+
+            <div class="p-6 sm:p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-serif font-bold text-naturalBrown" id="auth-title">Welcome Back</h1>
+                    <p class="text-sm text-gray-500 mt-1" id="auth-subtitle">Sign in to manage your orders</p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button onclick="switchTab('login')" id="tab-login" class="auth-tab active flex-1 pb-3 text-sm text-gray-500 hover:text-maroon border-b-2 border-transparent transition-colors">Sign In</button>
+                    <button onclick="switchTab('signup')" id="tab-signup" class="auth-tab flex-1 pb-3 text-sm text-gray-500 hover:text-maroon border-b-2 border-transparent transition-colors">Create Account</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="form-login" class="space-y-5 block">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                        <input type="email" id="login-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="block text-sm font-medium text-gray-700">Password</label>
+                            <button type="button" onclick="forgotPassword()" class="text-xs text-maroon hover:text-saffron font-medium">Forgot Password?</button>
+                        </div>
+                        <input type="password" id="login-password" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="••••••••">
+                    </div>
+                    
+                    <button type="submit" id="btn-login" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold shadow-md hover:bg-maroon/90 transition-colors flex justify-center items-center gap-2">
+                        Sign In <i class="ph ph-sign-in"></i>
+                    </button>
+                </form>
+
+                <!-- SIGNUP FORM -->
+                <form id="form-signup" class="space-y-5 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+                        <input type="text" id="signup-name" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="Rahul Kumar">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                        <input type="email" id="signup-email" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                        <input type="password" id="signup-password" required minlength="6" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon transition-all" placeholder="At least 6 characters">
+                    </div>
+                    
+                    <button type="submit" id="btn-signup" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold shadow-md hover:bg-maroon/90 transition-colors flex justify-center items-center gap-2">
+                        Create Account <i class="ph ph-user-plus"></i>
+                    </button>
+                    <p class="text-xs text-gray-500 text-center mt-3">By creating an account, you agree to our <a href="terms.html" class="text-maroon hover:underline">Terms</a> & <a href="privacy_policy.html" class="text-maroon hover:underline">Privacy Policy</a>.</p>
+                </form>
+
+                <!-- DIVIDER -->
+                <div class="flex items-center my-6">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="px-3 text-xs text-gray-400 font-medium uppercase tracking-wider">Or</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <!-- GOOGLE LOGIN -->
+                <button type="button" id="btn-google" class="w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-bold shadow-sm hover:bg-gray-50 transition-colors flex justify-center items-center gap-3">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MINIMAL FOOTER -->
+    <footer class="bg-white border-t border-gray-200 py-6 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs text-gray-400">© 2026 Sri Shambhu Sha & Sons. All Rights Reserved. Regd. No.: 3271313</p>
+        </div>
+    </footer>
+
+    <!-- UI INTERACTION SCRIPTS -->
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const signupForm = document.getElementById('form-signup');
+            const loginTab = document.getElementById('tab-login');
+            const signupTab = document.getElementById('tab-signup');
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            // Reset notification
+            hideNotification();
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                loginForm.classList.add('block');
+                signupForm.classList.remove('block');
+                signupForm.classList.add('hidden');
+                
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                
+                title.innerText = 'Welcome Back';
+                subtitle.innerText = 'Sign in to manage your orders';
+            } else {
+                signupForm.classList.remove('hidden');
+                signupForm.classList.add('block');
+                loginForm.classList.remove('block');
+                loginForm.classList.add('hidden');
+                
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                
+                title.innerText = 'Create Account';
+                subtitle.innerText = 'Join us to track orders easily';
+            }
+        }
+
+        function showNotification(message, type = 'error') {
+            const banner = document.getElementById('notification-banner');
+            banner.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'bg-green-50', 'text-green-600', 'border-b', 'border-red-200', 'border-green-200');
+            
+            if (type === 'error') {
+                banner.classList.add('bg-red-50', 'text-red-600', 'border-b', 'border-red-200');
+                banner.innerHTML = `<i class="ph-fill ph-warning-circle align-middle mr-1 text-lg"></i> ${message}`;
+            } else {
+                banner.classList.add('bg-green-50', 'text-green-600', 'border-b', 'border-green-200');
+                banner.innerHTML = `<i class="ph-fill ph-check-circle align-middle mr-1 text-lg"></i> ${message}`;
+            }
+            banner.classList.remove('hidden');
+        }
+
+        function hideNotification() {
+            document.getElementById('notification-banner').classList.add('hidden');
+        }
+    </script>
+
+    <!-- FIREBASE AUTHENTICATION LOGIC -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            updateProfile,
+            GoogleAuthProvider,
+            signInWithPopup,
+            sendPasswordResetEmail,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Firebase configuration provided by user
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // DOM Elements
+        const formLogin = document.getElementById('form-login');
+        const formSignup = document.getElementById('form-signup');
+        const btnGoogle = document.getElementById('btn-google');
+        const btnLogin = document.getElementById('btn-login');
+        const btnSignup = document.getElementById('btn-signup');
+
+        // Check if user is already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Determine where to redirect (default to home)
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect') || 'index.html';
+                window.location.replace(redirect);
+            }
+        });
+
+        // 1. Handle Email/Password Login
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideNotification();
+            
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            // Loading state
+            const originalText = btnLogin.innerHTML;
+            btnLogin.innerHTML = `<i class="ph ph-spinner-gap animate-spin text-xl"></i> Signing In...`;
+            btnLogin.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Auth listener will handle the redirect
+            } catch (error) {
+                btnLogin.innerHTML = originalText;
+                btnLogin.disabled = false;
+                
+                // Map Firebase errors to human-readable text
+                let errorMsg = "Failed to sign in. Please try again.";
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    errorMsg = "Incorrect email or password.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMsg = "Too many failed attempts. Try again later or reset password.";
+                }
+                showNotification(errorMsg, 'error');
+            }
+        });
+
+        // 2. Handle Email/Password Sign Up
+        formSignup.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideNotification();
+            
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+
+            if (password.length < 6) {
+                showNotification("Password must be at least 6 characters.", 'error');
+                return;
+            }
+
+            // Loading state
+            const originalText = btnSignup.innerHTML;
+            btnSignup.innerHTML = `<i class="ph ph-spinner-gap animate-spin text-xl"></i> Creating...`;
+            btnSignup.disabled = true;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Update profile with name
+                await updateProfile(userCredential.user, {
+                    displayName: name
+                });
+                // Auth listener will handle the redirect
+            } catch (error) {
+                btnSignup.innerHTML = originalText;
+                btnSignup.disabled = false;
+                
+                let errorMsg = "Failed to create account.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMsg = "Email is already registered. Please log in.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = "Please enter a valid email address.";
+                }
+                showNotification(errorMsg, 'error');
+            }
+        });
+
+        // 3. Handle Google Sign-In
+        btnGoogle.addEventListener('click', async () => {
+            hideNotification();
+            
+            // Loading state
+            const originalText = btnGoogle.innerHTML;
+            btnGoogle.innerHTML = `<i class="ph ph-spinner-gap animate-spin text-xl"></i> Connecting...`;
+            btnGoogle.disabled = true;
+
+            try {
+                await signInWithPopup(auth, googleProvider);
+                // Auth listener will handle the redirect
+            } catch (error) {
+                btnGoogle.innerHTML = originalText;
+                btnGoogle.disabled = false;
+                
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    showNotification("Google sign-in failed. Please try again.", 'error');
+                }
+            }
+        });
+
+        // 4. Handle Password Reset
+        window.forgotPassword = async function() {
+            hideNotification();
+            const emailInput = document.getElementById('login-email');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showNotification("Please enter your email address first, then click 'Forgot Password'.", 'error');
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showNotification(`Password reset link sent to <strong>${email}</strong>. Check your inbox.`, 'success');
+            } catch (error) {
+                let errorMsg = "Failed to send reset link.";
+                if (error.code === 'auth/user-not-found') {
+                    errorMsg = "No account found with this email.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = "Please enter a valid email address.";
+                }
+                showNotification(errorMsg, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
