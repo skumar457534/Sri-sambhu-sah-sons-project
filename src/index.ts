@@ -10,6 +10,7 @@ export interface Env {
 
   SHIPROCKET_EMAIL: string;
   SHIPROCKET_PASSWORD: string;
+  SHIPROCKET_WEBHOOK_TOKEN: string;
 
   BREVO_API_KEY: string;
   CORS_ORIGIN: string;
@@ -28,7 +29,7 @@ export default {
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, x-razorpay-signature',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, x-razorpay-signature, x-api-key',
     };
 
     if (method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -301,33 +302,113 @@ export default {
       }
 
       // =========================================================
-      // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
+      // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if (path === '/api/shiprocket/webhook' && method === 'POST') {
-          // Note: Shiprocket sends header 'x-api-key' which you should verify in production
-          const payload = await request.json() as any;
-          
-          if (payload.awb) {
-              const currentStatus = payload.current_status; // e.g. "DELIVERED", "IN TRANSIT", "SHIPPED"
-              
-              // We need to map Shiprocket status strings to your Firebase status strings
-              let firebaseStatus = "";
-              if(currentStatus === 'DELIVERED') firebaseStatus = 'DELIVERED';
-              else if(currentStatus === 'OUT FOR DELIVERY') firebaseStatus = 'OUT_FOR_DELIVERY';
-              else if(currentStatus === 'IN TRANSIT') firebaseStatus = 'IN_TRANSIT';
-              else if(currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP') firebaseStatus = 'SHIPPED';
+        const receivedToken = request.headers.get('x-api-key');
 
-              if (firebaseStatus !== "") {
-                  // To update via REST, we need the document ID. 
-                  // Since Webhook only gives AWB, we must query Firestore first to find the Document ID, then update it.
-                  // Implementing this requires an extra REST query step.
-                  // For now, returning 200 OK.
-              }
-          }
-          return new Response("Shiprocket Webhook Received", { status: 200, headers: corsHeaders });
+        if (!receivedToken || !env.SHIPROCKET_WEBHOOK_TOKEN) {
+          return new Response(JSON.stringify({ success: false, error: 'Webhook authentication failed' }), {
+            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        const webhookEncoder = new TextEncoder();
+        const receivedBytes = webhookEncoder.encode(receivedToken);
+        const expectedBytes = webhookEncoder.encode(env.SHIPROCKET_WEBHOOK_TOKEN);
+
+        if (receivedBytes.length !== expectedBytes.length) {
+          return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        let difference = 0;
+        for (let i = 0; i < receivedBytes.length; i++) {
+          difference |= receivedBytes[i] ^ expectedBytes[i];
+        }
+
+        if (difference !== 0) {
+          return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        const payload = await request.json() as any;
+        const awb = payload.awb || payload.awb_number || payload.shipment?.awb || payload.shipment?.awb_number;
+
+        if (!awb) {
+          return new Response(JSON.stringify({ success: false, error: 'AWB not found in webhook payload' }), {
+            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        const currentStatus = String(payload.current_status || payload.status || payload.shipment_status || '').toUpperCase().trim();
+        let firebaseStatus = '';
+
+        if (currentStatus === 'DELIVERED') firebaseStatus = 'DELIVERED';
+        else if (currentStatus === 'OUT FOR DELIVERY' || currentStatus === 'OUT_FOR_DELIVERY') firebaseStatus = 'OUT_FOR_DELIVERY';
+        else if (currentStatus === 'IN TRANSIT' || currentStatus === 'IN_TRANSIT') firebaseStatus = 'IN_TRANSIT';
+        else if (currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP' || currentStatus === 'PICKED_UP') firebaseStatus = 'SHIPPED';
+        else if (currentStatus === 'READY TO SHIP' || currentStatus === 'READY_FOR_PICKUP') firebaseStatus = 'READY_FOR_PICKUP';
+
+        if (!firebaseStatus) {
+          return new Response(JSON.stringify({ success: true, message: 'Webhook received. Status not mapped.', status: currentStatus }), {
+            status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        // Find the Firebase order by AWB.
+        const firebaseToken = await getFirebaseToken();
+        const queryUrl = `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`;
+
+        const queryResponse = await fetch(queryUrl, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${firebaseToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            structuredQuery: {
+              from: [{ collectionId: 'orders' }],
+              where: { fieldFilter: { field: { fieldPath: 'awbNumber' }, op: 'EQUAL', value: { stringValue: String(awb) } } },
+              limit: 1
+            }
+          })
+        });
+
+        if (!queryResponse.ok) {
+          console.error('Firestore AWB query failed:', await queryResponse.text());
+          return new Response(JSON.stringify({ success: false, error: 'Could not find order' }), {
+            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        const queryResult = await queryResponse.json() as any[];
+        const documentResult = queryResult.find((item: any) => item.document);
+
+        if (!documentResult?.document?.name) {
+          return new Response(JSON.stringify({ success: false, error: 'Order not found for this AWB' }), {
+            status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        const documentId = documentResult.document.name.split('/').pop();
+        if (!documentId) {
+          return new Response(JSON.stringify({ success: false, error: 'Invalid Firestore document' }), {
+            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          });
+        }
+
+        await updateFirestoreOrder(documentId, {
+          shipmentStatus: firebaseStatus,
+          awbNumber: String(awb)
+        });
+
+        return new Response(JSON.stringify({
+          success: true, message: 'Shiprocket webhook processed', awb: String(awb), shipmentStatus: firebaseStatus
+        }), {
+          status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
       }
 
-      // =========================================================
       // 8. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
       // =========================================================
       if (path === '/api/email/send' && method === 'POST') {
