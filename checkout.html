@@ -341,8 +341,8 @@
         let subtotalAmount = 0;
         let selectedShippingAmount = 0;
         
-        // CLOUDFLARE WORKER API
-        const API_BASE_URL = "https://peda-store-api.skumar457534.workers.dev/api";
+        // CLOUDFLARE WORKER API (UPDATED TO NEW CUSTOM DOMAIN)
+        const API_BASE_URL = "https://api.srishambhushaandsons.in/api";
 
         function initCheckout() {
             if (cart.length === 0) {
@@ -670,7 +670,8 @@
                 btn.disabled = false;
             }
         }
- // Initial Load
+
+        // Initial Load
         initCheckout();
     </script>
 </body>
