@@ -1,28 +1,23 @@
 export interface Env {
-  // Firebase Secrets
-  FIREBASE_CLIENT_EMAIL: string;
-  FIREBASE_PRIVATE_KEY: string;
   FIREBASE_PROJECT_ID: string;
+  FIREBASE_API_KEY: string;
+  FIREBASE_ADMIN_EMAIL: string;
+  FIREBASE_ADMIN_PASSWORD: string;
 
-  // Razorpay Secrets
   RAZORPAY_KEY_ID: string;
   RAZORPAY_KEY_SECRET: string;
+  RAZORPAY_WEBHOOK_SECRET: string;
 
-  // Shiprocket Secrets
   SHIPROCKET_EMAIL: string;
   SHIPROCKET_PASSWORD: string;
 
-  // Brevo Email API
   BREVO_API_KEY: string;
-
   CORS_ORIGIN: string;
 }
 
-// =========================================================
-// SMART CACHE SYSTEM: To Prevent 2-Hour Account Locks
-// =========================================================
 let cachedShiprocketToken: string | null = null;
 let tokenExpiryTime: number = 0;
+let cachedFirebaseToken: string | null = null; // Cache for Firebase Admin Token
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -30,32 +25,73 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
-    // -----------------------------------------------------
-    // CORS HEADERS
-    // -----------------------------------------------------
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, x-razorpay-signature',
     };
 
-    if (method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
-    }
+    if (method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
     try {
+      // =========================================================
+      // HELPER: GET FIREBASE AUTH TOKEN (FOR WORKER TO WRITE TO DB)
+      // =========================================================
+      const getFirebaseToken = async () => {
+        if (cachedFirebaseToken) return cachedFirebaseToken;
+        const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${env.FIREBASE_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: env.FIREBASE_ADMIN_EMAIL, password: env.FIREBASE_ADMIN_PASSWORD, returnSecureToken: true })
+        });
+        const data = await res.json() as any;
+        if (data.idToken) {
+           cachedFirebaseToken = data.idToken;
+           return data.idToken;
+        }
+        throw new Error("Firebase Auth Failed in Worker");
+      };
+
+      // =========================================================
+      // HELPER: UPDATE FIRESTORE DOCUMENT VIA REST API
+      // =========================================================
+      const updateFirestoreOrder = async (documentId: string, fields: any) => {
+        const token = await getFirebaseToken();
+        const projectId = env.FIREBASE_PROJECT_ID; // e.g. "srishambhushaandsons"
+        
+        // Convert JSON to Firestore REST format
+        const firestoreFields: any = {};
+        for (const [key, value] of Object.entries(fields)) {
+            if (typeof value === 'string') firestoreFields[key] = { stringValue: value };
+            else if (typeof value === 'number') firestoreFields[key] = { integerValue: value };
+            else if (typeof value === 'boolean') firestoreFields[key] = { booleanValue: value };
+        }
+
+        let updateMask = Object.keys(fields).map(k => `updateMask.fieldPaths=${k}`).join('&');
+        
+        await fetch(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/orders/${documentId}?${updateMask}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: firestoreFields })
+        });
+      };
+
       // =========================================================
       // 0. RAZORPAY: CREATE ORDER API
       // =========================================================
       if (path === '/api/payment/create-order' && method === 'POST') {
-        const { amount } = await request.json() as any;
+        const { amount, receipt } = await request.json() as any; // NEW: Receives receipt (Firebase ID)
         if (!amount) return new Response(JSON.stringify({ error: "Amount required" }), { status: 400, headers: corsHeaders });
 
         const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
         const rzpResponse = await fetch("https://api.razorpay.com/v1/orders", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
-          body: JSON.stringify({ amount: Math.round(amount * 100), currency: "INR", receipt: "receipt_" + Date.now() })
+          body: JSON.stringify({ 
+              amount: Math.round(amount * 100), 
+              currency: "INR", 
+              receipt: receipt || ("receipt_" + Date.now()) 
+          })
         });
         
         const rzpData = await rzpResponse.json();
@@ -88,6 +124,42 @@ export default {
         } else {
           return new Response(JSON.stringify({ success: false, error: "Invalid signature" }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
+      }
+
+      // =========================================================
+      // NEW: RAZORPAY WEBHOOK (The Safety Net)
+      // =========================================================
+      if (path === '/api/razorpay/webhook' && method === 'POST') {
+        const signature = request.headers.get('x-razorpay-signature');
+        const bodyText = await request.text();
+
+        // Verify Webhook Signature
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey("raw", encoder.encode(env.RAZORPAY_WEBHOOK_SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+        const signatureBuffer = await crypto.subtle.sign("HMAC", key, encoder.encode(bodyText));
+        const expectedSignature = Array.from(new Uint8Array(signatureBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if (signature !== expectedSignature) {
+            return new Response("Invalid Signature", { status: 400 });
+        }
+
+        const payload = JSON.parse(bodyText);
+        
+        // Handle Payment Captured
+        if (payload.event === 'payment.captured') {
+            const paymentEntity = payload.payload.payment.entity;
+            const firebaseOrderId = paymentEntity.notes?.firebase_order_id;
+            
+            if (firebaseOrderId) {
+                // Update Firestore Order via REST API
+                await updateFirestoreOrder(firebaseOrderId, {
+                    status: 'PENDING', // CHANGED: Move to PENDING so Admin can now see it
+                    paymentStatus: 'PAID',
+                    razorpayPaymentId: paymentEntity.id
+                });
+            }
+        }
+        return new Response("Webhook Processed", { status: 200, headers: corsHeaders });
       }
 
       // =========================================================
@@ -232,9 +304,27 @@ export default {
       // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if (path === '/api/shiprocket/webhook' && method === 'POST') {
-        // Just acknowledging the webhook for now.
-        // Full automation requires Firebase Admin setup.
-        return new Response("Webhook Received", { status: 200, headers: corsHeaders });
+          // Note: Shiprocket sends header 'x-api-key' which you should verify in production
+          const payload = await request.json() as any;
+          
+          if (payload.awb) {
+              const currentStatus = payload.current_status; // e.g. "DELIVERED", "IN TRANSIT", "SHIPPED"
+              
+              // We need to map Shiprocket status strings to your Firebase status strings
+              let firebaseStatus = "";
+              if(currentStatus === 'DELIVERED') firebaseStatus = 'DELIVERED';
+              else if(currentStatus === 'OUT FOR DELIVERY') firebaseStatus = 'OUT_FOR_DELIVERY';
+              else if(currentStatus === 'IN TRANSIT') firebaseStatus = 'IN_TRANSIT';
+              else if(currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP') firebaseStatus = 'SHIPPED';
+
+              if (firebaseStatus !== "") {
+                  // To update via REST, we need the document ID. 
+                  // Since Webhook only gives AWB, we must query Firestore first to find the Document ID, then update it.
+                  // Implementing this requires an extra REST query step.
+                  // For now, returning 200 OK.
+              }
+          }
+          return new Response("Shiprocket Webhook Received", { status: 200, headers: corsHeaders });
       }
 
       // =========================================================
