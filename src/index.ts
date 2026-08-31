@@ -10,6 +10,7 @@ export interface Env {
 
   SHIPROCKET_EMAIL: string;
   SHIPROCKET_PASSWORD: string;
+  SHIPROCKET_WEBHOOK_TOKEN: string;
 
   BREVO_API_KEY: string;
   CORS_ORIGIN: string;
@@ -301,15 +302,58 @@ export default {
       }
 
       // =========================================================
-      // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
+      // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if (path === '/api/webhook/tracking' && method === 'POST') {
 
-        // Read the webhook payload safely.
+        // Shiprocket sends the configured token in x-api-key.
+        const receivedToken = request.headers.get('x-api-key');
+
+        if (env.SHIPROCKET_WEBHOOK_TOKEN) {
+          if (!receivedToken) {
+            return new Response(JSON.stringify({
+              success: false,
+              error: 'Webhook authentication required'
+            }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+          }
+
+          // Constant-time token comparison.
+          const encoder = new TextEncoder();
+          const receivedBytes = encoder.encode(receivedToken);
+          const expectedBytes = encoder.encode(env.SHIPROCKET_WEBHOOK_TOKEN);
+
+          if (receivedBytes.length !== expectedBytes.length) {
+            return new Response(JSON.stringify({
+              success: false,
+              error: 'Invalid webhook token'
+            }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+          }
+
+          let difference = 0;
+          for (let i = 0; i < receivedBytes.length; i++) {
+            difference |= receivedBytes[i] ^ expectedBytes[i];
+          }
+
+          if (difference !== 0) {
+            return new Response(JSON.stringify({
+              success: false,
+              error: 'Invalid webhook token'
+            }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+          }
+        }
+
+        // Read payload. Empty/invalid test payloads are acknowledged with 200.
         const payload = await request.json().catch(() => null) as any;
 
-        // Shiprocket test requests may not contain an AWB.
-        // Always acknowledge a valid POST with HTTP 200.
         if (!payload) {
           return new Response(JSON.stringify({
             success: true,
@@ -328,7 +372,7 @@ export default {
           payload.shipment?.awb_number ||
           payload.shipment?.awb_code;
 
-        // If this is only a test/empty webhook, acknowledge it.
+        // Test webhook may not contain an AWB.
         if (!awb) {
           return new Response(JSON.stringify({
             success: true,
@@ -339,7 +383,6 @@ export default {
           });
         }
 
-        // Get current shipment status.
         const currentStatus = String(
           payload.current_status ||
           payload.status ||
@@ -348,7 +391,6 @@ export default {
           ''
         ).toUpperCase().trim();
 
-        // Map Shiprocket status to the website's Firebase status.
         let firebaseStatus = '';
 
         if (currentStatus === 'DELIVERED') {
@@ -376,7 +418,7 @@ export default {
           firebaseStatus = 'READY_FOR_PICKUP';
         }
 
-        // Unknown status: acknowledge the webhook without changing Firestore.
+        // Unknown status: acknowledge without changing Firestore.
         if (!firebaseStatus) {
           return new Response(JSON.stringify({
             success: true,
@@ -389,7 +431,7 @@ export default {
           });
         }
 
-        // Find the Firebase order using the AWB.
+        // Find the order in Firestore using the AWB.
         const firebaseToken = await getFirebaseToken();
 
         const queryUrl =
@@ -459,7 +501,6 @@ export default {
           });
         }
 
-        // Automatically update shipment status in Firebase.
         await updateFirestoreOrder(documentId, {
           shipmentStatus: firebaseStatus,
           awbNumber: String(awb)
