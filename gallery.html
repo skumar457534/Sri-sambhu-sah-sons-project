@@ -191,29 +191,31 @@
 
     <!-- PREMIUM LIGHTBOX (Auto-play, Arrows) -->
     <div id="lightbox" class="fixed inset-0 z-[200] bg-black/95 hidden items-center justify-center fade-in backdrop-blur-sm" onclick="closeLightbox()">
+        
         <!-- Close Button -->
-        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[210]">
-            <i class="ph ph-x text-4xl"></i>
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 md:top-6 md:right-6 text-white/60 hover:text-white transition-colors z-[210] p-2 bg-black/20 rounded-full">
+            <i class="ph ph-x text-2xl md:text-4xl"></i>
         </button>
 
         <!-- Previous Arrow -->
-        <button onclick="prevImg(event)" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-[210] p-4">
-            <i class="ph ph-caret-left text-5xl md:text-6xl"></i>
+        <button onclick="prevImg(event)" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors z-[210] p-2 md:p-4 bg-black/20 hover:bg-black/40 rounded-full">
+            <i class="ph ph-caret-left text-3xl md:text-5xl"></i>
+        </button>
+
+        <!-- Next Arrow -->
+        <button onclick="nextImg(event)" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors z-[210] p-2 md:p-4 bg-black/20 hover:bg-black/40 rounded-full">
+            <i class="ph ph-caret-right text-3xl md:text-5xl"></i>
         </button>
 
         <!-- Image Container -->
-        <div class="relative max-w-5xl max-h-[85vh] w-full px-16 flex items-center justify-center" onclick="event.stopPropagation()">
-            <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-500">
+        <div class="relative w-full max-w-5xl h-full max-h-[85vh] flex items-center justify-center px-12 md:px-24" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" class="w-full h-full object-contain drop-shadow-2xl transition-opacity duration-300">
+            
             <!-- Progress Bar for Auto-play -->
-            <div class="absolute bottom-[-20px] left-16 right-16 h-1 bg-white/20 rounded-full overflow-hidden">
+            <div class="absolute bottom-2 md:bottom-0 left-12 right-12 md:left-24 md:right-24 h-1 bg-white/20 rounded-full overflow-hidden">
                 <div id="lightbox-progress" class="h-full bg-saffron w-0"></div>
             </div>
         </div>
-
-        <!-- Next Arrow -->
-        <button onclick="nextImg(event)" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-[210] p-4">
-            <i class="ph ph-caret-right text-5xl md:text-6xl"></i>
-        </button>
     </div>
 
     <!-- FOOTER -->
@@ -241,7 +243,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info (Clickable WhatsApp) -->
+                <!-- Contact Info -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
@@ -408,7 +410,7 @@
         let autoPlayTimer = null;
         let progressTimer = null;
 
-        function openLightbox(index) {
+        window.openLightbox = function(index) {
             currentImgIndex = index;
             document.getElementById('lightbox').classList.remove('hidden');
             document.getElementById('lightbox').classList.add('flex');
@@ -416,7 +418,7 @@
             startAutoplay();
         }
 
-        function closeLightbox() {
+        window.closeLightbox = function() {
             document.getElementById('lightbox').classList.add('hidden');
             document.getElementById('lightbox').classList.remove('flex');
             stopAutoplay();
@@ -432,13 +434,13 @@
             }, 150);
         }
 
-        function nextImg(e) {
+        window.nextImg = function(e) {
             if(e) { e.stopPropagation(); stopAutoplay(); startAutoplay(); } // Reset timer if user clicks
             currentImgIndex = (currentImgIndex + 1) % globalGallery.length;
             updateLightboxUI();
         }
 
-        function prevImg(e) {
+        window.prevImg = function(e) {
             if(e) { e.stopPropagation(); stopAutoplay(); startAutoplay(); }
             currentImgIndex = (currentImgIndex - 1 + globalGallery.length) % globalGallery.length;
             updateLightboxUI();
@@ -459,7 +461,7 @@
             // Change image every 3 seconds
             autoPlayTimer = setInterval(() => {
                 width = 0; // Reset progress
-                nextImg();
+                window.nextImg();
             }, 3000);
         }
 
@@ -539,10 +541,10 @@
                 }
 
                 grid.innerHTML = globalGallery.map((img, index) => `
-                    <div class="rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer h-48 md:h-64 border border-golden/20 group" onclick="openLightbox(${index})">
+                    <div class="relative rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer h-48 md:h-64 border border-golden/20 group" onclick="window.openLightbox(${index})">
                         <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <i class="ph ph-magnifying-glass-plus text-white text-3xl"></i>
+                            <i class="ph ph-magnifying-glass-plus text-white text-3xl drop-shadow-md"></i>
                         </div>
                     </div>
                 `).join('');
