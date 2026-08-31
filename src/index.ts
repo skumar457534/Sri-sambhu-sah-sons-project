@@ -304,7 +304,7 @@ export default {
       // =========================================================
       // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
       // =========================================================
-      if (path === '/api/shiprocket/webhook' && method === 'POST') {
+      if (path === '/api/webhook/tracking' && method === 'POST') {
         const receivedToken = request.headers.get('x-api-key');
 
         if (!receivedToken || !env.SHIPROCKET_WEBHOOK_TOKEN) {
