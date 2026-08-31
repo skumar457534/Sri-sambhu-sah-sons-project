@@ -37,6 +37,9 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* Remove Mobile Tap Highlight Flashes */
+        button, a { -webkit-tap-highlight-color: transparent; }
+
         /* Toast Animation */
         @keyframes slideDown {
             from { transform: translateY(-100%); opacity: 0; }
@@ -73,7 +76,7 @@
             </div>
         </div>
 
-        <!-- Navigation Tabs (Removed Ratings) -->
+        <!-- Navigation Tabs -->
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active-nav w-full flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-squares-four text-xl"></i> Dashboard
@@ -129,7 +132,7 @@
             </div>
         </header>
 
-        <!-- SCROLLABLE WORKSPACE (Added pb-32 to fix mobile cutoff) -->
+        <!-- SCROLLABLE WORKSPACE (Added pb-32 to fix mobile bottom cutoff) -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-8 pb-32">
             <div class="max-w-7xl mx-auto space-y-8 relative">
 
@@ -199,19 +202,18 @@
 
                 <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden">
-                    <!-- Removed fixed height h-[700px] for better mobile view -->
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
                         <!-- Order Header & Filters -->
-                        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Manage Orders</h3>
                                 <p class="text-xs text-gray-500 mt-1">Only active processing orders (Pending, Accepted, Rejected) are shown here. Must be PAID.</p>
                             </div>
-                            <div class="flex flex-wrap gap-2">
-                                <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors" data-status="ALL">All Active</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="PENDING">Pending</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="ACCEPTED">Accepted</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="REJECTED">Rejected</button>
+                            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md outline-none" data-status="ALL">All Active</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="PENDING">Pending</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="ACCEPTED">Accepted</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="REJECTED">Rejected</button>
                             </div>
                         </div>
 
@@ -220,13 +222,13 @@
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
                                 <thead class="bg-white sticky top-0 z-10 shadow-sm border-b border-gray-200">
                                     <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body" class="divide-y divide-gray-100">
@@ -241,7 +243,7 @@
                 <div id="tab-products" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Product Catalog</h3>
-                        <button onclick="openProductModal()" class="bg-maroon text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-maroon/90 flex items-center gap-2 transition-colors">
+                        <button onclick="openProductModal()" class="bg-maroon text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-maroon/90 flex items-center gap-2 transition-colors outline-none">
                             <i class="ph ph-plus-circle text-lg"></i> Add Product
                         </button>
                     </div>
@@ -256,22 +258,22 @@
                 <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Shipments & Tracking</h3>
-                                <p class="text-xs text-gray-500 mt-1">Orders that have been picked up by the courier are moved here.</p>
+                                <p class="text-xs text-gray-500 mt-1">Orders picked up by the courier.</p>
                             </div>
-                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
+                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Ready</span>
                         </div>
                         <div class="flex-1 overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
                                 <thead class="bg-white sticky top-0 shadow-sm z-10 border-b border-gray-200">
                                     <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">AWB Number</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Courier</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Status</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">AWB Number</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Courier</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="shipments-table-body" class="divide-y divide-gray-100">
@@ -288,7 +290,7 @@
                         <h3 class="text-xl font-bold text-gray-900">Photo Gallery</h3>
                     </div>
                     
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6 mb-8">
                         <h4 class="font-bold text-naturalBrown mb-2">Upload New Photo</h4>
                         <p class="text-sm text-gray-500 mb-4">Max size: 700 KB. Ideal for shop photos, making process, or packaging.</p>
                         
@@ -351,7 +353,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-lg text-naturalBrown" id="modal-order-id">Order Details</h3>
-                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors">
+                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
@@ -391,7 +393,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-lg text-naturalBrown">Create Shipment</h3>
-                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors">
+                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
@@ -408,8 +410,8 @@
                     <p class="text-blue-800">Customer originally selected <strong id="orig-courier-name">...</strong>. Confirm to generate AWB.</p>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
-                    <button onclick="closeModals()" class="px-5 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                    <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md">Generate AWB</button>
+                    <button onclick="closeModals()" class="px-5 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg outline-none">Cancel</button>
+                    <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md outline-none">Generate AWB</button>
                 </div>
             </div>
             
@@ -419,7 +421,7 @@
                 </div>
                 <h3 class="font-bold text-gray-800 text-xl mb-2">Shipment Created!</h3>
                 <p class="text-sm text-gray-500 mb-2">AWB No: <span id="new-awb" class="font-mono font-bold text-naturalBrown">...</span></p>
-                <button onclick="closeModals()" class="mt-4 w-full bg-maroon text-cream py-2.5 rounded-lg font-bold hover:bg-maroon/90">Done</button>
+                <button onclick="closeModals()" class="mt-4 w-full bg-maroon text-cream py-2.5 rounded-lg font-bold hover:bg-maroon/90 outline-none">Done</button>
             </div>
         </div>
     </div>
@@ -436,8 +438,8 @@
                 <p><strong>Warning:</strong> This will trigger the Refund API and initiate a <strong>FULL REFUND</strong> of <span id="reject-amount" class="font-bold">...</span> to the customer.</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="closeModals()" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-                <button id="confirm-reject-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors">Confirm Reject</button>
+                <button onclick="closeModals()" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors outline-none">Cancel</button>
+                <button id="confirm-reject-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors outline-none">Confirm Reject</button>
             </div>
         </div>
     </div>
@@ -447,7 +449,7 @@
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h3 class="font-bold text-lg text-naturalBrown" id="product-modal-title">Add New Product</h3>
-                <button onclick="closeProductModal()" class="text-gray-400 hover:text-red-500 transition-colors">
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
@@ -469,7 +471,7 @@
                             </div>
                             <div id="image-preview-container" class="hidden absolute inset-0 w-full h-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-maroon">
                                 <img id="image-preview" src="" class="h-full w-full object-cover">
-                                <button type="button" onclick="clearImagePreview(event)" class="absolute top-2 right-2 bg-white/95 text-red-500 w-8 h-8 flex items-center justify-center rounded-full shadow-lg hover:bg-red-50 transition-colors z-10" title="Remove Image">
+                                <button type="button" onclick="clearImagePreview(event)" class="absolute top-2 right-2 bg-white/95 text-red-500 w-8 h-8 flex items-center justify-center rounded-full shadow-lg hover:bg-red-50 transition-colors z-10 outline-none" title="Remove Image">
                                     <i class="ph ph-trash text-lg"></i>
                                 </button>
                             </div>
@@ -490,8 +492,8 @@
                         <textarea id="prod-desc" rows="3" required placeholder="Describe the product flavor and ingredients..." class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon resize-none"></textarea>
                     </div>
                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
-                        <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                        <button type="submit" id="btn-save-prod" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md flex items-center gap-2">
+                        <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors outline-none">Cancel</button>
+                        <button type="submit" id="btn-save-prod" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md flex items-center gap-2 outline-none">
                             <i class="ph ph-broadcast text-lg"></i> Publish Product
                         </button>
                     </div>
@@ -518,7 +520,7 @@
                     <i class="ph-fill ${icon} text-2xl"></i>
                     <span>${message}</span>
                 </div>
-                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white"><i class="ph ph-x text-lg"></i></button>
+                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white outline-none"><i class="ph ph-x text-lg"></i></button>
             `;
             
             container.appendChild(toast);
@@ -590,6 +592,7 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
+                // Strict limit of 1MB for Base64 Firestore storage
                 if (file.size > 1048576) {
                     showToast("Image is too large! Please select an image under 1MB.", "error");
                     event.target.value = "";
@@ -650,9 +653,11 @@
             }
 
             try {
+                // Verify Admin Role strictly from Firestore 'admins' collection
                 const adminDoc = await getDoc(doc(db, "admins", user.uid));
                 
                 if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+                    // Valid Admin. Remove overlay and initialize dashboard.
                     document.getElementById('admin-user-email').innerText = user.email;
                     document.getElementById('auth-loading-overlay').classList.add('hidden');
                     document.getElementById('main-dashboard-container').classList.remove('hidden');
@@ -660,6 +665,7 @@
                     initRealtimeListeners();
                     showToast("Verified Admin Access Granted.", "success");
                 } else {
+                    // Normal user trying to access admin page
                     showToast("Access Denied. Administrator Privileges Required.", "error");
                     await signOut(auth);
                     window.location.replace("admin-login.html");
@@ -736,7 +742,7 @@
                     <div>
                         <h4 class="font-bold text-orange-800">${pendingCount} Pending Orders</h4>
                         <p class="text-sm text-orange-600 mt-1">You have orders waiting to be accepted.</p>
-                        <button onclick="switchTab('orders')" class="mt-3 text-sm font-bold bg-orange-500 text-white px-4 py-1.5 rounded hover:bg-orange-600 transition">View Orders</button>
+                        <button onclick="switchTab('orders')" class="mt-3 text-sm font-bold bg-orange-500 text-white px-4 py-1.5 rounded hover:bg-orange-600 transition outline-none">View Orders</button>
                     </div>
                 `;
             } else {
@@ -782,7 +788,7 @@
         // --- ORDER MANAGEMENT ---
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-
+            
             // STRICTLY SHOW ONLY PAID ORDERS
             let visibleOrders = globalOrders.filter(o => 
                 o.paymentStatus === 'PAID' && 
@@ -804,45 +810,52 @@
                 
                 if(status === 'PENDING') {
                     btns = `
-                        <button onclick="window.initAcceptOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2">Accept</button>
-                        <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2">Reject</button>
+                        <button onclick="window.initAcceptOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2 outline-none">Accept</button>
+                        <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2 outline-none">Reject</button>
                     `;
                 } else if (status === 'ACCEPTED' && order.awb) {
                     const shipmentIdParam = order.shiprocketShipmentId || '';
                     if (!order.labelPrinted) {
-                        btns = `<button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Print Label</button>`;
+                        btns = `<button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Print Label</button>`;
                     } else {
                         btns = `
-                            <button onclick="window.markAsShipped('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph-fill ph-truck"></i> Mark Shipped</button>
-                            <button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1"><i class="ph ph-printer"></i> Re-Print</button>
+                            <button onclick="window.markAsShipped('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph-fill ph-truck"></i> Mark Shipped</button>
+                            <button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Re-Print</button>
                         `;
                     }
                 }
-                btns += `<button onclick="window.viewOrderDetails('${order.id}')" class="text-gray-400 hover:text-maroon align-middle" title="View Details"><i class="ph ph-eye text-xl"></i></button>`;
+                btns += `<button onclick="window.viewOrderDetails('${order.id}')" class="text-gray-400 hover:text-maroon align-middle outline-none" title="View Details"><i class="ph ph-eye text-xl"></i></button>`;
 
                 return `
                     <tr class="hover:bg-gray-50/50">
-                        <td class="py-4 px-6 text-sm font-bold text-naturalBrown">${order.id}</td>
-                        <td class="py-4 px-6 text-sm text-gray-600">${formatDate(order.createdAt)}</td>
-                        <td class="py-4 px-6"><p class="text-sm font-semibold">${order.customerName || 'Guest'}</p></td>
-                        <td class="py-4 px-6 text-sm font-bold">₹${order.amount || 0}</td>
-                        <td class="py-4 px-6">${getPaymentBadge(order.paymentStatus)}</td>
-                        <td class="py-4 px-6">${getStatusBadge(status)}</td>
-                        <td class="py-4 px-6 text-right whitespace-nowrap">${btns}</td>
+                        <td class="py-4 px-4 sm:px-6 text-sm font-bold text-naturalBrown">${order.id}</td>
+                        <td class="py-4 px-4 sm:px-6 text-sm text-gray-600">${formatDate(order.createdAt)}</td>
+                        <td class="py-4 px-4 sm:px-6"><p class="text-sm font-semibold">${order.customerName || 'Guest'}</p></td>
+                        <td class="py-4 px-4 sm:px-6 text-sm font-bold">₹${order.amount || 0}</td>
+                        <td class="py-4 px-4 sm:px-6">${getPaymentBadge(order.paymentStatus)}</td>
+                        <td class="py-4 px-4 sm:px-6">${getStatusBadge(status)}</td>
+                        <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">${btns}</td>
                     </tr>`;
             }).join('');
         }
 
-        // Order Filters Listener
+        // Order Filters Listener (Updated for clean class toggling without white flashes)
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                const target = e.currentTarget;
+                if(target.classList.contains('bg-maroon')) return;
+
+                // Reset all
                 document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent');
+                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
                     b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
                 });
-                e.target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                e.target.classList.add('bg-maroon', 'text-white', 'border-transparent');
-                currentOrderFilter = e.target.getAttribute('data-status');
+
+                // Set active
+                target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                target.classList.add('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
+                
+                currentOrderFilter = target.getAttribute('data-status');
                 renderOrders();
             });
         });
@@ -987,7 +1000,7 @@
                 document.getElementById('new-awb').innerText = generatedAWB;
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shipment-success').classList.remove('hidden');
-                showToast("Order Accepted & Synced with Shiprocket! Email Sent.");
+                showToast("Order Accepted & Synced with Shiprocket! Email Sent.", "success");
                 
             } catch(e) {
                 console.error(e);
@@ -1076,12 +1089,12 @@
 
             tbody.innerHTML = shippedOrders.map(o => `
                 <tr class="hover:bg-gray-50/50">
-                    <td class="py-4 px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
-                    <td class="py-4 px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb || 'Pending Sync'}</span></td>
-                    <td class="py-4 px-6 text-sm font-semibold text-gray-700">${o.courier || 'Standard'}</td>
-                    <td class="py-4 px-6">${getStatusBadge(o.status)}</td>
-                    <td class="py-4 px-6 text-right">
-                        <a href="https://shiprocket.co/tracking/${o.awb}" target="_blank" class="text-xs font-bold text-maroon hover:text-white border border-maroon hover:bg-maroon px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1" title="Track Live"><i class="ph ph-navigation-arrow"></i> Track Live</a>
+                    <td class="py-4 px-4 sm:px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
+                    <td class="py-4 px-4 sm:px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb || 'Pending Sync'}</span></td>
+                    <td class="py-4 px-4 sm:px-6 text-sm font-semibold text-gray-700">${o.courier || 'Standard'}</td>
+                    <td class="py-4 px-4 sm:px-6">${getStatusBadge(o.status)}</td>
+                    <td class="py-4 px-4 sm:px-6 text-right">
+                        <a href="https://shiprocket.co/tracking/${o.awb}" target="_blank" class="text-xs font-bold text-maroon hover:text-white border border-maroon hover:bg-maroon px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none" title="Track Live"><i class="ph ph-navigation-arrow"></i> Track Live</a>
                     </td>
                 </tr>
             `).join('');
@@ -1136,8 +1149,8 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group relative">
                     <!-- Action Buttons: Always visible top-right to prevent hidden overlaps on mobile -->
                     <div class="absolute top-3 right-3 z-10 flex gap-2">
-                        <button onclick="window.editProduct('${p.id}')" class="bg-blue-500 hover:bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95" title="Edit"><i class="ph ph-pencil-simple text-lg"></i></button>
-                        <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95" title="Delete"><i class="ph ph-trash text-lg"></i></button>
+                        <button onclick="window.editProduct('${p.id}')" class="bg-blue-500 hover:bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 outline-none" title="Edit"><i class="ph ph-pencil-simple text-lg"></i></button>
+                        <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 outline-none" title="Delete"><i class="ph ph-trash text-lg"></i></button>
                     </div>
                     
                     <div class="h-48 w-full bg-gray-100 relative">
@@ -1248,7 +1261,7 @@
                 <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-200 h-40">
                     <img src="${img.url}" class="w-full h-full object-cover">
                     <!-- Delete button always visible top-right -->
-                    <button onclick="deleteGalleryImage('${img.id}')" class="absolute top-2 right-2 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 shadow-md backdrop-blur-sm transition-transform active:scale-95" title="Delete Image">
+                    <button onclick="deleteGalleryImage('${img.id}')" class="absolute top-2 right-2 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 shadow-md backdrop-blur-sm transition-transform active:scale-95 outline-none" title="Delete Image">
                         <i class="ph ph-trash text-sm"></i>
                     </button>
                 </div>
