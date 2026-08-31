@@ -189,30 +189,30 @@
         </div>
     </section>
 
-    <!-- PREMIUM LIGHTBOX (Full Screen, Overlaid Arrows) -->
+    <!-- PREMIUM LIGHTBOX (Full Screen, Overlaid Clean Arrows) -->
     <div id="lightbox" class="fixed inset-0 z-[200] bg-black/95 hidden items-center justify-center fade-in backdrop-blur-md" onclick="closeLightbox()">
         
         <!-- Close Button -->
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors z-[210] p-2 bg-white/10 hover:bg-red-500/80 rounded-full backdrop-blur-sm">
-            <i class="ph ph-x text-2xl md:text-3xl"></i>
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-[210] p-2 drop-shadow-xl" aria-label="Close">
+            <i class="ph-bold ph-x text-3xl md:text-4xl"></i>
         </button>
 
         <!-- Previous Arrow -->
-        <button onclick="prevImg(event)" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors z-[210] p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm">
-            <i class="ph ph-caret-left text-2xl md:text-4xl"></i>
+        <button onclick="prevImg(event)" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-[210] p-2 drop-shadow-xl" aria-label="Previous">
+            <i class="ph-bold ph-caret-left text-4xl md:text-6xl"></i>
         </button>
 
         <!-- Next Arrow -->
-        <button onclick="nextImg(event)" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors z-[210] p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm">
-            <i class="ph ph-caret-right text-2xl md:text-4xl"></i>
+        <button onclick="nextImg(event)" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-[210] p-2 drop-shadow-xl" aria-label="Next">
+            <i class="ph-bold ph-caret-right text-4xl md:text-6xl"></i>
         </button>
 
         <!-- Image Container (Takes Full Space) -->
-        <div class="relative w-full h-full flex items-center justify-center p-2 md:p-12" onclick="event.stopPropagation()">
+        <div class="relative w-full h-full flex items-center justify-center p-0 md:p-12" onclick="event.stopPropagation()">
             <img id="lightbox-img" src="" class="max-w-full max-h-full object-contain drop-shadow-2xl transition-opacity duration-300">
             
             <!-- Progress Bar for Auto-play (Fixed at bottom) -->
-            <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-white/10">
+            <div class="absolute bottom-0 left-0 right-0 h-1 md:h-1.5 bg-white/10">
                 <div id="lightbox-progress" class="h-full bg-saffron w-0"></div>
             </div>
         </div>
