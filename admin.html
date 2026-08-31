@@ -92,6 +92,9 @@
             <button onclick="switchTab('shipments')" id="nav-shipments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-truck text-xl"></i> Shipments
             </button>
+            <button onclick="switchTab('gallery')" id="nav-gallery" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
+                <i class="ph ph-image text-xl"></i> Gallery
+            </button>
             <button onclick="switchTab('ratings')" id="nav-ratings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-star text-xl"></i> Ratings
             </button>
@@ -136,6 +139,7 @@
         <div class="flex-1 overflow-y-auto p-4 sm:p-8">
             <div class="max-w-7xl mx-auto space-y-8 relative">
 
+                <!-- DASHBOARD TAB -->
                 <div id="tab-dashboard" class="tab-content block">
                     <!-- STATS GRID -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -199,6 +203,7 @@
                     </div>
                 </div>
 
+                <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <!-- Order Header & Filters -->
@@ -237,6 +242,7 @@
                     </div>
                 </div>
 
+                <!-- PRODUCTS TAB -->
                 <div id="tab-products" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Product Catalog</h3>
@@ -252,6 +258,7 @@
                     </div>
                 </div>
 
+                <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
                         <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
@@ -280,6 +287,32 @@
                     </div>
                 </div>
 
+                <!-- GALLERY TAB (NEW) -->
+                <div id="tab-gallery" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Photo Gallery</h3>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+                        <h4 class="font-bold text-naturalBrown mb-2">Upload New Photo</h4>
+                        <p class="text-sm text-gray-500 mb-4">Max size: 700 KB. Ideal for shop photos, making process, or packaging.</p>
+                        
+                        <div class="w-full border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-maroon transition-colors bg-gray-50/50 cursor-pointer" onclick="document.getElementById('gallery-upload-input').click()" id="gallery-drop-zone">
+                            <i class="ph ph-upload-simple text-4xl text-gray-400 mb-2"></i>
+                            <p class="font-medium text-gray-700">Click to upload image</p>
+                            <input type="file" id="gallery-upload-input" accept="image/*" class="hidden" onchange="handleGalleryUpload(event)">
+                        </div>
+                        <div id="gallery-upload-loading" class="hidden text-center mt-4">
+                            <i class="ph ph-spinner-gap animate-spin text-2xl text-maroon inline-block"></i> Uploading...
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="admin-gallery-grid">
+                        <div class="col-span-full py-8 text-center text-gray-500">Loading gallery...</div>
+                    </div>
+                </div>
+
+                <!-- RATINGS TAB -->
                 <div id="tab-ratings" class="tab-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-900">Customer Ratings & Reviews</h3>
@@ -304,6 +337,7 @@
                     </div>
                 </div>
 
+                <!-- SETTINGS TAB -->
                 <div id="tab-settings" class="tab-content hidden">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-3xl">
                         <div class="p-6 border-b border-gray-200">
@@ -538,7 +572,7 @@
         function switchTab(tabId) {
             const titles = {
                 'dashboard': 'Overview Dashboard', 'orders': 'Order Management', 'products': 'Product Catalog',
-                'shipments': 'Shipments & Tracking', 'ratings': 'Customer Ratings', 'settings': 'Business Settings'
+                'shipments': 'Shipments & Tracking', 'gallery': 'Photo Gallery', 'ratings': 'Customer Ratings', 'settings': 'Business Settings'
             };
             document.getElementById('page-title').innerText = titles[tabId];
 
@@ -635,6 +669,7 @@
         let globalOrders = [];
         let globalProducts = [];
         let globalRatings = []; 
+        let globalGallery = []; // New for Gallery
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
 
@@ -696,6 +731,15 @@
                 updateDashboardStats();
             }, (error) => {
                 showToast("Failed to fetch live products data.", "error");
+            });
+
+            // Listen to Gallery
+            onSnapshot(collection(db, "gallery"), (snapshot) => {
+                globalGallery = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                globalGallery.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderAdminGallery();
+            }, (error) => {
+                console.log("No gallery or error fetching gallery:", error);
             });
 
             // Listen to Ratings
@@ -1273,6 +1317,71 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        // --- GALLERY MANAGEMENT ---
+        function renderAdminGallery() {
+            const grid = document.getElementById('admin-gallery-grid');
+            if(globalGallery.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 bg-white rounded-xl border border-gray-100">No images in gallery. Upload some photos!</div>`;
+                return;
+            }
+
+            grid.innerHTML = globalGallery.map(img => `
+                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-200 h-40">
+                    <img src="${img.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onclick="deleteGalleryImage('${img.id}')" class="bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-600 shadow-lg" title="Delete Image">
+                            <i class="ph ph-trash text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.handleGalleryUpload = function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            // Maximum Size 700KB (716,800 bytes)
+            if(file.size > 716800) {
+                showToast("Image size must be less than 700 KB. Please compress and try again.", "error");
+                event.target.value = '';
+                return;
+            }
+
+            document.getElementById('gallery-drop-zone').classList.add('hidden');
+            document.getElementById('gallery-upload-loading').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Str = e.target.result;
+                try {
+                    await addDoc(collection(db, "gallery"), {
+                        url: base64Str,
+                        createdAt: Date.now()
+                    });
+                    showToast("Image added to gallery!", "success");
+                } catch (error) {
+                    console.error("Gallery Upload Error", error);
+                    showToast("Failed to upload image.", "error");
+                } finally {
+                    document.getElementById('gallery-drop-zone').classList.remove('hidden');
+                    document.getElementById('gallery-upload-loading').classList.add('hidden');
+                    event.target.value = '';
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+
+        window.deleteGalleryImage = async function(id) {
+            if(!confirm("Delete this image from the gallery?")) return;
+            try {
+                await deleteDoc(doc(db, "gallery", id));
+                showToast("Image removed.", "success");
+            } catch(e) {
+                showToast("Failed to delete image.", "error");
+            }
         }
     </script>
 </body>
