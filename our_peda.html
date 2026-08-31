@@ -66,7 +66,7 @@
                     <a href="index.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Home</a>
                     <a href="about_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">About Us</a>
                     <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">Our Peda</a>
-                    <a href="how_it_works.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">How It Works</a>
+                    <a href="gallery.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
                     <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
                     <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
@@ -76,7 +76,7 @@
                     </span>
                 </nav>
 
-                <!-- Actions (Cart & Mobile Toggle) -->
+                <!-- Actions (Cart & Mobile Toggle ONLY) -->
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
@@ -95,7 +95,7 @@
                 <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
                 <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
                 <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Our Peda</a>
-                <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">How It Works</a>
+                <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
                 <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
                 <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
@@ -201,6 +201,19 @@
         </div>
     </section>
 
+    <!-- TRACK ORDER CALL TO ACTION -->
+    <section class="py-20 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-serif font-bold text-naturalBrown mb-4">Track Your Order</h2>
+            <div class="w-24 h-1 bg-maroon mx-auto rounded mb-8"></div>
+            <p class="text-gray-600 max-w-xl mx-auto mb-10 font-medium">Want to know where your Peda is? Enter your Order ID on our dedicated tracking page to get real-time updates.</p>
+            
+            <a href="track_order.html" class="inline-flex items-center gap-2 bg-cream border-2 border-maroon text-maroon hover:bg-maroon hover:text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-sm">
+                <i class="ph ph-magnifying-glass text-xl"></i> Track Package Live
+            </a>
+        </div>
+    </section>
+
     <!-- FOOTER -->
     <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -226,7 +239,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
+                <!-- Contact Info (Single WhatsApp Number Only) -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
@@ -307,6 +320,85 @@
             document.getElementById('guest-checkout-modal').classList.add('hidden');
             document.getElementById('guest-checkout-modal').classList.remove('flex');
         }
+
+        // --- Dynamic Cart Rendering from LocalStorage ---
+        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
+            renderCartUI();
+        }
+
+        function renderCartUI() {
+            const itemsContainer = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const badgeEl = document.getElementById('cart-badge');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            let subtotal = 0;
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
+                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
+                        <p class="font-medium text-lg">Your cart is empty</p>
+                    </div>`;
+                subtotalEl.innerText = '₹0';
+                badgeEl.classList.add('hidden');
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map((item, index) => {
+                subtotal += (item.price * item.qty);
+                totalItems += item.qty;
+                return `
+                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
+                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
+                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.innerText = `₹${subtotal}`;
+            badgeEl.innerText = totalItems;
+            badgeEl.classList.remove('hidden');
+            checkoutBtn.disabled = false;
+
+            document.querySelectorAll('.update-qty').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    const action = e.target.getAttribute('data-action');
+                    if(action === 'plus') cart[idx].qty += 1;
+                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
+                    saveCart();
+                });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                    cart.splice(idx, 1);
+                    saveCart();
+                });
+            });
+        }
+
+        // Init cart rendering
+        renderCartUI();
     </script>
 
     <!-- FIREBASE & CART LOGIC (Strictly Dynamic with +/- Weight Selection) -->
@@ -367,7 +459,7 @@
             } else {
                 document.getElementById('guest-checkout-modal').classList.remove('hidden');
                 document.getElementById('guest-checkout-modal').classList.add('flex');
-                toggleCart();
+                toggleCart(); 
             }
         }
 
@@ -529,86 +621,6 @@
                 renderProductGrid(sortedProducts);
             });
         }
-
-        // --- CART LOGIC ---
-        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
-
-        function saveCart() {
-            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
-            window.renderCartUI();
-        }
-
-        window.renderCartUI = function() {
-            const itemsContainer = document.getElementById('cart-items');
-            const subtotalEl = document.getElementById('cart-subtotal');
-            const badgeEl = document.getElementById('cart-badge');
-            const checkoutBtn = document.getElementById('checkout-btn');
-
-            let subtotal = 0;
-            let totalItems = 0;
-
-            if (cart.length === 0) {
-                itemsContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
-                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
-                        <p class="font-medium text-lg">Your cart is empty</p>
-                    </div>`;
-                subtotalEl.innerText = '₹0';
-                badgeEl.classList.add('hidden');
-                checkoutBtn.disabled = true;
-                return;
-            }
-
-            itemsContainer.innerHTML = cart.map((item, index) => {
-                subtotal += (item.price * item.qty);
-                totalItems += item.qty;
-                return `
-                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
-                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
-                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
-                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
-                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
-                    </div>
-                `;
-            }).join('');
-
-            subtotalEl.innerText = `₹${subtotal}`;
-            badgeEl.innerText = totalItems;
-            badgeEl.classList.remove('hidden');
-            checkoutBtn.disabled = false;
-
-            document.querySelectorAll('.update-qty').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.target.getAttribute('data-index'));
-                    const action = e.target.getAttribute('data-action');
-                    if(action === 'plus') cart[idx].qty += 1;
-                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
-                    saveCart();
-                });
-            });
-
-            document.querySelectorAll('.remove-item').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
-                    cart.splice(idx, 1);
-                    saveCart();
-                });
-            });
-        }
-
-        // Init
-        fetchProducts();
-        window.renderCartUI();
     </script>
 </body>
 </html>
