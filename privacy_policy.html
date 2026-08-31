@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Sri Shambhu Sha & Sons</title>
+    <meta name="description" content="Privacy Policy of Sri Shambhu Sha & Sons. Learn how we handle and protect your personal information.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: "#FDFBF7",
+                        maroon: "#7B1818",
+                        golden: "#D4AF37",
+                        saffron: "#F48C06",
+                        naturalBrown: "#5C4033",
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FDFBF7; }
+        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        
+        /* Cart Drawer Animation Styles */
+        .cart-open { transform: translateX(0) !important; }
+        .overlay-open { opacity: 1 !important; visibility: visible !important; }
+    </style>
+</head>
+<body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Brand -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                        <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+                    </div>
+                    <a href="index.html" class="flex flex-col">
+                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
+                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase">Deoghar</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden lg:flex space-x-6 items-center text-sm xl:text-base">
+                    <a href="index.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Home</a>
+                    <a href="about_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">About Us</a>
+                    <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
+                    <a href="gallery.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
+                    <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
+                    <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
+                    <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
+                    <!-- Dynamic Auth Link Desktop -->
+                    <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
+                        <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
+                    </span>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-2 md:space-x-4">
+                    <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
+                        <i class="ph ph-shopping-cart text-2xl"></i>
+                        <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="lg:hidden text-maroon p-2">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-cream border-t border-golden/20 absolute w-full shadow-xl max-h-[80vh] overflow-y-auto">
+            <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
+                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
+                <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
+                <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
+                <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
+                <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
+                <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
+                <!-- Dynamic Auth Link Mobile -->
+                <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
+                    <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SHOPPING CART DRAWER -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
+            <h2 class="text-xl font-serif font-bold text-maroon flex items-center gap-2">
+                <i class="ph-fill ph-shopping-bag text-2xl"></i> Your Cart
+            </h2>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <!-- Items injected by JS -->
+        </div>
+        <div class="p-5 border-t border-golden/20 bg-white shadow-[0_-4px_15px_rgba(0,0,0,0.02)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">Subtotal</span>
+                <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
+            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Checkout <i class="ph ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- GUEST CHECKOUT WARNING MODAL -->
+    <div id="guest-checkout-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-maroon">
+            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-user-circle text-4xl text-saffron"></i>
+            </div>
+            <h3 class="font-serif font-bold text-naturalBrown text-2xl mb-2">Login Required?</h3>
+            <p class="text-sm text-gray-600 mb-4 leading-relaxed">You are not logged in. Creating an account allows you to track your live order history and manage addresses easily.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 text-gray-700 text-xs p-3 rounded-lg mb-6 text-left shadow-sm">
+                <strong><i class="ph-fill ph-warning-circle text-saffron"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-maroon">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-sign-in"></i> Login / Signup Now
+                </a>
+                <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
+                    Order Without Signup (Guest)
+                </a>
+                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-maroon underline transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE HERO BANNER -->
+    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Privacy Policy</h1>
+            <div class="w-24 h-1 bg-saffron mx-auto rounded mb-4"></div>
+            <p class="text-cream/80 text-sm md:text-base">Last updated: August 2026</p>
+        </div>
+    </section>
+
+    <!-- CONTENT SECTION -->
+    <section class="py-16 md:py-24 bg-white relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="prose prose-lg prose-maroon text-gray-600 max-w-none">
+                
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-0 mb-4">1. Introduction</h2>
+                <p class="mb-6 leading-relaxed">
+                    Welcome to <strong>Sri Shambhu Sha & Sons</strong> ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website (the "Site") and purchase our products.
+                </p>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">2. Information We Collect</h2>
+                <p class="mb-4 leading-relaxed">We collect personal information that you voluntarily provide to us when registering at the Site, expressing an interest in obtaining information about us or our products, or otherwise contacting us. The personal information that we collect depends on the context of your interactions with us and the Site, the choices you make, and the products and features you use.</p>
+                <ul class="list-disc pl-6 mb-6 space-y-2">
+                    <li><strong>Personal Details:</strong> Name, Email address, Phone number.</li>
+                    <li><strong>Delivery Information:</strong> Complete shipping and billing addresses, PIN codes, city, and state.</li>
+                    <li><strong>Account Data:</strong> Encrypted passwords (if you choose to create an account).</li>
+                    <li><strong>Payment Data:</strong> We do <strong>not</strong> store your credit card, debit card, or UPI details. All payments are processed securely through our trusted payment gateway partner, Razorpay.</li>
+                </ul>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">3. How We Use Your Information</h2>
+                <p class="mb-4 leading-relaxed">We use personal information collected via our Site for a variety of business purposes described below:</p>
+                <ul class="list-disc pl-6 mb-6 space-y-2">
+                    <li><strong>To fulfill and manage your orders:</strong> We use your information to process payments, arrange for shipping via Shiprocket, and provide you with order tracking updates.</li>
+                    <li><strong>To communicate with you:</strong> We use your email and phone number to send you transactional emails (like order acceptance, shipment tracking, or refund notifications) and to respond to your customer service inquiries.</li>
+                    <li><strong>To manage user accounts:</strong> If you create an account, we use your data to manage your profile and order history.</li>
+                </ul>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">4. How We Share Your Information</h2>
+                <p class="mb-4 leading-relaxed">We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We share your data with the following third parties strictly for operational purposes:</p>
+                <ul class="list-disc pl-6 mb-6 space-y-2">
+                    <li><strong>Payment Processors (Razorpay):</strong> To securely process your payments and refunds.</li>
+                    <li><strong>Logistics Partners (Shiprocket & Couriers):</strong> To generate shipping labels (AWB) and deliver your physical order to your address.</li>
+                    <li><strong>Communication Services (Brevo/WhatsApp):</strong> To send you automated order status emails or SMS notifications.</li>
+                    <li><strong>Hosting & Database (Firebase/Cloudflare):</strong> To securely store your order history and account details in our encrypted database.</li>
+                </ul>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">5. Data Security</h2>
+                <p class="mb-6 leading-relaxed">
+                    We use administrative, technical, and physical security measures to help protect your personal information. Our website uses SSL/HTTPS encryption to ensure that your data is transmitted securely. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.
+                </p>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">6. Your Privacy Rights</h2>
+                <p class="mb-6 leading-relaxed">
+                    If you have an account on our website, you can review or change the information in your account at any time by logging in. If you wish to have your account completely deleted along with your order history, please contact our support team.
+                </p>
+
+                <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-8 mb-4">7. Contact Us</h2>
+                <p class="mb-4 leading-relaxed">If you have questions or comments about this Privacy Policy, please contact us at:</p>
+                <div class="bg-cream p-6 rounded-xl border border-golden/20 mb-6">
+                    <p class="font-bold text-naturalBrown mb-1">Sri Shambhu Sha & Sons</p>
+                    <p class="text-sm text-gray-600 mb-4">FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong class="text-naturalBrown">Email:</strong> support@srishambhushaandsons.in</p>
+                    <p class="text-sm text-gray-600"><strong class="text-naturalBrown">WhatsApp / Phone:</strong> +91 7295021513</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
+                <!-- Brand Info -->
+                <div class="max-w-md">
+                    <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
+                    <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
+                    <div class="flex space-x-4 justify-center md:justify-start">
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                    </div>
+                </div>
+
+                <!-- Policies -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
+                    <ul class="space-y-2 text-sm text-cream/80">
+                        <li><a href="#" class="text-golden font-bold">Privacy Policy</a></li>
+                        <li><a href="return_policy.html" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
+                        <li><a href="shipping_policy.html" class="hover:text-golden transition-colors">Shipping Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
+                    <ul class="space-y-4 text-sm text-cream/80">
+                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
+                            <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
+                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
+                        </li>
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
+                            <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
+                            <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>© 2026 Sri Shambhu Sha & Sons. All Rights Reserved.</p>
+                <p>Regd. No.: 3271313</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- UI & CART SCRIPTS -->
+    <script>
+        // --- Mobile Menu Logic ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        const menuIcon = mobileMenuBtn.querySelector('i');
+
+        function closeMobileMenu() {
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('ph-x');
+                menuIcon.classList.add('ph-list');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            mobileMenu.classList.toggle('hidden');
+            if(mobileMenu.classList.contains('hidden')) {
+                menuIcon.classList.remove('ph-x'); menuIcon.classList.add('ph-list');
+            } else {
+                menuIcon.classList.remove('ph-list'); menuIcon.classList.add('ph-x');
+            }
+        });
+
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
+        });
+
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            closeMobileMenu(); 
+            if (window.scrollY > 20) header.classList.add('shadow-md');
+            else header.classList.remove('shadow-md');
+        });
+
+        // --- Cart Drawer Toggle ---
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            drawer.classList.toggle('cart-open');
+            overlay.classList.toggle('overlay-open');
+        }
+
+        function closeGuestModal() {
+            document.getElementById('guest-checkout-modal').classList.add('hidden');
+            document.getElementById('guest-checkout-modal').classList.remove('flex');
+        }
+
+        // --- LocalStorage Cart Logic ---
+        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
+            window.renderCartUI();
+        }
+
+        window.renderCartUI = function() {
+            const itemsContainer = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const badgeEl = document.getElementById('cart-badge');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            let subtotal = 0;
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
+                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
+                        <p class="font-medium text-lg">Your cart is empty</p>
+                    </div>`;
+                subtotalEl.innerText = '₹0';
+                badgeEl.classList.add('hidden');
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map((item, index) => {
+                subtotal += (item.price * item.qty);
+                totalItems += item.qty;
+                return `
+                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
+                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
+                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.innerText = `₹${subtotal}`;
+            badgeEl.innerText = totalItems;
+            badgeEl.classList.remove('hidden');
+            checkoutBtn.disabled = false;
+
+            document.querySelectorAll('.update-qty').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    const action = e.target.getAttribute('data-action');
+                    if(action === 'plus') cart[idx].qty += 1;
+                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
+                    saveCart();
+                });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                    cart.splice(idx, 1);
+                    saveCart();
+                });
+            });
+        }
+        
+        // Init Cart
+        window.renderCartUI();
+    </script>
+
+    <!-- FIREBASE IMPORT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+
+        // AUTHENTICATION LISTENER
+        onAuthStateChanged(auth, (user) => {
+            const deskLink = document.getElementById('auth-link-desk');
+            const mobLink = document.getElementById('auth-link-mob');
+            
+            if (user) {
+                currentUser = user;
+                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-maroon font-bold hover:text-saffron transition-colors">Logout</button>`;
+                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
+            } else {
+                currentUser = null;
+                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-maroon font-bold transition-colors">Login / Signup</a>`;
+                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
+            }
+        });
+
+        window.userLogout = function() {
+            signOut(auth).then(() => window.location.reload());
+        }
+
+        // CHECKOUT FLOW WITH AUTH CHECK
+        window.proceedToCheckoutFlow = function() {
+            if (currentUser) {
+                window.location.href = "checkout.html";
+            } else {
+                document.getElementById('guest-checkout-modal').classList.remove('hidden');
+                document.getElementById('guest-checkout-modal').classList.add('flex');
+                toggleCart(); 
+            }
+        }
+    </script>
+</body>
+</html>
