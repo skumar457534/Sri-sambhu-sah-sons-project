@@ -7,28 +7,4 @@
 "CORS_ORIGIN": "*",
 "FIREBASE_PROJECT_ID": "srishambhushaandsons"
 }
-
-// ========================================================
-// SECRETS (DO NOT WRITE PASSWORDS IN THIS FILE)
-// ========================================================
-// Add them securely via Cloudflare Dashboard
-// (Workers & Pages -> Settings -> Variables -> Secrets)
-//
-// 1. Firebase Auth
-// FIREBASE_API_KEY
-// FIREBASE_ADMIN_EMAIL
-// FIREBASE_ADMIN_PASSWORD
-//
-// 2. Razorpay
-// RAZORPAY_KEY_ID
-// RAZORPAY_KEY_SECRET
-// RAZORPAY_WEBHOOK_SECRET
-//
-// 3. Shiprocket
-// SHIPROCKET_EMAIL
-// SHIPROCKET_PASSWORD
-// SHIPROCKET_WEBHOOK_TOKEN
-//
-// 4. Brevo
-// BREVO_API_KEY
 }
