@@ -95,6 +95,9 @@
             <button onclick="switchTab('gallery')" id="nav-gallery" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-image text-xl"></i> Gallery
             </button>
+            <button onclick="switchTab('ratings')" id="nav-ratings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
+                <i class="ph ph-star text-xl"></i> Ratings
+            </button>
             <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors">
                 <i class="ph ph-gear text-xl"></i> Settings
             </button>
@@ -202,33 +205,33 @@
 
                 <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden">
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                         <!-- Order Header & Filters -->
-                        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Manage Orders</h3>
                                 <p class="text-xs text-gray-500 mt-1">Only active processing orders (Pending, Accepted, Rejected) are shown here. Must be PAID.</p>
                             </div>
-                            <div class="flex flex-wrap gap-2">
-                                <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors" data-status="ALL">All Active</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="PENDING">Pending</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="ACCEPTED">Accepted</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors" data-status="REJECTED">Rejected</button>
+                            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md" data-status="ALL">All Active</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 transition-colors" data-status="PENDING">Pending</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 transition-colors" data-status="ACCEPTED">Accepted</button>
+                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 transition-colors" data-status="REJECTED">Rejected</button>
                             </div>
                         </div>
 
                         <!-- Orders Table -->
-                        <div class="flex-1 overflow-auto">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
-                                <thead class="bg-white sticky top-0 z-10 shadow-sm border-b border-gray-200">
+                                <thead class="bg-white border-b border-gray-200">
                                     <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body" class="divide-y divide-gray-100">
@@ -257,23 +260,23 @@
 
                 <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden">
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-[700px]">
-                        <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Shipments & Tracking</h3>
-                                <p class="text-xs text-gray-500 mt-1">Orders that have been picked up by the courier are moved here.</p>
+                                <p class="text-xs text-gray-500 mt-1">Orders picked up by the courier.</p>
                             </div>
-                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
+                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Ready</span>
                         </div>
-                        <div class="flex-1 overflow-x-auto">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
-                                <thead class="bg-white sticky top-0 shadow-sm z-10 border-b border-gray-200">
+                                <thead class="bg-white border-b border-gray-200">
                                     <tr>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">AWB Number</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Courier</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Status</th>
-                                        <th class="py-3 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">AWB Number</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Courier</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="shipments-table-body" class="divide-y divide-gray-100">
@@ -290,7 +293,7 @@
                         <h3 class="text-xl font-bold text-gray-900">Photo Gallery</h3>
                     </div>
                     
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6 mb-8">
                         <h4 class="font-bold text-naturalBrown mb-2">Upload New Photo</h4>
                         <p class="text-sm text-gray-500 mb-4">Max size: 700 KB. Ideal for shop photos, making process, or packaging.</p>
                         
@@ -306,6 +309,31 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="admin-gallery-grid">
                         <div class="col-span-full py-8 text-center text-gray-500">Loading gallery...</div>
+                    </div>
+                </div>
+
+                <!-- RATINGS TAB -->
+                <div id="tab-ratings" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Customer Ratings & Reviews</h3>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                                <thead class="bg-white border-b border-gray-200">
+                                    <tr>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rating</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Review</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ratings-table-body" class="divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="py-8 text-center text-gray-500">Loading ratings...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -544,7 +572,7 @@
         function switchTab(tabId) {
             const titles = {
                 'dashboard': 'Overview Dashboard', 'orders': 'Order Management', 'products': 'Product Catalog',
-                'shipments': 'Shipments & Tracking', 'gallery': 'Photo Gallery', 'settings': 'Business Settings'
+                'shipments': 'Shipments & Tracking', 'gallery': 'Photo Gallery', 'ratings': 'Customer Ratings', 'settings': 'Business Settings'
             };
             document.getElementById('page-title').innerText = titles[tabId];
 
@@ -640,7 +668,8 @@
         // State variables
         let globalOrders = [];
         let globalProducts = [];
-        let globalGallery = [];
+        let globalRatings = []; 
+        let globalGallery = []; // New for Gallery
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
 
@@ -711,6 +740,16 @@
                 renderAdminGallery();
             }, (error) => {
                 console.log("No gallery or error fetching gallery:", error);
+            });
+
+            // Listen to Ratings
+            onSnapshot(collection(db, "ratings"), (snapshot) => {
+                globalRatings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                globalRatings.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderRatings();
+                renderProducts(); // Re-render products to update star badges
+            }, (error) => {
+                console.log("No ratings or error fetching ratings:", error);
             });
         }
 
@@ -787,13 +826,13 @@
         // --- ORDER MANAGEMENT ---
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-            
+
             // STRICTLY SHOW ONLY PAID ORDERS
             let visibleOrders = globalOrders.filter(o => 
                 o.paymentStatus === 'PAID' && 
                 ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING')
             );
-            
+
             if (currentOrderFilter !== 'ALL') {
                 visibleOrders = visibleOrders.filter(o => o.status === currentOrderFilter);
             }
@@ -806,7 +845,7 @@
             tbody.innerHTML = visibleOrders.map(order => {
                 let btns = '';
                 const status = order.status || 'PENDING';
-                
+
                 if(status === 'PENDING') {
                     btns = `
                         <button onclick="window.initAcceptOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2">Accept</button>
@@ -841,13 +880,14 @@
         // Order Filters Listener
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                // Reset all
                 document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent');
-                    b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                    b.className = "filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 transition-colors";
                 });
-                e.target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                e.target.classList.add('bg-maroon', 'text-white', 'border-transparent');
-                currentOrderFilter = e.target.getAttribute('data-status');
+                // Set active
+                const target = e.currentTarget;
+                target.className = "filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md";
+                currentOrderFilter = target.getAttribute('data-status');
                 renderOrders();
             });
         });
@@ -894,12 +934,18 @@
             const o = globalOrders.find(x => x.id === id);
             document.getElementById('orig-courier-name').innerText = o.courier || 'Standard';
             
-            document.getElementById('shiprocket-check-loading').classList.add('hidden');
-            document.getElementById('shiprocket-couriers-list').classList.remove('hidden');
+            document.getElementById('shiprocket-check-loading').classList.remove('hidden');
+            document.getElementById('shiprocket-load-text').innerText = "Checking Serviceability...";
+            document.getElementById('shiprocket-couriers-list').classList.add('hidden');
             document.getElementById('shipment-success').classList.add('hidden');
             
             const modal = document.getElementById('accept-shipment-modal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
+
+            setTimeout(() => {
+                document.getElementById('shiprocket-check-loading').classList.add('hidden');
+                document.getElementById('shiprocket-couriers-list').classList.remove('hidden');
+            }, 1000);
         }
 
         document.getElementById('confirm-shipment-btn').addEventListener('click', async () => {
@@ -954,6 +1000,7 @@
                 
                 if(!shipData.success) throw new Error(shipData.error || "Failed to create shipment");
                 
+                // Usually Shiprocket returns shipment_id and order_id. We'll mark the AWB status logic here.
                 const generatedAWB = 'SR-SHIP-' + shipData.shipment_id; 
                 
                 // Update Firestore Live Data
@@ -986,7 +1033,7 @@
                 document.getElementById('new-awb').innerText = generatedAWB;
                 document.getElementById('shiprocket-check-loading').classList.add('hidden');
                 document.getElementById('shipment-success').classList.remove('hidden');
-                showToast("Order Accepted! AWB Generated & Email Sent.");
+                showToast("Order Accepted & Synced with Shiprocket! Email Sent.", "success");
                 
             } catch(e) {
                 console.error(e);
@@ -1123,6 +1170,13 @@
         }
 
         // --- PRODUCT MANAGEMENT ---
+        function getProductRating(productId) {
+            const productRatings = globalRatings.filter(r => r.productId === productId);
+            if (productRatings.length === 0) return { avg: 0, count: 0 };
+            const sum = productRatings.reduce((acc, curr) => acc + curr.rating, 0);
+            return { avg: (sum / productRatings.length).toFixed(1), count: productRatings.length };
+        }
+
         function renderProducts() {
             const grid = document.getElementById('products-grid');
             if(globalProducts.length === 0) {
@@ -1131,18 +1185,28 @@
             }
 
             grid.innerHTML = globalProducts.map(p => {
+                const ratingObj = getProductRating(p.id);
+                const starsHtml = ratingObj.count > 0 
+                    ? `<span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1"><i class="ph-fill ph-star"></i> ${ratingObj.avg} (${ratingObj.count})</span>` 
+                    : `<span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded text-xs font-bold">No ratings</span>`;
+
                 return `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group relative">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative">
+                    <!-- Action Buttons (Always visible on mobile/desktop cleanly) -->
+                    <div class="absolute top-3 right-3 z-10 flex flex-col gap-2">
+                        <button onclick="window.editProduct('${p.id}')" class="bg-blue-500 hover:bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-95" title="Edit"><i class="ph ph-pencil-simple text-lg"></i></button>
+                        <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform active:scale-95" title="Delete"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                    
                     <div class="h-48 w-full bg-gray-100 relative">
                         <img src="${p.img || 'https://placehold.co/400x300/eee/999?text=No+Image'}" alt="Product" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                            <button onclick="window.editProduct('${p.id}')" class="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 shadow-lg" title="Edit"><i class="ph ph-pencil-simple text-lg"></i></button>
-                            <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-600 shadow-lg" title="Delete"><i class="ph ph-trash text-lg"></i></button>
-                        </div>
                     </div>
                     <div class="p-5 flex-1 flex flex-col">
-                        <h4 class="font-bold text-lg text-naturalBrown mb-1">${p.name}</h4>
-                        <p class="text-xs text-gray-500 mb-4 flex-1">${p.description || p.desc || ''}</p>
+                        <div class="flex justify-between items-start mb-1 gap-2">
+                            <h4 class="font-bold text-lg text-naturalBrown flex-1 leading-tight">${p.name}</h4>
+                            ${starsHtml}
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4 flex-1 mt-2">${p.description || p.desc || ''}</p>
                         <div class="flex justify-between items-center pt-3 border-t border-gray-100">
                             <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Base (1 Kg)</span>
                             <span class="font-bold text-maroon text-lg">₹${p.basePrice || p.price}</span>
@@ -1233,6 +1297,34 @@
             }
         }
 
+        // --- RATINGS MANAGEMENT ---
+        function renderRatings() {
+            const tbody = document.getElementById('ratings-table-body');
+            if(globalRatings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No ratings available yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = globalRatings.map(r => {
+                let stars = '';
+                for(let i=1; i<=5; i++) {
+                    stars += `<i class="ph-fill ph-star ${i <= r.rating ? 'text-yellow-500' : 'text-gray-300'}"></i>`;
+                }
+
+                const productName = (globalProducts.find(p => p.id === r.productId) || {}).name || 'Unknown Product';
+
+                return `
+                    <tr class="hover:bg-gray-50/50">
+                        <td class="py-4 px-6 text-sm font-semibold text-naturalBrown">${r.customerName || 'Anonymous'}</td>
+                        <td class="py-4 px-6 text-sm text-gray-600">${productName}</td>
+                        <td class="py-4 px-6 flex items-center gap-1">${stars}</td>
+                        <td class="py-4 px-6 text-sm text-gray-600 truncate max-w-xs" title="${r.review || ''}">${r.review || '-'}</td>
+                        <td class="py-4 px-6 text-sm text-gray-500">${formatDate(r.createdAt)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         // --- GALLERY MANAGEMENT ---
         function renderAdminGallery() {
             const grid = document.getElementById('admin-gallery-grid');
@@ -1242,13 +1334,12 @@
             }
 
             grid.innerHTML = globalGallery.map(img => `
-                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-200 h-40">
+                <div class="relative rounded-xl overflow-hidden shadow-sm border border-gray-200 h-40 group">
                     <img src="${img.url}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button onclick="deleteGalleryImage('${img.id}')" class="bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-600 shadow-lg" title="Delete Image">
-                            <i class="ph ph-trash text-lg"></i>
-                        </button>
-                    </div>
+                    <!-- Always visible on touch screens via proper button placement -->
+                    <button onclick="deleteGalleryImage('${img.id}')" class="absolute top-2 right-2 bg-red-500/90 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-md backdrop-blur-sm transition-transform active:scale-95" title="Delete Image">
+                        <i class="ph ph-trash text-sm"></i>
+                    </button>
                 </div>
             `).join('');
         }
