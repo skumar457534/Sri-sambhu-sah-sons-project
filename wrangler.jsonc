@@ -1,12 +1,1 @@
-{
-"$schema": "node_modules/wrangler/config-schema.json",
-"name": "peda-store-api",
-"main": "src/index.ts",
-"compatibility_date": "2024-03-20",
-"vars": {
-"CORS_ORIGIN": "*"
-}
-// Secrets like RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET
-// should not be written here. You will add them securely via CLI:
-// npx wrangler secret put RAZORPAY_KEY_ID
-}
+{"$schema": "node_modules/wrangler/config-schema.json","name": "peda-store-api","main": "src/index.ts","compatibility_date": "2024-03-20","vars": {"CORS_ORIGIN": "*","FIREBASE_PROJECT_ID": "srishambhushaandsons"}// ========================================================// SECRETS (DO NOT WRITE PASSWORDS IN THIS FILE)// ========================================================// Webhooks and Admin tasks require these secrets to be set.// Add them securely via Cloudflare Dashboard (Workers & Pages -> Settings -> Variables)// OR run these commands one by one in your terminal://// 1. Firebase Auth (For updating database from Worker)// npx wrangler secret put FIREBASE_API_KEY// npx wrangler secret put FIREBASE_ADMIN_EMAIL// npx wrangler secret put FIREBASE_ADMIN_PASSWORD//// 2. Razorpay (For Payment & Webhook)// npx wrangler secret put RAZORPAY_KEY_ID// npx wrangler secret put RAZORPAY_KEY_SECRET// npx wrangler secret put RAZORPAY_WEBHOOK_SECRET//// 3. Shiprocket (For AWB & Tracking)// npx wrangler secret put SHIPROCKET_EMAIL// npx wrangler secret put SHIPROCKET_PASSWORD//// 4. Brevo (For Emails)// npx wrangler secret put BREVO_API_KEY}
