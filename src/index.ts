@@ -16,6 +16,9 @@ export interface Env {
   CORS_ORIGIN: string;
 }
 
+// =========================================================
+// SMART CACHE SYSTEM: To Prevent 2-Hour Account Locks
+// =========================================================
 let cachedShiprocketToken: string | null = null;
 let tokenExpiryTime: number = 0;
 let cachedFirebaseToken: string | null = null; // Cache for Firebase Admin Token
@@ -26,13 +29,18 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
+    // -----------------------------------------------------
+    // CORS HEADERS
+    // -----------------------------------------------------
     const corsHeaders = {
       'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, x-razorpay-signature, x-api-key',
     };
 
-    if (method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    if (method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
     try {
       // =========================================================
@@ -58,7 +66,7 @@ export default {
       // =========================================================
       const updateFirestoreOrder = async (documentId: string, fields: any) => {
         const token = await getFirebaseToken();
-        const projectId = env.FIREBASE_PROJECT_ID; // e.g. "srishambhushaandsons"
+        const projectId = env.FIREBASE_PROJECT_ID; 
         
         // Convert JSON to Firestore REST format
         const firestoreFields: any = {};
@@ -81,7 +89,7 @@ export default {
       // 0. RAZORPAY: CREATE ORDER API
       // =========================================================
       if (path === '/api/payment/create-order' && method === 'POST') {
-        const { amount, receipt } = await request.json() as any; // NEW: Receives receipt (Firebase ID)
+        const { amount, receipt } = await request.json() as any;
         if (!amount) return new Response(JSON.stringify({ error: "Amount required" }), { status: 400, headers: corsHeaders });
 
         const authHeader = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
@@ -154,7 +162,7 @@ export default {
             if (firebaseOrderId) {
                 // Update Firestore Order via REST API
                 await updateFirestoreOrder(firebaseOrderId, {
-                    status: 'PENDING', // CHANGED: Move to PENDING so Admin can now see it
+                    status: 'PENDING',
                     paymentStatus: 'PAID',
                     razorpayPaymentId: paymentEntity.id
                 });
@@ -193,7 +201,6 @@ export default {
       // =========================================================
       const getShiprocketToken = async () => {
         const currentTime = Date.now();
-        // If token exists and is valid for at least 5 more minutes, use cached token
         if (cachedShiprocketToken && currentTime < tokenExpiryTime) {
           return cachedShiprocketToken;
         }
@@ -211,7 +218,6 @@ export default {
         
         const authData = await authRes.json() as any;
         cachedShiprocketToken = authData.token;
-        // Shiprocket tokens typically last 10 days, we set cache expiry to 9 days to be safe
         tokenExpiryTime = currentTime + (9 * 24 * 60 * 60 * 1000);
 
         return cachedShiprocketToken;
@@ -301,38 +307,28 @@ export default {
         }
       }
 
-      // Accept both /api/webhook/tracking and /api/shiprocket/webhook
       // =========================================================
       // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if ((path === '/api/webhook/tracking' || path === '/api/shiprocket/webhook') && method === 'POST') {
 
-        // Shiprocket sends the configured token in x-api-key.
         const receivedToken = request.headers.get('x-api-key');
 
         if (env.SHIPROCKET_WEBHOOK_TOKEN) {
           if (!receivedToken) {
-            return new Response(JSON.stringify({
-              success: false,
-              error: 'Webhook authentication required'
-            }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            return new Response(JSON.stringify({ success: false, error: 'Webhook authentication required' }), {
+              status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
           }
 
-          // Constant-time token comparison.
+          // Constant-time token comparison
           const encoder = new TextEncoder();
           const receivedBytes = encoder.encode(receivedToken);
           const expectedBytes = encoder.encode(env.SHIPROCKET_WEBHOOK_TOKEN);
 
           if (receivedBytes.length !== expectedBytes.length) {
-            return new Response(JSON.stringify({
-              success: false,
-              error: 'Invalid webhook token'
-            }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+              status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
           }
 
@@ -342,118 +338,64 @@ export default {
           }
 
           if (difference !== 0) {
-            return new Response(JSON.stringify({
-              success: false,
-              error: 'Invalid webhook token'
-            }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+              status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
           }
         }
 
-        // Read payload. Empty/invalid test payloads are acknowledged with 200.
         const payload = await request.json().catch(() => null) as any;
 
         if (!payload) {
-          return new Response(JSON.stringify({
-            success: true,
-            message: 'Shiprocket webhook received'
-          }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({ success: true, message: 'Shiprocket webhook received' }), {
+            status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
-        // Support common AWB field names.
-        const awb =
-          payload.awb ||
-          payload.awb_number ||
-          payload.shipment?.awb ||
-          payload.shipment?.awb_number ||
-          payload.shipment?.awb_code;
+        const awb = payload.awb || payload.awb_number || payload.shipment?.awb || payload.shipment?.awb_number || payload.shipment?.awb_code;
 
-        // Test webhook may not contain an AWB.
         if (!awb) {
-          return new Response(JSON.stringify({
-            success: true,
-            message: 'Shiprocket webhook test received'
-          }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({ success: true, message: 'Shiprocket webhook test received' }), {
+            status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
         const currentStatus = String(
-          payload.current_status ||
-          payload.status ||
-          payload.shipment_status ||
-          payload.shipment?.current_status ||
-          ''
+          payload.current_status || payload.status || payload.shipment_status || payload.shipment?.current_status || ''
         ).toUpperCase().trim();
 
         let firebaseStatus = '';
 
         if (currentStatus === 'DELIVERED') {
           firebaseStatus = 'DELIVERED';
-        } else if (
-          currentStatus === 'OUT FOR DELIVERY' ||
-          currentStatus === 'OUT_FOR_DELIVERY'
-        ) {
+        } else if (currentStatus === 'OUT FOR DELIVERY' || currentStatus === 'OUT_FOR_DELIVERY') {
           firebaseStatus = 'OUT_FOR_DELIVERY';
-        } else if (
-          currentStatus === 'IN TRANSIT' ||
-          currentStatus === 'IN_TRANSIT'
-        ) {
+        } else if (currentStatus === 'IN TRANSIT' || currentStatus === 'IN_TRANSIT') {
           firebaseStatus = 'IN_TRANSIT';
-        } else if (
-          currentStatus === 'SHIPPED' ||
-          currentStatus === 'PICKED UP' ||
-          currentStatus === 'PICKED_UP'
-        ) {
+        } else if (currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP' || currentStatus === 'PICKED_UP') {
           firebaseStatus = 'SHIPPED';
-        } else if (
-          currentStatus === 'READY TO SHIP' ||
-          currentStatus === 'READY_FOR_PICKUP'
-        ) {
+        } else if (currentStatus === 'READY TO SHIP' || currentStatus === 'READY_FOR_PICKUP') {
           firebaseStatus = 'READY_FOR_PICKUP';
         }
 
-        // Unknown status: acknowledge without changing Firestore.
         if (!firebaseStatus) {
-          return new Response(JSON.stringify({
-            success: true,
-            message: 'Shiprocket webhook received',
-            awb: String(awb),
-            status: currentStatus || 'UNKNOWN'
-          }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({ success: true, message: 'Shiprocket webhook received', awb: String(awb), status: currentStatus || 'UNKNOWN' }), {
+            status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
-        // Find the order in Firestore using the AWB.
+        // Find the order in Firestore using the AWB
         const firebaseToken = await getFirebaseToken();
-
-        const queryUrl =
-          `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}` +
-          `/databases/(default)/documents:runQuery`;
+        const queryUrl = `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`;
 
         const queryResponse = await fetch(queryUrl, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${firebaseToken}`,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Authorization': `Bearer ${firebaseToken}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             structuredQuery: {
               from: [{ collectionId: 'orders' }],
               where: {
-                fieldFilter: {
-                  field: { fieldPath: 'awbNumber' },
-                  op: 'EQUAL',
-                  value: { stringValue: String(awb) }
-                }
+                fieldFilter: { field: { fieldPath: 'awb' }, op: 'EQUAL', value: { stringValue: String(awb) } }
               },
               limit: 1
             }
@@ -461,63 +403,35 @@ export default {
         });
 
         if (!queryResponse.ok) {
-          console.error(
-            'Firestore AWB query failed:',
-            await queryResponse.text()
-          );
-
-          return new Response(JSON.stringify({
-            success: false,
-            error: 'Could not find order'
-          }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          console.error('Firestore AWB query failed:', await queryResponse.text());
+          return new Response(JSON.stringify({ success: false, error: 'Could not find order' }), {
+            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
         const queryResult = await queryResponse.json() as any[];
-        const documentResult = queryResult.find(
-          (item: any) => item.document
-        );
+        const documentResult = queryResult.find((item: any) => item.document);
 
         if (!documentResult?.document?.name) {
-          return new Response(JSON.stringify({
-            success: false,
-            error: 'Order not found for this AWB'
-          }), {
-            status: 404,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({ success: false, error: 'Order not found for this AWB' }), {
+            status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
         const documentId = documentResult.document.name.split('/').pop();
 
-        if (!documentId) {
-          return new Response(JSON.stringify({
-            success: false,
-            error: 'Invalid Firestore document'
-          }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders }
-          });
-        }
-
+        // Update the document to the new status mapped above
         await updateFirestoreOrder(documentId, {
-          shipmentStatus: firebaseStatus,
-          awbNumber: String(awb)
+          status: firebaseStatus,
+          awb: String(awb)
         });
 
-        return new Response(JSON.stringify({
-          success: true,
-          message: 'Shiprocket webhook processed',
-          awb: String(awb),
-          shipmentStatus: firebaseStatus
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        return new Response(JSON.stringify({ success: true, message: 'Shiprocket webhook processed', awb: String(awb), status: firebaseStatus }), {
+          status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
         });
       }
 
+      // =========================================================
       // 8. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
       // =========================================================
       if (path === '/api/email/send' && method === 'POST') {
@@ -572,7 +486,6 @@ export default {
         }
 
         const emailPayload = {
-            // Using your exact requested email
             sender: { name: "Sri Shambhu Sha & Sons", email: "skumar457534@gmail.com" }, 
             to: [{ email: email, name: name }],
             subject: subject,
