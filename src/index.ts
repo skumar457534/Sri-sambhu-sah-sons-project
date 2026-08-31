@@ -301,10 +301,11 @@ export default {
         }
       }
 
+      // Accept both /api/webhook/tracking and /api/shiprocket/webhook
       // =========================================================
       // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
       // =========================================================
-      if (path === '/api/webhook/tracking' && method === 'POST') {
+      if ((path === '/api/webhook/tracking' || path === '/api/shiprocket/webhook') && method === 'POST') {
 
         // Shiprocket sends the configured token in x-api-key.
         const receivedToken = request.headers.get('x-api-key');
