@@ -486,4 +486,130 @@
                 list.innerHTML = orders.map(order => {
                     const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Recent';
                     const displayId = order.awb || order.id;
-                    const
+                    const statusColor = getStatusColor(order.status);
+                    
+                    return `
+                        <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-gray-50 transition-colors">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Order Placed: ${dateStr}</p>
+                                <h4 class="font-bold text-naturalBrown flex items-center gap-2">
+                                    ${order.id} 
+                                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${statusColor}">${order.status || 'PENDING'}</span>
+                                </h4>
+                                <p class="text-sm font-semibold text-gray-700 mt-1">₹${order.amount}</p>
+                            </div>
+                            <button onclick="window.triggerAutoTrack('${displayId}')" class="w-full md:w-auto bg-white border border-maroon text-maroon px-5 py-2 rounded-md font-semibold hover:bg-maroon hover:text-cream transition-colors shadow-sm text-sm flex items-center justify-center gap-2 shrink-0">
+                                Track Order <i class="ph ph-arrow-right"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+                loading.innerHTML = `<p class="text-red-500">Failed to load orders. Please try again later.</p>`;
+            }
+        }
+
+        // Helper for status colors
+        function getStatusColor(status) {
+            switch(status) {
+                case 'DELIVERED': return 'bg-green-100 text-green-700';
+                case 'SHIPPED': case 'IN_TRANSIT': case 'OUT_FOR_DELIVERY': return 'bg-saffron/20 text-saffron';
+                case 'REJECTED': return 'bg-red-100 text-red-700';
+                default: return 'bg-blue-100 text-blue-700';
+            }
+        }
+
+        // --- SMART REDIRECT TRACKING LOGIC ---
+        const trackForm = document.getElementById('track-form');
+        const orderIdInput = document.getElementById('order-id-input');
+        const msgBox = document.getElementById('tracking-message-box');
+        
+        window.triggerAutoTrack = function(trackingId) {
+            orderIdInput.value = trackingId;
+            executeTracking(trackingId);
+        };
+
+        trackForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = orderIdInput.value.trim();
+            if(id === '') return;
+            executeTracking(id);
+        });
+
+        async function executeTracking(id) {
+            const btn = trackForm.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin text-xl"></i> Checking...`;
+            
+            // Hide previous message
+            msgBox.classList.add('hidden');
+            msgBox.className = "hidden mt-6 max-w-lg mx-auto p-4 rounded-lg text-sm font-medium text-center border transition-all duration-300";
+
+            try {
+                let orderData = null;
+
+                // 1. Try fetching by Document ID first
+                const docRef = doc(db, "orders", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    orderData = docSnap.data();
+                } else {
+                    // 2. Try fetching by AWB Number
+                    const q = query(collection(db, "orders"), where("awb", "==", id));
+                    const querySnap = await getDocs(q);
+                    if (!querySnap.empty) {
+                        orderData = querySnap.docs[0].data();
+                    }
+                }
+
+                // Restore Button Text
+                btn.innerHTML = originalText;
+
+                // SCENARIO 1: Not Found
+                if (!orderData) {
+                    msgBox.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
+                    msgBox.innerHTML = `<i class="ph-fill ph-warning-circle text-lg align-middle mr-1"></i> Order not found. Please check your Tracking ID or Order ID.`;
+                    msgBox.classList.remove('hidden');
+                    return;
+                }
+
+                // SCENARIO 2: Rejected Order
+                if (orderData.status === 'REJECTED') {
+                    msgBox.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
+                    msgBox.innerHTML = `<i class="ph-fill ph-x-circle text-lg align-middle mr-1"></i> <strong>Order Cancelled:</strong> This order was cancelled and a refund has been initiated.`;
+                    msgBox.classList.remove('hidden');
+                    return;
+                }
+
+                // SCENARIO 3: Dispatched (AWB Exists) -> Redirect to Shiprocket
+                if (orderData.awb) {
+                    msgBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                    msgBox.innerHTML = `<i class="ph-fill ph-check-circle text-lg align-middle mr-1"></i> <strong>Order Dispatched!</strong> Redirecting you to live tracking page...`;
+                    msgBox.classList.remove('hidden');
+                    
+                    // Open Shiprocket Tracking in New Tab
+                    setTimeout(() => {
+                        window.open(`https://shiprocket.co/tracking/${orderData.awb}`, '_blank');
+                    }, 800);
+                    return;
+                }
+
+                // SCENARIO 4: Processing (No AWB Yet)
+                msgBox.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
+                msgBox.innerHTML = `<i class="ph-fill ph-info text-lg align-middle mr-1"></i> <strong>Order Processing:</strong> Your order is currently being prepared and packed. Tracking link will be available soon.`;
+                msgBox.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Tracking error:", error);
+                msgBox.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
+                msgBox.innerHTML = `<i class="ph-fill ph-warning-circle text-lg align-middle mr-1"></i> An error occurred while fetching tracking details. Please try again.`;
+                msgBox.classList.remove('hidden');
+                btn.innerHTML = originalText;
+            }
+        }
+    </script>
+</body>
+</html>
