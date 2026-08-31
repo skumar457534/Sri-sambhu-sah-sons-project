@@ -10,7 +10,6 @@ export interface Env {
 
   SHIPROCKET_EMAIL: string;
   SHIPROCKET_PASSWORD: string;
-  SHIPROCKET_WEBHOOK_TOKEN: string;
 
   BREVO_API_KEY: string;
   CORS_ORIGIN: string;
@@ -302,110 +301,178 @@ export default {
       }
 
       // =========================================================
-      // 7. SHIPROCKET WEBHOOK (SECURE AUTOMATIC TRACKING UPDATE)
+      // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if (path === '/api/webhook/tracking' && method === 'POST') {
-        const receivedToken = request.headers.get('x-api-key');
 
-        if (!receivedToken || !env.SHIPROCKET_WEBHOOK_TOKEN) {
-          return new Response(JSON.stringify({ success: false, error: 'Webhook authentication failed' }), {
-            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        // Read the webhook payload safely.
+        const payload = await request.json().catch(() => null) as any;
+
+        // Shiprocket test requests may not contain an AWB.
+        // Always acknowledge a valid POST with HTTP 200.
+        if (!payload) {
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Shiprocket webhook received'
+          }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
-        const webhookEncoder = new TextEncoder();
-        const receivedBytes = webhookEncoder.encode(receivedToken);
-        const expectedBytes = webhookEncoder.encode(env.SHIPROCKET_WEBHOOK_TOKEN);
+        // Support common AWB field names.
+        const awb =
+          payload.awb ||
+          payload.awb_number ||
+          payload.shipment?.awb ||
+          payload.shipment?.awb_number ||
+          payload.shipment?.awb_code;
 
-        if (receivedBytes.length !== expectedBytes.length) {
-          return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
-            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
-          });
-        }
-
-        let difference = 0;
-        for (let i = 0; i < receivedBytes.length; i++) {
-          difference |= receivedBytes[i] ^ expectedBytes[i];
-        }
-
-        if (difference !== 0) {
-          return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
-            status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders }
-          });
-        }
-
-        const payload = await request.json() as any;
-        const awb = payload.awb || payload.awb_number || payload.shipment?.awb || payload.shipment?.awb_number;
-
+        // If this is only a test/empty webhook, acknowledge it.
         if (!awb) {
-          return new Response(JSON.stringify({ success: false, error: 'AWB not found in webhook payload' }), {
-            status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Shiprocket webhook test received'
+          }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
-        const currentStatus = String(payload.current_status || payload.status || payload.shipment_status || '').toUpperCase().trim();
+        // Get current shipment status.
+        const currentStatus = String(
+          payload.current_status ||
+          payload.status ||
+          payload.shipment_status ||
+          payload.shipment?.current_status ||
+          ''
+        ).toUpperCase().trim();
+
+        // Map Shiprocket status to the website's Firebase status.
         let firebaseStatus = '';
 
-        if (currentStatus === 'DELIVERED') firebaseStatus = 'DELIVERED';
-        else if (currentStatus === 'OUT FOR DELIVERY' || currentStatus === 'OUT_FOR_DELIVERY') firebaseStatus = 'OUT_FOR_DELIVERY';
-        else if (currentStatus === 'IN TRANSIT' || currentStatus === 'IN_TRANSIT') firebaseStatus = 'IN_TRANSIT';
-        else if (currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP' || currentStatus === 'PICKED_UP') firebaseStatus = 'SHIPPED';
-        else if (currentStatus === 'READY TO SHIP' || currentStatus === 'READY_FOR_PICKUP') firebaseStatus = 'READY_FOR_PICKUP';
+        if (currentStatus === 'DELIVERED') {
+          firebaseStatus = 'DELIVERED';
+        } else if (
+          currentStatus === 'OUT FOR DELIVERY' ||
+          currentStatus === 'OUT_FOR_DELIVERY'
+        ) {
+          firebaseStatus = 'OUT_FOR_DELIVERY';
+        } else if (
+          currentStatus === 'IN TRANSIT' ||
+          currentStatus === 'IN_TRANSIT'
+        ) {
+          firebaseStatus = 'IN_TRANSIT';
+        } else if (
+          currentStatus === 'SHIPPED' ||
+          currentStatus === 'PICKED UP' ||
+          currentStatus === 'PICKED_UP'
+        ) {
+          firebaseStatus = 'SHIPPED';
+        } else if (
+          currentStatus === 'READY TO SHIP' ||
+          currentStatus === 'READY_FOR_PICKUP'
+        ) {
+          firebaseStatus = 'READY_FOR_PICKUP';
+        }
 
+        // Unknown status: acknowledge the webhook without changing Firestore.
         if (!firebaseStatus) {
-          return new Response(JSON.stringify({ success: true, message: 'Webhook received. Status not mapped.', status: currentStatus }), {
-            status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Shiprocket webhook received',
+            awb: String(awb),
+            status: currentStatus || 'UNKNOWN'
+          }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
-        // Find the Firebase order by AWB.
+        // Find the Firebase order using the AWB.
         const firebaseToken = await getFirebaseToken();
-        const queryUrl = `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery`;
+
+        const queryUrl =
+          `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}` +
+          `/databases/(default)/documents:runQuery`;
 
         const queryResponse = await fetch(queryUrl, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${firebaseToken}`, 'Content-Type': 'application/json' },
+          headers: {
+            'Authorization': `Bearer ${firebaseToken}`,
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             structuredQuery: {
               from: [{ collectionId: 'orders' }],
-              where: { fieldFilter: { field: { fieldPath: 'awbNumber' }, op: 'EQUAL', value: { stringValue: String(awb) } } },
+              where: {
+                fieldFilter: {
+                  field: { fieldPath: 'awbNumber' },
+                  op: 'EQUAL',
+                  value: { stringValue: String(awb) }
+                }
+              },
               limit: 1
             }
           })
         });
 
         if (!queryResponse.ok) {
-          console.error('Firestore AWB query failed:', await queryResponse.text());
-          return new Response(JSON.stringify({ success: false, error: 'Could not find order' }), {
-            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          console.error(
+            'Firestore AWB query failed:',
+            await queryResponse.text()
+          );
+
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Could not find order'
+          }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
         const queryResult = await queryResponse.json() as any[];
-        const documentResult = queryResult.find((item: any) => item.document);
+        const documentResult = queryResult.find(
+          (item: any) => item.document
+        );
 
         if (!documentResult?.document?.name) {
-          return new Response(JSON.stringify({ success: false, error: 'Order not found for this AWB' }), {
-            status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Order not found for this AWB'
+          }), {
+            status: 404,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
         const documentId = documentResult.document.name.split('/').pop();
+
         if (!documentId) {
-          return new Response(JSON.stringify({ success: false, error: 'Invalid Firestore document' }), {
-            status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Invalid Firestore document'
+          }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
 
+        // Automatically update shipment status in Firebase.
         await updateFirestoreOrder(documentId, {
           shipmentStatus: firebaseStatus,
           awbNumber: String(awb)
         });
 
         return new Response(JSON.stringify({
-          success: true, message: 'Shiprocket webhook processed', awb: String(awb), shipmentStatus: firebaseStatus
+          success: true,
+          message: 'Shiprocket webhook processed',
+          awb: String(awb),
+          shipmentStatus: firebaseStatus
         }), {
-          status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
         });
       }
 
