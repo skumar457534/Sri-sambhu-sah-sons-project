@@ -286,7 +286,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
@@ -304,6 +304,8 @@
         window.firebaseDB = getFirestore(app);
         window.firebaseAddDoc = addDoc;
         window.firebaseCollection = collection;
+        window.firebaseDoc = doc;
+        window.firebaseUpdateDoc = updateDoc;
         window.currentUser = null;
 
         onAuthStateChanged(auth, (user) => {
@@ -505,7 +507,7 @@
             formError.classList.add('hidden');
         }
 
-        // --- REAL RAZORPAY PAYMENT FLOW ---
+        // --- REAL RAZORPAY PAYMENT FLOW (WEBHOOK READY) ---
         window.initiatePayment = async function() {
             formError.classList.add('hidden');
             const form = document.getElementById('address-form');
@@ -526,40 +528,75 @@
             const customerName = document.getElementById('cust-name').value;
             const customerEmail = document.getElementById('cust-email').value;
             const customerPhone = document.getElementById('cust-phone').value;
+            const selectedCourierName = selectedCourier.getAttribute('data-courier-name');
             
             const btn = document.getElementById('pay-btn');
             btn.innerHTML = `<i class="ph ph-spinner-gap animate-spin text-xl"></i> Securely Connecting...`;
             btn.disabled = true;
 
             try {
-                // 1. CREATE ORDER ON CLOUDFLARE WORKER
+                // STEP 1: SAVE "DRAFT" ORDER TO FIREBASE FIRST (Before Payment)
+                // This ensures if customer closes browser during payment, Webhook can still find the order.
+                const orderPayload = {
+                    customerName: customerName,
+                    customerPhone: customerPhone,
+                    customerEmail: customerEmail,
+                    shippingAddress: {
+                        line1: document.getElementById('cust-address1').value,
+                        line2: document.getElementById('cust-address2').value,
+                        city: cityInput.value,
+                        state: stateInput.value,
+                        pincode: pincodeInput.value
+                    },
+                    items: cart,
+                    courier: selectedCourierName,
+                    subtotal: subtotalAmount,
+                    shippingFee: selectedShippingAmount,
+                    amount: finalTotal,
+                    status: 'DRAFT', // CHANGED: Set to DRAFT so it hides from Admin until paid
+                    paymentStatus: 'PENDING_PAYMENT',
+                    createdAt: Date.now(),
+                    userId: window.currentUser ? window.currentUser.uid : 'GUEST'
+                };
+
+                // Add to Firebase and get the unique Document ID
+                const docRef = await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, "orders"), orderPayload);
+                const firebaseOrderId = docRef.id;
+
+                // STEP 2: CREATE RAZORPAY ORDER VIA CLOUDFLARE
                 const orderRes = await fetch(`${API_BASE_URL}/payment/create-order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: finalTotal })
+                    body: JSON.stringify({ 
+                        amount: finalTotal,
+                        receipt: firebaseOrderId // Link Razorpay Order to Firebase Order
+                    })
                 });
                 const orderData = await orderRes.json();
 
                 if (!orderData.id) throw new Error("Failed to create Razorpay Order");
 
-                // 2. CONFIGURE RAZORPAY
+                // STEP 3: CONFIGURE RAZORPAY
                 var options = {
-                    "key": "rzp_test_TVYhXZ7PKxs2fp", // Your Real Test Key
+                    "key": "rzp_test_TVYhXZ7PKxs2fp", // Replace with Live Key later
                     "amount": finalTotal * 100, 
                     "currency": "INR",
                     "name": "Sri Shambhu Sha & Sons",
                     "description": "Authentic Deoghar Peda Order",
                     "image": "https://placehold.co/100x100/7B1818/FDFBF7?text=S", 
-                    "order_id": orderData.id, 
+                    "order_id": orderData.id,
+                    "notes": {
+                        "firebase_order_id": firebaseOrderId // Crucial for Webhook
+                    },
                     "handler": async function (response) {
-                        // 3. SHOW PROCESSING OVERLAY
+                        // PAYMENT SUCCESS FRONTEND HANDLER
                         const modal = document.getElementById('razorpay-modal');
                         const rzpStatus = document.getElementById('rzp-status-box');
                         modal.classList.remove('hidden');
                         modal.classList.add('flex');
                         
                         try {
-                            // 4. VERIFY PAYMENT ON WORKER
+                            // Verify Payment
                             const verifyRes = await fetch(`${API_BASE_URL}/payment/verify`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -573,36 +610,16 @@
 
                             if (!verifyData.success) throw new Error("Payment Verification Failed!");
 
-                            const selectedCourierName = document.querySelector('input[name="courier"]:checked').getAttribute('data-courier-name');
-
-                            // 5. SAVE TO FIREBASE
-                            const orderPayload = {
-                                customerName: customerName,
-                                customerPhone: customerPhone,
-                                customerEmail: customerEmail,
-                                shippingAddress: {
-                                    line1: document.getElementById('cust-address1').value,
-                                    line2: document.getElementById('cust-address2').value,
-                                    city: cityInput.value,
-                                    state: stateInput.value,
-                                    pincode: pincodeInput.value
-                                },
-                                items: cart,
-                                courier: selectedCourierName,
-                                subtotal: subtotalAmount,
-                                shippingFee: selectedShippingAmount,
-                                amount: finalTotal,
-                                status: 'PENDING',
+                            // UPDATE FIREBASE RECORD TO SUCCESS (Frontend Sync)
+                            const orderRef = window.firebaseDoc(window.firebaseDB, "orders", firebaseOrderId);
+                            await window.firebaseUpdateDoc(orderRef, {
+                                status: 'PENDING', // Now visible in admin
                                 paymentStatus: 'PAID',
                                 razorpayOrderId: response.razorpay_order_id,
-                                razorpayPaymentId: response.razorpay_payment_id,
-                                createdAt: Date.now(),
-                                userId: window.currentUser ? window.currentUser.uid : 'GUEST'
-                            };
+                                razorpayPaymentId: response.razorpay_payment_id
+                            });
 
-                            await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, "orders"), orderPayload);
-
-                            // 6. SUCCESS UI
+                            // SUCCESS UI
                             rzpStatus.innerHTML = `
                                 <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
                                     <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
@@ -611,16 +628,19 @@
                                 <p class="text-sm text-gray-500 mb-6">Redirecting to tracking...</p>
                             `;
 
-                            // 7. CLEAR CART & REDIRECT
+                            // CLEAR CART & REDIRECT
                             setTimeout(() => {
                                 localStorage.removeItem('shriShambhuCart');
                                 window.location.href = "track_order.html";
                             }, 1500);
 
                         } catch (error) {
-                            console.error("Verification/Saving Error:", error);
-                            alert("Payment successful but database saving failed. Don't worry, your money is safe. Payment ID: " + response.razorpay_payment_id);
+                            console.error("Verification Error:", error);
+                            // If frontend verification fails or is slow, trust the Webhook
+                            alert("Payment successful! If the order doesn't show immediately, don't worry, our system will sync it shortly. Payment ID: " + response.razorpay_payment_id);
                             modal.classList.add('hidden');
+                            localStorage.removeItem('shriShambhuCart');
+                            window.location.href = "track_order.html";
                         }
                     },
                     "prefill": {
@@ -629,7 +649,7 @@
                         "contact": customerPhone
                     },
                     "theme": {
-                        "color": "#7B1818" // Maroon Branding
+                        "color": "#7B1818"
                     }
                 };
 
