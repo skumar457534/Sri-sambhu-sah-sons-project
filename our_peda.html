@@ -76,7 +76,7 @@
                     </span>
                 </nav>
 
-                <!-- Actions (Cart & Mobile Toggle ONLY) -->
+                <!-- Actions -->
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
@@ -239,7 +239,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info (Single WhatsApp Number Only) -->
+                <!-- Contact Info -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
@@ -621,6 +621,8 @@
                 renderProductGrid(sortedProducts);
             });
         }
+        
+        fetchProducts(); // Added execution line here!
     </script>
 </body>
 </html>
