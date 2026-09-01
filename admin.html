@@ -38,7 +38,13 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+
+        /* Order filter active button - keep maroon even on hover */
+        .filter-btn.active:hover {
+    background-color: #7B1818 !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    }
         /* Fast Rendering for heavy tables */
         .fast-render { content-visibility: auto; will-change: transform; }
 
@@ -841,26 +847,53 @@
             }).join('');
         }
 
-        // Order Filters Listener (Optimized for smooth toggling)
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const target = e.currentTarget;
-                if(target.classList.contains('bg-maroon')) return;
+     // Order Filters Listener
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const target = e.currentTarget;
 
-                // Reset all
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
-                    b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
-                });
+        // Already active — do nothing
+        if (target.classList.contains('active')) return;
 
-                // Set active
-                target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                target.classList.add('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
-                
-                currentOrderFilter = target.getAttribute('data-status');
-                renderOrders();
-            });
+        // Reset all buttons
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove(
+                'bg-maroon',
+                'text-white',
+                'border-transparent',
+                'shadow-md',
+                'active'
+            );
+
+            b.classList.add(
+                'bg-white',
+                'text-gray-600',
+                'border-gray-200'
+            );
         });
+
+        // Make clicked button permanently maroon
+        target.classList.remove(
+            'bg-white',
+            'text-gray-600',
+            'border-gray-200'
+        );
+
+        target.classList.add(
+            'bg-maroon',
+            'text-white',
+            'border-transparent',
+            'shadow-md',
+            'active'
+        );
+
+        // Update filter
+        currentOrderFilter = target.getAttribute('data-status');
+
+        // Render filtered orders
+        renderOrders();
+    });
+});
 
         // Modals Action Functions
         window.viewOrderDetails = function(id) {
