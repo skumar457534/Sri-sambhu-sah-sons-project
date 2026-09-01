@@ -299,11 +299,11 @@
         </div>
     </footer>
 
-    <!-- FIREBASE IMPORT -->
+    <!-- FIREBASE IMPORT (Updated with setDoc and runTransaction for Sequential IDs) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, updateDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
@@ -317,12 +317,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         
-        // Export DB explicitly to the window object so the non-module script can access it to save the order
+        // Export DB explicitly to the window object
         window.firebaseDB = getFirestore(app);
-        window.firebaseAddDoc = addDoc;
         window.firebaseCollection = collection;
         window.firebaseDoc = doc;
         window.firebaseUpdateDoc = updateDoc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseRunTransaction = runTransaction;
         window.currentUser = null;
 
         onAuthStateChanged(auth, (user) => {
@@ -561,7 +562,7 @@
             formError.classList.add('hidden');
         }
 
-        // --- REAL RAZORPAY PAYMENT FLOW ---
+        // --- REAL RAZORPAY PAYMENT FLOW WITH SEQUENTIAL ID ---
         window.initiatePayment = async function() {
             formError.classList.add('hidden');
             const form = document.getElementById('address-form');
@@ -589,8 +590,28 @@
             btn.disabled = true;
 
             try {
-                // STEP 1: SAVE "DRAFT" ORDER TO FIREBASE FIRST
+                // 1. GENERATE UNIQUE SEQUENTIAL ORDER ID (e.g., SSS-1500001)
+                let customOrderId = "SSS-" + Date.now().toString().slice(-6); // Safe fallback
+                try {
+                    const counterRef = window.firebaseDoc(window.firebaseDB, "counters", "orderSequence");
+                    await window.firebaseRunTransaction(window.firebaseDB, async (transaction) => {
+                        const counterDoc = await transaction.get(counterRef);
+                        let nextVal = 1500001; // Starting ID number
+                        if (counterDoc.exists()) {
+                            nextVal = counterDoc.data().current + 1;
+                            transaction.update(counterRef, { current: nextVal });
+                        } else {
+                            transaction.set(counterRef, { current: nextVal });
+                        }
+                        customOrderId = "SSS-" + nextVal;
+                    });
+                } catch(e) {
+                    console.error("Sequence generator failed, using fallback.", e);
+                }
+
+                // 2. BUILD THE ORDER PAYLOAD
                 const orderPayload = {
+                    id: customOrderId,
                     customerName: customerName,
                     customerPhone: customerPhone,
                     customerEmail: customerEmail,
@@ -612,10 +633,12 @@
                     userId: window.currentUser ? window.currentUser.uid : 'GUEST'
                 };
 
-                const docRef = await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, "orders"), orderPayload);
-                const firebaseOrderId = docRef.id;
+                // 3. SAVE TO FIRESTORE USING THE CUSTOM ID (setDoc)
+                const orderDocRef = window.firebaseDoc(window.firebaseDB, "orders", customOrderId);
+                await window.firebaseSetDoc(orderDocRef, orderPayload);
+                const firebaseOrderId = customOrderId;
 
-                // STEP 2: CREATE RAZORPAY ORDER VIA CLOUDFLARE
+                // 4. CREATE RAZORPAY ORDER VIA CLOUDFLARE
                 const orderRes = await fetch(`${API_BASE_URL}/payment/create-order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -628,20 +651,34 @@
 
                 if (!orderData.id) throw new Error("Failed to create Razorpay Order");
 
-                // STEP 3: CONFIGURE RAZORPAY
+                // 5. CONFIGURE RAZORPAY
                 var options = {
-                    "key": "rzp_test_TVYhXZ7PKxs2fp", 
+                    "key": "rzp_test_TVYhXZ7PKxs2fp", // REPLACE WITH LIVE KEY
                     "amount": finalTotal * 100, 
                     "currency": "INR",
                     "name": "Sri Shambhu Sha & Sons",
-                    "description": "Authentic Deoghar Peda Order",
+                    "description": "Order " + firebaseOrderId,
                     "image": "https://placehold.co/100x100/7B1818/FDFBF7?text=S", 
                     "order_id": orderData.id,
                     "notes": {
                         "firebase_order_id": firebaseOrderId 
                     },
+                    "modal": {
+                        // DETECT POPUP CLOSE (USER CANCELLED)
+                        "ondismiss": async function() {
+                            try {
+                                const orderRef = window.firebaseDoc(window.firebaseDB, "orders", firebaseOrderId);
+                                await window.firebaseUpdateDoc(orderRef, {
+                                    status: 'PAYMENT_FAILED',
+                                    paymentStatus: 'CANCELLED_BY_USER'
+                                });
+                            } catch(e) {}
+                            btn.innerHTML = `<i class="ph ph-shield-check text-xl"></i> Pay Securely <i class="ph ph-arrow-right ml-1"></i>`;
+                            btn.disabled = false;
+                        }
+                    },
                     "handler": async function (response) {
-                        // 4. SHOW PROCESSING OVERLAY
+                        // SUCCESS UI OVERLAY
                         const modal = document.getElementById('razorpay-modal');
                         const rzpStatus = document.getElementById('rzp-status-box');
                         modal.classList.remove('hidden');
@@ -663,7 +700,7 @@
 
                             if (!verifyData.success) throw new Error("Payment Verification Failed!");
 
-                            // Frontend Update is handled via Webhook & Worker, but we trigger a manual update just to be 100% safe
+                            // Frontend Update
                             const orderRef = window.firebaseDoc(window.firebaseDB, "orders", firebaseOrderId);
                             await window.firebaseUpdateDoc(orderRef, {
                                 status: 'PENDING', 
@@ -677,7 +714,7 @@
                                 <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
                                     <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
                                 </div>
-                                <h3 class="font-bold text-gray-800 text-xl mb-1">Payment Verified & Saved!</h3>
+                                <h3 class="font-bold text-gray-800 text-xl mb-1">Payment Verified!</h3>
                                 <p class="text-sm text-gray-500 mb-6">Redirecting to tracking...</p>
                             `;
 
@@ -707,17 +744,31 @@
 
                 // Open Razorpay
                 var rzp = new Razorpay(options);
-                rzp.on('payment.failed', function (response){
+                
+                // DETECT ACTUAL PAYMENT FAILURE (Card decline, Bank issue, etc.)
+                rzp.on('payment.failed', async function (response){
                     formError.innerText = "Payment Failed: " + response.error.description;
                     formError.classList.remove('hidden');
+                    
+                    try {
+                        const orderRef = window.firebaseDoc(window.firebaseDB, "orders", firebaseOrderId);
+                        await window.firebaseUpdateDoc(orderRef, {
+                            status: 'PAYMENT_FAILED',
+                            paymentStatus: 'FAILED',
+                            errorDescription: response.error.description
+                        });
+                    } catch(e) {}
+                    
+                    btn.innerHTML = `<i class="ph ph-shield-check text-xl"></i> Pay Securely <i class="ph ph-arrow-right ml-1"></i>`;
+                    btn.disabled = false;
                 });
+                
                 rzp.open();
 
             } catch (error) {
                 console.error("Order Init Error:", error);
                 formError.innerText = "Could not initialize secure payment. Please try again.";
                 formError.classList.remove('hidden');
-            } finally {
                 btn.innerHTML = `<i class="ph ph-shield-check text-xl"></i> Pay Securely <i class="ph ph-arrow-right ml-1"></i>`;
                 btn.disabled = false;
             }
