@@ -603,10 +603,55 @@
                     return;
                 }
 
-                // SCENARIO 4: Processing (No AWB Yet)
-                msgBox.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
-                msgBox.innerHTML = `<i class="ph-fill ph-info text-lg align-middle mr-1"></i> <strong>Order Processing:</strong> Your order is currently being prepared and packed. Tracking link will be available soon.`;
-                msgBox.classList.remove('hidden');
+            // SCENARIO 4: PAYMENT FAILED
+if (orderData.status === 'PAYMENT_FAILED') {
+    msgBox.classList.add('bg-red-50', 'text-red-600', 'border-red-200');
+
+    let paymentMessage = 'Your payment could not be completed. Please try again.';
+
+    if (orderData.paymentStatus === 'CANCELLED_BY_USER') {
+        paymentMessage = 'You cancelled the payment. Please try again to complete your order.';
+    } else if (orderData.paymentStatus === 'FAILED') {
+        paymentMessage = 'Your payment failed. No successful payment was received.';
+    }
+
+    msgBox.innerHTML = `
+        <i class="ph-fill ph-x-circle text-lg align-middle mr-1"></i>
+        <strong>Payment Failed:</strong> ${paymentMessage}
+    `;
+
+    msgBox.classList.remove('hidden');
+    return;
+}
+
+
+// SCENARIO 5: DRAFT / PAYMENT PENDING
+if (orderData.status === 'DRAFT') {
+    msgBox.classList.add('bg-yellow-50', 'text-yellow-700', 'border-yellow-200');
+
+    msgBox.innerHTML = `
+        <i class="ph-fill ph-warning-circle text-lg align-middle mr-1"></i>
+        <strong>Payment Pending:</strong>
+        Your order has been created, but payment has not been completed yet.
+        Please complete the payment to confirm your order.
+    `;
+
+    msgBox.classList.remove('hidden');
+    return;
+}
+
+
+// SCENARIO 6: PROCESSING / PAID
+msgBox.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
+
+msgBox.innerHTML = `
+    <i class="ph-fill ph-info text-lg align-middle mr-1"></i>
+    <strong>Order Processing:</strong>
+    Your payment is successful and your order is being prepared.
+    Tracking link will be available once your order is shipped.
+`;
+
+msgBox.classList.remove('hidden');
 
             } catch (error) {
                 console.error("Tracking error:", error);
