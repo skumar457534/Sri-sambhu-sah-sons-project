@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | Sri Shambhu Sha & Sons</title>
     <meta name="description" content="Get in touch with Sri Shambhu Sha & Sons. Find our shop location at Baidyanath Dham, Deoghar, or contact us online.">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -38,7 +38,7 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #FDFBF7; }
         ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
-        
+
         /* Cart Drawer Animation Styles */
         .cart-open { transform: translateX(0) !important; }
         .overlay-open { opacity: 1 !important; visibility: visible !important; }
@@ -46,7 +46,6 @@
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
-    <!-- HEADER / NAVIGATION -->
     <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -66,7 +65,7 @@
                     <a href="index.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Home</a>
                     <a href="about_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">About Us</a>
                     <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
-                    <a href="how_it_works.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
+                    <a href="how_it_works.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">How It Works</a>
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
                     <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
                     <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">Contact Us</a>
@@ -95,7 +94,7 @@
                 <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
                 <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
                 <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
-                <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
+                <a href="how_it_works.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">How It Works</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
                 <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
                 <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Contact Us</a>
@@ -184,48 +183,57 @@
                         <!-- Shop Location Card -->
                         <div class="bg-cream p-6 md:p-8 rounded-2xl border border-golden/30 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-24 h-24 bg-golden/5 rounded-bl-[100px] z-0"></div>
-                            <div class="relative z-10 flex items-start gap-4">
-                                <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm border border-gray-100">
+                            
+                            <!-- Mobile Fixed: Changed to flex-col on small screens, flex-row on large -->
+                            <div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-5">
+                                <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm border border-gray-100 mx-auto sm:mx-0">
                                     <i class="ph-fill ph-map-pin text-maroon text-3xl"></i>
                                 </div>
-                                <div>
+                                <div class="w-full">
                                     <span class="text-saffron font-bold text-xs uppercase tracking-widest block mb-1">Visit Us</span>
                                     <h4 class="font-bold text-naturalBrown text-xl mb-2">Our Shop Location</h4>
-                                    <p class="text-gray-600 font-medium mb-4 leading-relaxed">FPR2+Q57, Shivganga Muhalla, <br/>Deoghar, Jharkhand 814112, India</p>
-                                    <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-maroon hover:text-saffron font-semibold transition-colors">
+                                    <p class="text-gray-600 font-medium mb-4 leading-relaxed">FPR2+Q57, Shivganga Muhalla, <br class="hidden sm:block"/>Deoghar, Jharkhand 814112, India</p>
+                                    <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center sm:justify-start gap-2 text-maroon hover:text-saffron font-semibold transition-colors w-full sm:w-auto">
                                         Open in Google Maps <i class="ph ph-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Mobile Fixed: Changed from grid-cols-2 to grid-cols-1 sm:grid-cols-2 -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- Phone -->
-                            <a href="tel:7295021513" class="block bg-white p-4 sm:p-5 rounded-xl border border-gray-100 shadow-sm hover:border-maroon/30 hover:shadow-md transition-all group">
-                                <div class="w-10 h-10 rounded-full bg-cream flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <a href="tel:7295021513" class="block bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:border-maroon/30 hover:shadow-md transition-all group text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                                <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                     <i class="ph-fill ph-phone-call text-maroon text-xl"></i>
                                 </div>
-                                <h4 class="font-bold text-naturalBrown text-sm sm:text-base">Call Support</h4>
-                                <p class="text-maroon font-semibold mt-1 text-xs sm:text-sm">7295021513</p>
+                                <div>
+                                    <h4 class="font-bold text-naturalBrown text-base">Call Support</h4>
+                                    <p class="text-maroon font-semibold mt-1 text-sm">7295021513</p>
+                                </div>
                             </a>
 
                             <!-- Email -->
-                            <a href="mailto:support@srishambhushaandsons.in" class="block bg-white p-4 sm:p-5 rounded-xl border border-gray-100 shadow-sm hover:border-blue-500/30 hover:shadow-md transition-all group">
-                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <a href="mailto:support@srishambhushaandsons.in" class="block bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:border-blue-500/30 hover:shadow-md transition-all group text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                     <i class="ph-fill ph-envelope-simple text-blue-500 text-xl"></i>
                                 </div>
-                                <h4 class="font-bold text-naturalBrown text-sm sm:text-base">Email Us</h4>
-                                <p class="text-blue-600 font-semibold mt-1 text-xs sm:text-sm">support@srishambhushaandsons.in</p>
+                                <div>
+                                    <h4 class="font-bold text-naturalBrown text-base">Email Us</h4>
+                                    <!-- Using break-all or truncate to prevent overflow on mobile -->
+                                    <p class="text-blue-600 font-semibold mt-1 text-sm break-all">support@srishambhushaandsons.in</p>
+                                </div>
                             </a>
                         </div>
 
                         <!-- Hours -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center flex-shrink-0">
+                        <!-- Mobile Fixed: Changed layout to stack on mobile -->
+                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+                            <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                                 <i class="ph-fill ph-clock text-maroon text-2xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-naturalBrown">Shop Hours</h4>
+                                <h4 class="font-bold text-naturalBrown text-lg">Shop Hours</h4>
                                 <p class="text-gray-600 mt-1 text-sm">Open All Days: 8:00 AM - 10:00 PM</p>
                             </div>
                         </div>
@@ -269,7 +277,7 @@
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
                             <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
                         </li>
-                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4 justify-center md:justify-start">
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
                             <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
                         </li>
@@ -292,7 +300,7 @@
         </span>
     </a>
 
-    <!-- SCRIPTS -->
+    <!-- UI & CART SCRIPTS -->
     <script>
         // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -348,10 +356,10 @@
 
         function saveCart() {
             localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
-            renderCartUI();
+            window.renderCartUI();
         }
 
-        function renderCartUI() {
+        window.renderCartUI = function() {
             const itemsContainer = document.getElementById('cart-items');
             const subtotalEl = document.getElementById('cart-subtotal');
             const badgeEl = document.getElementById('cart-badge');
@@ -418,12 +426,12 @@
                 });
             });
         }
-
-        // Init cart rendering
-        renderCartUI();
+        
+        // Init Cart
+        window.renderCartUI();
     </script>
 
-    <!-- FIREBASE AUTH & CHECKOUT LOGIC -->
+    <!-- FIREBASE IMPORT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
