@@ -896,6 +896,18 @@
             document.getElementById('order-modal').classList.add('flex');
         }
 
+        // --- SAFE DIMENSION CALCULATOR ---
+        function getSafeDimensions(weightKg) {
+            if (weightKg <= 1.0) return { l: 15, b: 15, h: 15 };
+            if (weightKg <= 1.5) return { l: 20, b: 15, h: 15 };
+            if (weightKg <= 2.0) return { l: 20, b: 20, h: 15 };
+            if (weightKg <= 3.0) return { l: 25, b: 20, h: 15 };
+            if (weightKg <= 4.0) return { l: 25, b: 25, h: 15 };
+            if (weightKg <= 5.0) return { l: 30, b: 25, h: 20 };
+            if (weightKg <= 7.5) return { l: 35, b: 30, h: 20 };
+            return { l: 40, b: 30, h: 25 }; 
+        }
+
         // --- ACCEPT ORDER LOGIC ---
         window.initAcceptOrder = function(id) {
             actionOrderId = id;
@@ -923,6 +935,18 @@
             
             try {
                 const o = globalOrders.find(x => x.id === actionOrderId);
+
+                // Calculate Weight dynamically
+                let totalWeight = 0;
+                if(Array.isArray(o.items)) {
+                    o.items.forEach(item => {
+                        if (item.weight.includes("Kg")) totalWeight += parseFloat(item.weight) * item.qty;
+                        else if (item.weight.includes("g")) totalWeight += (parseFloat(item.weight) / 1000) * item.qty;
+                    });
+                }
+                if (totalWeight === 0) totalWeight = 1;
+
+                const dims = getSafeDimensions(totalWeight);
                 
                 // Real Shiprocket API Call
                 const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
@@ -957,10 +981,10 @@
                         transaction_charges: 0,
                         total_discount: 0,
                         sub_total: o.amount || 0,
-                        length: 10,
-                        breadth: 10,
-                        height: 10,
-                        weight: 1
+                        length: dims.l,
+                        breadth: dims.b,
+                        height: dims.h,
+                        weight: totalWeight
                     })
                 });
                 
