@@ -6,6 +6,12 @@
     <title>Gallery | Sri Shambhu Sha & Sons</title>
     <meta name="description" content="Explore our photo gallery. See the tradition and purity of Baba Dham Peda.">
     
+    <!-- Preconnect for Faster Firebase & Font Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
     
@@ -95,7 +101,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-cream border-t border-golden/20 absolute w-full shadow-xl max-h-[80vh] overflow-y-auto">
             <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
-                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
+                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Home</a>
                 <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
                 <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
                 <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Gallery</a>
@@ -178,9 +184,10 @@
     <!-- GALLERY GRID -->
     <section class="py-16 md:py-24 bg-cream min-h-[50vh]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div id="gallery-loading" class="text-center py-12">
-                <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon inline-block mb-3"></i>
-                <p class="text-gray-500 font-medium">Loading beautiful memories...</p>
+            
+            <!-- Skeleton Loader (Shows instantly while waiting for Firebase) -->
+            <div id="gallery-skeleton" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-12">
+                <!-- Javascript will inject glowing placeholder boxes here -->
             </div>
             
             <div id="public-gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 hidden">
@@ -472,7 +479,7 @@
         }
     </script>
 
-    <!-- FIREBASE IMPORT -->
+    <!-- FIREBASE IMPORT & GALLERY LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -524,25 +531,39 @@
             }
         }
 
-        // LOAD GALLERY
+        // --- INJECT SKELETON LOADER ---
+        function showSkeletons() {
+            const skeletonContainer = document.getElementById('gallery-skeleton');
+            // Generate 8 empty animated boxes to mimic image loading
+            skeletonContainer.innerHTML = Array(8).fill(`
+                <div class="rounded-xl bg-gray-200 animate-pulse h-48 md:h-64 w-full border border-gray-100 shadow-sm"></div>
+            `).join('');
+        }
+
+        // LOAD GALLERY WITH OPTIMIZATIONS
         async function loadGallery() {
+            showSkeletons(); // Show fake boxes instantly
+            
             try {
                 const snapshot = await getDocs(collection(db, "gallery"));
                 globalGallery = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 globalGallery.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 const grid = document.getElementById('public-gallery-grid');
-                document.getElementById('gallery-loading').classList.add('hidden');
+                
+                // Hide skeletons and show actual grid
+                document.getElementById('gallery-skeleton').classList.add('hidden');
                 grid.classList.remove('hidden');
 
                 if(globalGallery.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full py-10 text-center text-gray-500">More beautiful pictures coming soon!</div>`;
+                    grid.innerHTML = `<div class="col-span-full py-10 text-center text-gray-500 font-medium">More beautiful pictures coming soon!</div>`;
                     return;
                 }
 
+                // Render images with lazy loading and async decoding
                 grid.innerHTML = globalGallery.map((img, index) => `
-                    <div class="relative rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer h-48 md:h-64 border border-golden/20 group" onclick="window.openLightbox(${index})">
-                        <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    <div class="relative rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer h-48 md:h-64 border border-golden/20 group bg-gray-100" onclick="window.openLightbox(${index})">
+                        <img src="${img.url}" alt="Gallery Image ${index + 1}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <i class="ph ph-magnifying-glass-plus text-white text-3xl drop-shadow-md"></i>
                         </div>
@@ -551,7 +572,7 @@
 
             } catch (error) {
                 console.error("Gallery Fetch Error:", error);
-                document.getElementById('gallery-loading').innerHTML = `<p class="text-red-500">Failed to load images.</p>`;
+                document.getElementById('gallery-skeleton').innerHTML = `<div class="col-span-full py-10 text-center text-red-500 font-medium">Failed to load images. Please check your connection.</div>`;
             }
         }
 
