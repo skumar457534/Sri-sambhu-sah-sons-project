@@ -407,7 +407,7 @@ export default {
         }
 
         const emailPayload = {
-            sender: { name: "Sri Shambhu Sha & Sons", email: "skumar457534@gmail.com" }, 
+            sender: { name: "Sri Shambhu Sha & Sons", email: "srishambhushaandsons@gmail.com" }, 
             to: [{ email: email, name: name }],
             subject: subject,
             htmlContent: htmlContent
