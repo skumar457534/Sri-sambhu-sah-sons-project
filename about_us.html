@@ -734,6 +734,31 @@ footer a:hover{color:#F2D997!important}
 }
 </style>
 
+
+<style id="footer-only-animation">
+/* FOOTER ANIMATION ONLY — soft fade, no upward movement */
+footer{
+  opacity:0;
+  transition:opacity 1.1s cubic-bezier(.16,1,.3,1);
+  will-change:opacity;
+}
+footer.footer-visible{
+  opacity:1;
+}
+footer .flex.space-x-4 a{
+  transition:transform .3s cubic-bezier(.22,.8,.25,1),background-color .3s ease;
+}
+footer .flex.space-x-4 a:hover{
+  transform:translate3d(0,-4px,0) scale(1.06);
+}
+@media(prefers-reduced-motion:reduce){
+  footer{
+    opacity:1!important;
+    transition:none!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
@@ -748,7 +773,7 @@ footer a:hover{color:#F2D997!important}
                     </div>
                     <a href="index.html" class="flex flex-col">
                         <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
-                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase">Deoghar</span>
+                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase" style="color:#C99A3B!important;">Deoghar</span>
                     </a>
                 </div>
 
@@ -1214,5 +1239,21 @@ document.addEventListener('DOMContentLoaded', () => {
   els.forEach(el => io.observe(el));
 });
 </script>
+
+<script id="footer-only-animation-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const footer=document.querySelector('footer');
+  if(!footer) return;
+  const showFooter=()=>{
+    footer.classList.add('footer-visible');
+    observer.disconnect();
+  };
+  const observer=new IntersectionObserver((entries)=>{
+    if(entries.some(entry=>entry.isIntersecting)) showFooter();
+  },{threshold:.12});
+  observer.observe(footer);
+});
+</script>
+
 </body>
 </html>
