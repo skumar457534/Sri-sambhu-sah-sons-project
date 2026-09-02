@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Order | Sri Shambhu Sha & Sons</title>
     <meta name="description" content="Track your authentic Deoghar Peda order status live.">
+
+    <style id="track-prepaint">
+        html.theme-preload,
+        html.theme-preload body {
+            visibility: hidden !important;
+            background: #FBF8F1 !important;
+        }
+        html.theme-preload body::before { display:none !important; }
+        html.theme-preload header {
+            background:#FBF8F1 !important;
+            box-shadow:none !important;
+            border-color:transparent !important;
+        }
+        html.theme-preload #track-hero,
+        html.theme-preload .bg-maroon {
+            background:#FBF8F1 !important;
+        }
+        html.theme-preload footer {
+            background:#3B2417 !important;
+            border-top-color:#C99A3B !important;
+        }
+    </style>
+    <script>
+        document.documentElement.classList.add('theme-preload');
+    </script>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
@@ -20,10 +45,10 @@
                 extend: {
                     colors: {
                         cream: "#FDFBF7",
-                        maroon: "#7B1818",
-                        golden: "#D4AF37",
-                        saffron: "#F48C06",
-                        naturalBrown: "#5C4033",
+                        maroon: "#5A3925",
+                        golden: "#C99A3B",
+                        saffron: "#C99A3B",
+                        naturalBrown: "#76543B",
                     },
                     fontFamily: {
                         serif: ['"Playfair Display"', 'serif'],
@@ -196,6 +221,190 @@ footer a:hover{color:#F2D997!important}
 
 @keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+</style>
+
+
+<style id="track-faq-style-animation">
+/* FAQ-style first-paint loading gate */
+html.theme-preload,
+html.theme-preload body{
+  visibility:hidden!important;
+  background:#FBF8F1!important;
+}
+html.theme-preload body:before{display:none!important}
+html.theme-preload header{
+  background:#FBF8F1!important;
+  border-color:rgba(104,72,39,.10)!important;
+  box-shadow:none!important;
+}
+html.theme-preload #track-hero{
+  background:linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;
+}
+html.theme-preload .tracking-section{
+  background:#FFFDF9!important;
+}
+html.theme-preload footer{
+  background:#3B2417!important;
+  border-top-color:#C99A3B!important;
+}
+
+/* FAQ-style smooth viewport reveals */
+.track-scroll-reveal,
+.track-support-reveal,
+footer .track-footer-inner{
+  opacity:0!important;
+  transform:translateY(22px)!important;
+  transition:
+    opacity .50s cubic-bezier(.22,.8,.25,1),
+    transform .50s cubic-bezier(.22,.8,.25,1)!important;
+  will-change:opacity,transform;
+}
+.track-scroll-reveal.is-visible,
+.track-support-reveal.is-visible,
+footer .track-footer-inner.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+
+/* Hero entrance — same rhythm as FAQ */
+#track-hero .track-kicker,
+#track-hero h1,
+#track-hero p,
+#track-hero .track-rule{
+  opacity:0;
+}
+#track-hero .track-kicker{
+  animation:trackHeroIn .58s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero h1{
+  animation:trackHeroIn .62s .04s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero p{
+  animation:trackHeroCopy .64s .08s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero .track-rule{
+  animation:trackRule .48s .10s cubic-bezier(.22,.8,.25,1) both!important;
+}
+@keyframes trackHeroIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes trackHeroCopy{
+  from{opacity:0;transform:translateY(11px)}
+  to{opacity:1;transform:none}
+}
+@keyframes trackRule{
+  from{opacity:0;transform:scaleX(.3)}
+  to{opacity:1;transform:scaleX(1)}
+}
+
+/* Main tracking card / logged-in orders — FAQ-style entrance */
+#tracking-input-card,
+#auth-orders-section{
+  will-change:opacity,transform;
+}
+#tracking-input-card .track-child-reveal,
+#auth-orders-section .track-child-reveal{
+  opacity:0;
+  transform:translateY(14px);
+  transition:
+    opacity .45s cubic-bezier(.22,.8,.25,1),
+    transform .45s cubic-bezier(.22,.8,.25,1);
+}
+#tracking-input-card.is-visible .track-child-reveal,
+#auth-orders-section.is-visible .track-child-reveal{
+  opacity:1;
+  transform:none;
+}
+#tracking-input-card.is-visible .track-child-reveal:nth-child(1),
+#auth-orders-section.is-visible .track-child-reveal:nth-child(1){transition-delay:.05s}
+#tracking-input-card.is-visible .track-child-reveal:nth-child(2),
+#auth-orders-section.is-visible .track-child-reveal:nth-child(2){transition-delay:.11s}
+#tracking-input-card.is-visible .track-child-reveal:nth-child(3),
+#auth-orders-section.is-visible .track-child-reveal:nth-child(3){transition-delay:.17s}
+#tracking-input-card.is-visible .track-child-reveal:nth-child(4),
+#auth-orders-section.is-visible .track-child-reveal:nth-child(4){transition-delay:.23s}
+
+/* Track button feedback */
+#track-form button.track-click{
+  animation:trackButtonPress .30s cubic-bezier(.22,.8,.25,1);
+}
+@keyframes trackButtonPress{
+  0%{transform:scale(1)}
+  45%{transform:scale(.965)}
+  100%{transform:scale(1)}
+}
+
+/* Dynamic status/message loading reveal */
+#tracking-message-box{
+  transform:translateY(8px);
+  transition:
+    opacity .30s ease,
+    transform .30s ease,
+    background-color .30s ease,
+    border-color .30s ease!important;
+}
+#tracking-message-box:not(.hidden){
+  animation:trackMessageIn .35s cubic-bezier(.22,.8,.25,1) both;
+}
+@keyframes trackMessageIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+
+/* Loading spinner remains smooth */
+#user-orders-loading i{
+  animation:trackSpinner .9s linear infinite;
+}
+@keyframes trackSpinner{
+  to{transform:rotate(360deg)}
+}
+
+/* Dynamically loaded order cards */
+#user-orders-list > div.track-order-reveal{
+  opacity:0!important;
+  transform:translateY(14px)!important;
+  transition:
+    opacity .45s cubic-bezier(.22,.8,.25,1),
+    transform .45s cubic-bezier(.22,.8,.25,1),
+    background .25s ease,
+    box-shadow .25s ease!important;
+}
+#user-orders-list > div.track-order-reveal.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+
+/* Keep controls clickable during reveals */
+.track-scroll-reveal,
+.track-scroll-reveal.is-visible,
+.track-support-reveal,
+.track-support-reveal.is-visible,
+.track-order-reveal,
+.track-order-reveal.is-visible{
+  pointer-events:auto!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .track-scroll-reveal,
+  .track-support-reveal,
+  footer .track-footer-inner,
+  #tracking-input-card .track-child-reveal,
+  #auth-orders-section .track-child-reveal,
+  #user-orders-list > div.track-order-reveal{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+  #track-hero .track-kicker,
+  #track-hero h1,
+  #track-hero p,
+  #track-hero .track-rule{
+    opacity:1!important;
+    animation:none!important;
+  }
+  #tracking-message-box{animation:none!important}
+}
 </style>
 
 </head>
@@ -818,53 +1027,430 @@ msgBox.classList.remove('hidden');
         }
     </script>
 
-<script id="track-index-theme-hooks">
+
+
+
+<script id="track-faq-style-animation-js">
 (function(){
-  // Heritage particles
-  if(!document.querySelector('.track-float')){
-    const wrap=document.createElement('div');
-    wrap.className='track-float';wrap.setAttribute('aria-hidden','true');
-    [['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']]
-      .forEach(([l,d,delay])=>{const i=document.createElement('i');i.style.left=l;i.style.animationDuration=d;i.style.animationDelay=delay;wrap.appendChild(i)});
-    document.body.prepend(wrap);
-  }
+  function init(){
+    const root=document.documentElement;
+    const hero=document.getElementById('track-hero');
+    const section=document.querySelector('.tracking-section') ||
+      [...document.querySelectorAll('section')].find(s=>s.querySelector('#tracking-input-card'));
+    const footer=document.querySelector('footer');
+    const authOrders=document.getElementById('auth-orders-section');
+    const trackingCard=document.getElementById('tracking-input-card');
+    const trackButton=document.querySelector('#track-form button');
+    const orderList=document.getElementById('user-orders-list');
 
-  // Stable selectors for the tracking hero/section.
-  const hero=[...document.querySelectorAll('section')].find(s=>/Track Your Order/i.test(s.textContent||'') && /Live Updates/i.test(s.textContent||''));
-  if(hero){
-    hero.id='track-hero';
-    const span=hero.querySelector('span'), rule=hero.querySelector('div.w-24'), p=hero.querySelector('p');
-    if(span) span.classList.add('track-kicker');
-    if(rule) rule.classList.add('track-rule');
-    if(p) p.classList.add('track-copy');
-  }
-  const tracking=[...document.querySelectorAll('section')].find(s=>s.querySelector('#tracking-input-card'));
-  if(tracking) tracking.classList.add('tracking-section');
+    /* Stable theme selectors */
+    if(hero){
+      const kicker=hero.querySelector('span');
+      const rule=hero.querySelector('div.w-24');
+      const copy=hero.querySelector('p');
+      if(kicker) kicker.classList.add('track-kicker');
+      if(rule) rule.classList.add('track-rule');
+      if(copy) copy.classList.add('track-copy');
+    }
+    if(section) section.classList.add('tracking-section');
 
-  // Add subtle press feedback to the main Track button.
-  const trackBtn=document.querySelector('#track-form button');
-  if(trackBtn){
-    trackBtn.addEventListener('click',()=>{trackBtn.classList.remove('track-click');void trackBtn.offsetWidth;trackBtn.classList.add('track-click')});
-  }
-
-  // Keep header scroll state aligned with Index theme.
-  const header=document.querySelector('header');
-  if(header){
-    const update=()=>header.classList.toggle('scrolled',window.scrollY>20);
-    update();window.addEventListener('scroll',update,{passive:true});
-  }
-
-  // Stagger dynamically rendered order cards for a premium reveal.
-  const list=document.getElementById('user-orders-list');
-  if(list){
-    const mark=()=>{
-      [...list.children].forEach((el,i)=>{
-        el.style.animation=`cardIn .55s cubic-bezier(.22,.8,.25,1) ${Math.min(i*.07,.42)}s both`;
+    /* Heritage particles — same visual system as FAQ */
+    if(!document.querySelector('.track-float')){
+      const wrap=document.createElement('div');
+      wrap.className='track-float';
+      wrap.setAttribute('aria-hidden','true');
+      [
+        ['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],
+        ['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']
+      ].forEach(([left,duration,delay])=>{
+        const i=document.createElement('i');
+        i.style.left=left;
+        i.style.animationDuration=duration;
+        i.style.animationDelay=delay;
+        wrap.appendChild(i);
       });
+      document.body.prepend(wrap);
+    }
+
+    /* FAQ-style viewport reveals */
+    const revealTargets=[];
+    [authOrders,trackingCard].filter(Boolean).forEach((el,index)=>{
+      el.classList.add('track-scroll-reveal');
+      el.style.transitionDelay=Math.min(index*35,245)+'ms';
+      revealTargets.push(el);
+    });
+
+    if(footer){
+      const inner=footer.querySelector(':scope > div');
+      if(inner){
+        inner.classList.add('track-footer-inner');
+        revealTargets.push(inner);
+      }
+    }
+
+    /* Reveal children inside tracking card with a soft stagger */
+    if(trackingCard){
+      [
+        trackingCard.querySelector('h2'),
+        trackingCard.querySelector('p'),
+        trackingCard.querySelector('#track-form'),
+        trackingCard.querySelector('#tracking-message-box')
+      ].filter(Boolean).forEach(el=>el.classList.add('track-child-reveal'));
+    }
+
+    /* Intersection observer, matching FAQ behavior */
+    const show=(el)=>{
+      el.classList.add('is-visible');
+      el.style.opacity='';
     };
-    new MutationObserver(mark).observe(list,{childList:true,subtree:false});
-    setTimeout(mark,300);
+
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver((entries,observer)=>{
+        entries.forEach(entry=>{
+          if(!entry.isIntersecting) return;
+          show(entry.target);
+          observer.unobserve(entry.target);
+        });
+      },{threshold:.05,rootMargin:'0px 0px -5% 0px'});
+      revealTargets.forEach(el=>io.observe(el));
+    }else{
+      revealTargets.forEach(show);
+    }
+
+    /* Button press feedback without changing tracking behavior */
+    if(trackButton){
+      trackButton.addEventListener('click',()=>{
+        trackButton.classList.remove('track-click');
+        void trackButton.offsetWidth;
+        trackButton.classList.add('track-click');
+      });
+    }
+
+    /* Dynamically inserted order cards */
+    if(orderList){
+      const orderObserver='IntersectionObserver' in window
+        ? new IntersectionObserver((entries,observer)=>{
+            entries.forEach(entry=>{
+              if(!entry.isIntersecting) return;
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            });
+          },{threshold:.05,rootMargin:'0px 0px -5% 0px'})
+        : null;
+
+      const markOrders=()=>{
+        [...orderList.children].forEach((el,index)=>{
+          el.classList.add('track-order-reveal');
+          el.style.transitionDelay=Math.min(index*35,245)+'ms';
+          if(el.dataset.trackRevealObserved==='1') return;
+          el.dataset.trackRevealObserved='1';
+          if(orderObserver) orderObserver.observe(el);
+          else el.classList.add('is-visible');
+        });
+      };
+      new MutationObserver(markOrders).observe(orderList,{childList:true,subtree:false});
+      markOrders();
+    }
+
+    /* Release the loading gate only after theme hooks are ready — FAQ style */
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        root.classList.remove('theme-preload');
+      });
+    });
   }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
+})();
+</script>
+
+
+<style id="new-theme-final-animation">
+/* ===== NEW HERITAGE THEME — replaces the old maroon treatment ===== */
+:root{
+  --ivory:#FBF8F1;
+  --ivory-2:#F4EFE4;
+  --paper:#FFFDF8;
+  --coffee:#3B2417;
+  --coffee-2:#5A3925;
+  --brown:#76543B;
+  --gold:#C99A3B;
+  --gold-2:#E5C77B;
+}
+
+/* Keep the whole page on the new ivory / coffee / gold palette */
+body{
+  background:
+    radial-gradient(circle at 8% 8%,rgba(201,154,59,.08),transparent 26%),
+    radial-gradient(circle at 92% 32%,rgba(118,84,59,.055),transparent 24%),
+    linear-gradient(180deg,#FBF8F1 0%,#F7F2E8 42%,#F4EFE4 100%) !important;
+  color:var(--coffee) !important;
+}
+::-webkit-scrollbar-track{background:#EEE7DA!important}
+::-webkit-scrollbar-thumb{background:linear-gradient(#9A6E2E,#D4AE5A,#9A6E2E)!important;border-radius:999px}
+
+/* Header */
+header{
+  background:rgba(251,248,241,.82)!important;
+  border-bottom:1px solid rgba(104,72,39,.10)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:0 7px 24px rgba(68,44,24,.035)!important;
+}
+header.scrolled{
+  background:rgba(251,248,241,.96)!important;
+  box-shadow:0 16px 42px rgba(68,44,24,.09)!important;
+}
+header a, header .text-maroon, header .text-saffron,
+header .text-naturalBrown{color:#6A5544!important}
+header a:hover{color:#3B2417!important}
+header .text-golden{color:#C99A3B!important}
+header #cart-badge{
+  background:#6A4127!important;
+  border-color:#D8B15C!important;
+  color:#FFFDF8!important;
+}
+#mobile-menu{
+  background:#FBF8F1!important;
+  background-image:linear-gradient(180deg,#FFFDF8 0%,#F8F2E8 58%,#F1E8DA 100%)!important;
+  color:#3B2417!important;
+}
+#mobile-menu .bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;
+  color:#FFFDF8!important;
+}
+
+/* Track hero — same visual language as the new homepage */
+#track-hero{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(229,199,123,.11),transparent 32%),
+    linear-gradient(135deg,#6C5948 0%,#4B3829 52%,#76543B 100%)!important;
+  overflow:hidden!important;
+}
+#track-hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 30%,rgba(229,199,123,.10),transparent 20%),
+    radial-gradient(circle at 82% 70%,rgba(201,154,59,.10),transparent 23%);
+  animation:newThemeGlow 9s ease-in-out infinite alternate;
+}
+@keyframes newThemeGlow{
+  from{transform:translate3d(-1%,0,0) scale(1)}
+  to{transform:translate3d(1%,1%,0) scale(1.05)}
+}
+#track-hero .max-w-7xl,
+#track-hero > div{position:relative;z-index:2}
+#track-hero .track-kicker{
+  color:#E5C77B!important;
+  animation:newHeroIn .65s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero h1{
+  color:#FFF9EE!important;
+  text-shadow:0 14px 36px rgba(26,14,7,.24)!important;
+  letter-spacing:-.035em!important;
+  animation:newHeroIn .75s .06s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero p{
+  color:rgba(255,250,240,.90)!important;
+  animation:newHeroCopy .8s .12s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#track-hero .track-rule{
+  background:linear-gradient(90deg,transparent,#C99A3B,transparent)!important;
+  animation:newRuleIn .65s .14s cubic-bezier(.22,.8,.25,1) both!important;
+}
+@keyframes newHeroIn{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes newHeroCopy{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes newRuleIn{
+  from{opacity:0;transform:scaleX(.2)}
+  to{opacity:1;transform:scaleX(1)}
+}
+
+/* Main content */
+.tracking-section{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,154,59,.055),transparent 28%),
+    linear-gradient(180deg,#FFFDF9,#F2EBDF)!important;
+}
+#tracking-input-card,#auth-orders-section{
+  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
+  border:1px solid rgba(104,72,39,.11)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 40px rgba(68,44,24,.07)!important;
+  transition:transform .42s cubic-bezier(.2,.7,.2,1),box-shadow .42s,border-color .42s!important;
+}
+#tracking-input-card:hover,#auth-orders-section:hover{
+  transform:translateY(-5px)!important;
+  border-color:rgba(201,154,59,.35)!important;
+  box-shadow:0 24px 54px rgba(68,44,24,.12)!important;
+}
+#tracking-input-card h2,#auth-orders-section h2{color:#3B2417!important}
+#tracking-input-card p{color:#756252!important}
+
+/* Input + primary action */
+#order-id-input{
+  background:#FBF7EF!important;
+  color:#3B2417!important;
+  border-color:rgba(104,72,39,.14)!important;
+  border-radius:14px!important;
+}
+#order-id-input:focus{
+  border-color:#C99A3B!important;
+  box-shadow:0 0 0 4px rgba(201,154,59,.10)!important;
+  transform:translateY(-1px)!important;
+}
+#track-form button,
+#guest-checkout-modal a.bg-maroon,
+#cart-drawer #checkout-btn{
+  background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;
+  color:#FFFDF8!important;
+  border-color:rgba(229,199,123,.30)!important;
+  border-radius:13px!important;
+  box-shadow:0 10px 26px rgba(68,44,24,.12)!important;
+}
+#track-form button:hover,
+#guest-checkout-modal a.bg-maroon:hover,
+#cart-drawer #checkout-btn:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:0 16px 36px rgba(68,44,24,.18)!important;
+}
+#track-form button:active{transform:translateY(-1px) scale(.99)!important}
+
+/* Dynamic order cards */
+#user-orders-list>div{
+  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
+  border-color:rgba(104,72,39,.11)!important;
+  border-radius:16px!important;
+  transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease!important;
+}
+#user-orders-list>div:hover{
+  transform:translateY(-4px)!important;
+  border-color:rgba(201,154,59,.30)!important;
+  box-shadow:0 18px 38px rgba(68,44,24,.10)!important;
+}
+
+/* Loading + messages */
+#user-orders-loading i{color:#A87525!important}
+#tracking-message-box{
+  border-radius:14px!important;
+  box-shadow:0 8px 24px rgba(68,44,24,.06)!important;
+}
+
+/* Footer / floating map */
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+}
+footer .text-golden{color:#E6C87A!important}
+footer a:hover{color:#F2D997!important}
+.fixed.bottom-6.right-6,.fixed.bottom-5.right-5{
+  background:rgba(255,253,249,.94)!important;
+  border-color:rgba(201,154,59,.28)!important;
+  box-shadow:0 12px 28px rgba(68,44,24,.13)!important;
+}
+
+/* Stronger FAQ-like scroll entrance */
+.new-theme-reveal{
+  opacity:0!important;
+  transform:translateY(24px)!important;
+  transition:opacity .78s cubic-bezier(.22,.8,.25,1),transform .78s cubic-bezier(.22,.8,.25,1)!important;
+}
+.new-theme-reveal.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+.new-theme-stagger{
+  opacity:0!important;
+  transform:translateY(16px) scale(.985)!important;
+  transition:opacity .55s ease,transform .55s cubic-bezier(.22,.8,.25,1)!important;
+}
+.new-theme-reveal.is-visible .new-theme-stagger{
+  opacity:1!important;
+  transform:none!important;
+}
+.new-theme-reveal.is-visible .new-theme-stagger:nth-child(1){transition-delay:.04s!important}
+.new-theme-reveal.is-visible .new-theme-stagger:nth-child(2){transition-delay:.09s!important}
+.new-theme-reveal.is-visible .new-theme-stagger:nth-child(3){transition-delay:.14s!important}
+.new-theme-reveal.is-visible .new-theme-stagger:nth-child(4){transition-delay:.19s!important}
+.new-theme-reveal.is-visible .new-theme-stagger:nth-child(5){transition-delay:.24s!important}
+
+/* Button press */
+.new-theme-press{animation:newThemePress .28s cubic-bezier(.22,.8,.25,1)!important}
+@keyframes newThemePress{
+  0%{transform:scale(1)}
+  45%{transform:scale(.965)}
+  100%{transform:scale(1)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+</style>
+<script id="new-theme-final-animation-js">
+(function(){
+  function initNewTheme(){
+    const revealEls = document.querySelectorAll(
+      '#tracking-input-card, #auth-orders-section, .tracking-section > div, footer > div'
+    );
+    revealEls.forEach((el)=>{
+      el.classList.add('new-theme-reveal');
+      el.querySelectorAll(':scope > div, :scope > h2, :scope > p, :scope > form, :scope > a').forEach(child=>{
+        child.classList.add('new-theme-stagger');
+      });
+    });
+
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },{threshold:.10,rootMargin:'0px 0px -45px 0px'});
+
+    revealEls.forEach(el=>observer.observe(el));
+
+    document.querySelectorAll('#track-form button, #cart-drawer #checkout-btn, #mobile-menu a, #mobile-menu-btn')
+      .forEach(btn=>{
+        btn.addEventListener('pointerdown',()=>{
+          btn.classList.remove('new-theme-press');
+          void btn.offsetWidth;
+          btn.classList.add('new-theme-press');
+        });
+      });
+
+    // Animate cards that Firebase injects later.
+    const list=document.getElementById('user-orders-list');
+    if(list){
+      const orderObserver=new MutationObserver(()=>{
+        list.querySelectorAll(':scope > div:not([data-new-theme-ready])').forEach((card,i)=>{
+          card.setAttribute('data-new-theme-ready','1');
+          card.classList.add('new-theme-reveal','new-theme-stagger');
+          setTimeout(()=>card.classList.add('is-visible'),40+i*55);
+        });
+      });
+      orderObserver.observe(list,{childList:true});
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initNewTheme);
+  else initNewTheme();
 })();
 </script>
 
