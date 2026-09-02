@@ -1,13 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth theme-preload">
 <head>
+<style id="theme-prepaint-gate">
+html.theme-preload body{visibility:hidden!important}
+</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | Sri Shambhu Sha & Sons</title>
     <meta name="description" content="Get in touch with Sri Shambhu Sha & Sons. Find our shop location at Baidyanath Dham, Deoghar, or contact us online.">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+    
+<style id="contact-critical-theme">
+html{background:#FBF8F1!important;color:#3B2417!important}
+body{background:#FBF8F1!important;color:#3B2417!important}
+header{background:rgba(251,248,241,.94)!important;border-bottom:1px solid rgba(104,72,39,.10)!important;color:#3B2417!important}
+header a,header button,header span{color:#6A5544!important}
+#contact-hero{background:linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;color:#FFF9EE!important}
+.contact-section{background:#FFFDF9!important;color:#3B2417!important}
+footer{background:#3B2417!important;color:#FFF8EB!important;border-top:4px solid #C99A3B!important}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -267,8 +281,115 @@ footer a:hover{color:#F2D997!important}
 }
 </style>
 
+
+<style id="index-motion-contact">
+/* ===== INDEX-STYLE MOTION SYSTEM ===== */
+.reveal-premium{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .8s ease,transform .8s ease;
+  will-change:opacity,transform;
+}
+.reveal-premium.is-visible{
+  opacity:1;
+  transform:none;
+}
+
+/* Hero entrance from Index */
+#contact-hero .contact-kicker{
+  animation:heroTitleIn .85s cubic-bezier(.22,.8,.25,1) both;
+}
+#contact-hero h1{
+  animation:heroTitleIn .85s .06s cubic-bezier(.22,.8,.25,1) both;
+}
+#contact-hero p{
+  animation:heroCopyIn .95s .12s cubic-bezier(.22,.8,.25,1) both;
+}
+#contact-hero .contact-rule{
+  animation:ruleIn .8s .14s cubic-bezier(.22,.8,.25,1) both;
+}
+@keyframes heroTitleIn{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:none}
+}
+@keyframes heroCopyIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes ruleIn{
+  from{opacity:0;transform:scaleX(.2)}
+  to{opacity:1;transform:scaleX(1)}
+}
+
+/* Index-style premium hover motion */
+.contact-section .grid.grid-cols-1.md\:grid-cols-2>div,
+.contact-section .grid.grid-cols-1.sm\:grid-cols-2>a{
+  will-change:transform;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+
+/* Keep hover-lift elegant */
+@media(pointer:fine){
+  .contact-section .grid.grid-cols-1.md\:grid-cols-2>div:hover,
+  .contact-section .grid.grid-cols-1.sm\:grid-cols-2>a:hover{
+    transform:translateY(-7px);
+  }
+}
+
+/* Subtle section reveal should not fight card hover */
+.contact-section.reveal-premium.is-visible{
+  transform:none!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal-premium,
+  .reveal-premium.is-visible,
+  #contact-hero .contact-kicker,
+  #contact-hero h1,
+  #contact-hero p,
+  #contact-hero .contact-rule{
+    animation:none!important;
+    transition:none!important;
+    opacity:1!important;
+    transform:none!important;
+  }
+}
+</style>
+
+<style id="contact-index-final-motion">
+.reveal-premium{
+  opacity:0!important;
+  transform:translateY(24px)!important;
+  transition:opacity .8s ease,transform .8s ease!important;
+}
+.reveal-premium.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+/* Keep footer background visible, reveal its inner content exactly like Index. */
+footer > div.reveal-premium{will-change:opacity,transform}
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+  color:#FFF8EB!important;
+}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .text-cream\/60{color:rgba(255,248,235,.58)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+@media(prefers-reduced-motion:reduce){
+  .reveal-premium{opacity:1!important;transform:none!important;transition:none!important}
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
+<script>
+document.documentElement.classList.remove('theme-preload');
+</script>
+
 
     <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -758,30 +879,84 @@ footer a:hover{color:#F2D997!important}
         }
     </script>
 
-<script id="contact-index-theme-hooks">
+
+
+
+<script id="contact-index-final-motion-js">
 (function(){
-  if(!document.querySelector('.contact-float')){
-    const wrap=document.createElement('div');
-    wrap.className='contact-float';wrap.setAttribute('aria-hidden','true');
-    [['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']]
-      .forEach(([l,d,delay])=>{const i=document.createElement('i');i.style.left=l;i.style.animationDuration=d;i.style.animationDelay=delay;wrap.appendChild(i)});
-    document.body.prepend(wrap);
+  function init(){
+    const header=document.querySelector('header');
+    const hero=[...document.querySelectorAll('section')].find(s=>/Get in Touch/i.test(s.textContent||''));
+    const contact=[...document.querySelectorAll('section')].find(s=>/Contact Information/i.test(s.textContent||''));
+
+    if(hero) hero.id='contact-hero';
+    if(contact) contact.classList.add('contact-section');
+
+    if(header){
+      const syncHeader=()=>header.classList.toggle('scrolled',window.scrollY>28);
+      syncHeader();
+      window.addEventListener('scroll',syncHeader,{passive:true});
+    }
+
+    /* Same reveal targets philosophy as the Index page: section wrappers + footer wrapper. */
+    const selector=[
+      '#contact-hero > div.relative',
+      '.contact-section > div',
+      '.contact-section h2',
+      '.contact-section .space-y-6 > div',
+      'footer > div'
+    ].join(',');
+    const targets=[...document.querySelectorAll(selector)];
+
+    /* Contact cards get the same staggered entrance treatment as Index product cards. */
+    const cards=[...document.querySelectorAll(
+      '.contact-section .grid.grid-cols-1.md\\:grid-cols-2 > div,'+
+      '.contact-section .grid.grid-cols-1.sm\\:grid-cols-2 > a'
+    )];
+    cards.forEach((el,i)=>{
+      if(!targets.includes(el)) targets.push(el);
+      el.classList.add('reveal-premium');
+      el.style.transitionDelay=Math.min(i*70,350)+'ms';
+    });
+
+    /* Avoid duplicate targets while preserving DOM order. */
+    const unique=[...new Set(targets)];
+    unique.forEach((el,i)=>{
+      el.classList.add('reveal-premium');
+      if(!el.style.transitionDelay) el.style.transitionDelay=Math.min(i*70,350)+'ms';
+    });
+
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },{threshold:.11,rootMargin:'0px 0px -4% 0px'});
+      unique.forEach(el=>io.observe(el));
+    }else{
+      unique.forEach(el=>el.classList.add('is-visible'));
+    }
+
+    /* Same subtle pointer tilt used by Index product cards, on mouse devices only. */
+    if(window.matchMedia('(pointer:fine)').matches){
+      cards.forEach(card=>{
+        card.addEventListener('pointermove',(e)=>{
+          const r=card.getBoundingClientRect();
+          const x=((e.clientX-r.left)/r.width-.5)*5;
+          const y=((e.clientY-r.top)/r.height-.5)*-5;
+          card.style.transform=`translateY(-6px) rotateX(${y}deg) rotateY(${x}deg)`;
+        });
+        card.addEventListener('pointerleave',()=>{
+          card.style.transform='';
+        });
+      });
+    }
   }
-  const hero=[...document.querySelectorAll('section')].find(s=>/Get in Touch/i.test(s.textContent||''));
-  if(hero){
-    hero.id='contact-hero';
-    const span=hero.querySelector('span'),rule=hero.querySelector('div.w-24'),p=hero.querySelector('p');
-    if(span) span.classList.add('contact-kicker');
-    if(rule) rule.classList.add('contact-rule');
-    if(p) p.classList.add('contact-copy');
-  }
-  const section=[...document.querySelectorAll('section')].find(s=>/Contact Information/i.test(s.textContent||''));
-  if(section) section.classList.add('contact-section');
-  const header=document.querySelector('header');
-  if(header){
-    const update=()=>header.classList.toggle('scrolled',window.scrollY>20);
-    update();window.addEventListener('scroll',update,{passive:true});
-  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
 })();
 </script>
 
