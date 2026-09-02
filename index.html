@@ -480,6 +480,145 @@ footer a:hover{color:#F2D997!important}
 }
 </style>
 
+
+<style id="absolute-final-ui-fix">
+/* =========================================================
+   CART BADGE — explicit styling; do not inherit logo circle
+   ========================================================= */
+header #cart-badge{
+  position:absolute!important;
+  top:-1px!important;
+  right:-1px!important;
+  z-index:20!important;
+  width:20px!important;
+  min-width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  padding:0!important;
+  border-radius:9999px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#6A4127!important;
+  color:#FFFDF8!important;
+  border:1.5px solid #D8B15C!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  opacity:1!important;
+  visibility:visible!important;
+  box-shadow:0 3px 10px rgba(59,36,23,.18)!important;
+  transform:none!important;
+}
+header #cart-badge.hidden{
+  display:none!important;
+}
+/* Prevent the generic rounded-full/logo rule from touching the cart badge. */
+header #cart-badge.rounded-full{
+  background:#6A4127!important;
+  color:#FFFDF8!important;
+}
+
+/* =========================================================
+   MOBILE MENU — hidden by default, animated ONLY when open
+   ========================================================= */
+@media(max-width:1023px){
+  #mobile-menu{
+    /* IMPORTANT: no display:block here — Tailwind .hidden must work */
+    background:#FBF8F1!important;
+    background-image:linear-gradient(180deg,#FFFDF8 0%,#F8F2E8 58%,#F1E8DA 100%)!important;
+    color:#3B2417!important;
+    opacity:1!important;
+    visibility:visible!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border-top:1px solid rgba(201,154,59,.18)!important;
+    border-bottom:1px solid rgba(104,72,39,.12)!important;
+    box-shadow:0 20px 42px rgba(67,45,26,.14)!important;
+    transform-origin:top center;
+    isolation:isolate;
+    z-index:999!important;
+  }
+
+  #mobile-menu.hidden{
+    display:none!important;
+  }
+
+  #mobile-menu:not(.hidden){
+    display:block!important;
+    animation:mobileMenuReveal .36s cubic-bezier(.22,.78,.22,1) both!important;
+  }
+
+  #mobile-menu::before{
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    background:
+      radial-gradient(circle at 92% 8%,rgba(201,154,59,.11),transparent 26%),
+      radial-gradient(circle at 8% 90%,rgba(118,84,59,.055),transparent 24%)!important;
+    z-index:-1!important;
+    pointer-events:none!important;
+  }
+
+  #mobile-menu>div{
+    position:relative!important;
+    z-index:2!important;
+    background:transparent!important;
+  }
+
+  #mobile-menu .mobile-link{
+    opacity:1!important;
+    transform:none!important;
+  }
+
+  #mobile-menu:not(.hidden) .mobile-link{
+    animation:mobileMenuItem .42s cubic-bezier(.22,.78,.22,1) both!important;
+  }
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(1){animation-delay:.03s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(2){animation-delay:.065s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(3){animation-delay:.10s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(4){animation-delay:.135s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(5){animation-delay:.17s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(6){animation-delay:.205s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(7){animation-delay:.24s!important}
+
+  #mobile-menu a{
+    color:#614A38!important;
+    background:transparent!important;
+    border-bottom-color:rgba(104,72,39,.08)!important;
+    border-radius:12px!important;
+    transition:background .22s ease,color .22s ease,transform .22s ease,box-shadow .22s ease!important;
+  }
+  #mobile-menu a:hover{
+    background:rgba(201,154,59,.08)!important;
+    color:#3B2417!important;
+    transform:translateX(3px)!important;
+  }
+  #mobile-menu a.bg-maroon{
+    background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;
+    color:#FFFDF8!important;
+  }
+}
+
+@keyframes mobileMenuReveal{
+  0%{opacity:0;transform:translateY(-13px) scaleY(.92)}
+  70%{opacity:1;transform:translateY(2px) scaleY(1.01)}
+  100%{opacity:1;transform:translateY(0) scaleY(1)}
+}
+@keyframes mobileMenuItem{
+  0%{opacity:0;transform:translateX(-9px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #mobile-menu:not(.hidden),
+  #mobile-menu:not(.hidden) .mobile-link{
+    animation:none!important;
+    transform:none!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-obsidian text-[#F3F0E9] font-sans antialiased overflow-x-hidden">
 <div class="premium-float" aria-hidden="true">
@@ -1249,6 +1388,32 @@ document.addEventListener('DOMContentLoaded', function(){
     revealTargets.forEach(el=>io.observe(el));
   }else{
     revealTargets.forEach(el=>el.classList.add('is-visible'));
+  }
+});
+</script>
+
+
+<script id="absolute-final-ui-js">
+document.addEventListener('DOMContentLoaded', function(){
+  const badge = document.getElementById('cart-badge');
+  if (badge) {
+    const enforceBadge = () => {
+      if (!badge.classList.contains('hidden')) {
+        badge.style.setProperty('display','flex','important');
+        badge.style.setProperty('background','#6A4127','important');
+        badge.style.setProperty('color','#FFFDF8','important');
+        badge.style.setProperty('border','1.5px solid #D8B15C','important');
+        badge.style.setProperty('width','20px','important');
+        badge.style.setProperty('height','20px','important');
+        badge.style.setProperty('min-width','20px','important');
+        badge.style.setProperty('border-radius','9999px','important');
+      }
+    };
+    enforceBadge();
+    new MutationObserver(enforceBadge).observe(badge, {
+      attributes:true,
+      attributeFilter:['class','style']
+    });
   }
 });
 </script>
