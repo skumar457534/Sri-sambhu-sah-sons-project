@@ -1,6 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth faq-preload">
 <head>
+
+<style id="faq-prepaint-lock">
+html.faq-preload,html.faq-preload body{
+  visibility:hidden!important;
+  background:#FBF8F1!important;
+}
+html.faq-preload body:before{display:none!important}
+html.faq-preload header{
+  background:#FBF8F1!important;
+  border-color:rgba(104,72,39,.10)!important;
+}
+html.faq-preload .faq-hero-prepaint{
+  background:linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;
+}
+html.faq-preload .faq-section-prepaint{
+  background:#FFFDF9!important;
+}
+html.faq-preload footer{
+  background:#3B2417!important;
+  border-top-color:#C99A3B!important;
+}
+</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ | Sri Shambhu Sha & Sons</title>
@@ -39,21 +62,24 @@
         ::-webkit-scrollbar-track { background: #FDFBF7; }
         ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
         
-        /* Smooth accordion transition */
+        /* Smooth, content-sized accordion */
         .accordion-content {
-            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
             max-height: 0;
-            opacity: 0;
             overflow: hidden;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            transition:
+                max-height .34s cubic-bezier(.22,.8,.25,1),
+                opacity .22s ease,
+                padding-top .28s ease,
+                padding-bottom .28s ease;
         }
         .accordion-content.open {
-            max-height: 500px;
             opacity: 1;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
         }
         .accordion-icon {
-            transition: transform 0.3s ease-in-out;
+            transition: transform .28s cubic-bezier(.22,.8,.25,1), color .22s ease;
         }
         .accordion-icon.rotate {
             transform: rotate(180deg);
@@ -201,27 +227,11 @@ header #cart-badge.hidden{display:none!important}
     linear-gradient(180deg,#FFFDF9 0%,#F4EEE3 100%)!important;
 }
 .faq-section>.max-w-4xl{position:relative}
-.faq-section .space-y-4>div{
-  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
-  border:1px solid rgba(104,72,39,.12)!important;
-  border-radius:18px!important;
-  box-shadow:0 12px 34px rgba(68,44,24,.06)!important;
-  overflow:hidden;
-  transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease!important;
-  animation:faqCardIn .65s cubic-bezier(.22,.8,.25,1) both;
-}
 .faq-section .space-y-4>div:hover{
   transform:translateY(-3px)!important;
   border-color:rgba(201,154,59,.34)!important;
   box-shadow:0 20px 44px rgba(68,44,24,.10)!important;
 }
-.faq-section .space-y-4>div:nth-child(2){animation-delay:.05s}
-.faq-section .space-y-4>div:nth-child(3){animation-delay:.10s}
-.faq-section .space-y-4>div:nth-child(4){animation-delay:.15s}
-.faq-section .space-y-4>div:nth-child(5){animation-delay:.20s}
-.faq-section .space-y-4>div:nth-child(6){animation-delay:.25s}
-.faq-section .space-y-4>div:nth-child(7){animation-delay:.30s}
-.faq-section .space-y-4>div:nth-child(8){animation-delay:.35s}
 @keyframes faqCardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
 .faq-section .space-y-4 button{
@@ -281,6 +291,200 @@ footer a:hover{color:#F2D997!important}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+</style>
+
+
+
+
+
+
+
+
+<style id="faq-final-clean-theme">
+/* First-paint lock: old maroon utility classes never become visible. */
+html.faq-preload,
+html.faq-preload body{
+  visibility:hidden!important;
+  background:#FBF8F1!important;
+}
+html.faq-preload body:before{display:none!important}
+html.faq-preload header{
+  background:#FBF8F1!important;
+  border-color:rgba(104,72,39,.10)!important;
+}
+html.faq-preload .faq-hero-prepaint{
+  background:linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;
+}
+html.faq-preload .faq-section-prepaint{
+  background:#FFFDF9!important;
+}
+html.faq-preload footer{
+  background:#3B2417!important;
+  border-top-color:#C99A3B!important;
+}
+
+/* Fast Index-style scroll reveal */
+.faq-scroll-reveal{
+  opacity:0!important;
+  transform:translateY(22px)!important;
+  transition:opacity .50s cubic-bezier(.22,.8,.25,1),
+             transform .50s cubic-bezier(.22,.8,.25,1)!important;
+  will-change:opacity,transform;
+}
+.faq-scroll-reveal.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+
+/* FAQ cards */
+.faq-section .space-y-4>div{
+  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
+  border:1px solid rgba(104,72,39,.12)!important;
+  border-radius:18px!important;
+  box-shadow:0 12px 34px rgba(68,44,24,.06)!important;
+  overflow:hidden!important;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important;
+}
+.faq-section .space-y-4>div:hover{
+  transform:translateY(-4px)!important;
+  border-color:rgba(201,154,59,.34)!important;
+  box-shadow:0 20px 44px rgba(68,44,24,.10)!important;
+}
+.faq-section .space-y-4 button{
+  background:transparent!important;
+  color:#3B2417!important;
+}
+.faq-section .space-y-4 h3{color:#3B2417!important}
+
+/* Exact content-height accordion; JS writes scrollHeight */
+.faq-section .accordion-content{
+  max-height:0;
+  height:auto!important;
+  overflow:hidden!important;
+  opacity:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  box-sizing:border-box!important;
+  transition:max-height .34s cubic-bezier(.22,.8,.25,1),
+             opacity .22s ease,
+             padding-top .28s ease,
+             padding-bottom .28s ease!important;
+}
+.faq-section .accordion-content.open{
+  opacity:1!important;
+  padding-top:1rem!important;
+  padding-bottom:1rem!important;
+  background:rgba(247,241,231,.72)!important;
+  color:#756252!important;
+}
+.faq-section .accordion-icon{color:#6A4127!important}
+.faq-section .accordion-icon.rotate{color:#C99A3B!important}
+
+/* Gold header details */
+#faq-hero .faq-kicker{color:#C99A3B!important}
+#faq-hero .faq-rule{
+  background:linear-gradient(90deg,transparent,#C99A3B,transparent)!important;
+}
+
+/* Support block */
+.faq-support-scroll{
+  opacity:0!important;
+  transform:translateY(22px)!important;
+  transition:opacity .50s cubic-bezier(.22,.8,.25,1),
+             transform .50s cubic-bezier(.22,.8,.25,1)!important;
+}
+.faq-support-scroll.is-visible{opacity:1!important;transform:none!important}
+
+/* Footer exactly keeps normal layout; only inner content reveals */
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+  color:#FFF8EB!important;
+}
+footer .faq-footer-inner{
+  opacity:0!important;
+  transform:translateY(22px)!important;
+  transition:opacity .50s cubic-bezier(.22,.8,.25,1),
+             transform .50s cubic-bezier(.22,.8,.25,1)!important;
+}
+footer .faq-footer-inner.is-visible{
+  opacity:1!important;
+  transform:none!important;
+}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .text-cream\/60{color:rgba(255,248,235,.58)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+
+/* Hero fast entrance */
+#faq-hero .faq-kicker{
+  animation:faqHeroIn .58s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#faq-hero h1{
+  animation:faqHeroIn .62s .04s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#faq-hero p{
+  animation:faqHeroCopy .64s .08s cubic-bezier(.22,.8,.25,1) both!important;
+}
+#faq-hero .faq-rule{
+  animation:faqRule .48s .10s cubic-bezier(.22,.8,.25,1) both!important;
+}
+@keyframes faqHeroIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes faqHeroCopy{
+  from{opacity:0;transform:translateY(11px)}
+  to{opacity:1;transform:none}
+}
+@keyframes faqRule{
+  from{opacity:0;transform:scaleX(.3)}
+  to{opacity:1;transform:scaleX(1)}
+}
+
+@media(max-width:640px){
+  .faq-section .space-y-4>div{border-radius:16px!important}
+  .faq-section .space-y-4 button{
+    padding-left:1rem!important;
+    padding-right:1rem!important;
+  }
+  .faq-section .accordion-content{
+    padding-left:1rem!important;
+    padding-right:1rem!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .faq-scroll-reveal,.faq-scroll-reveal.is-visible,
+  .faq-support-scroll,.faq-support-scroll.is-visible,
+  footer .faq-footer-inner,footer .faq-footer-inner.is-visible{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+  #faq-hero .faq-kicker,#faq-hero h1,#faq-hero p,#faq-hero .faq-rule{
+    animation:none!important;
+  }
+}
+</style>
+
+
+<style id="faq-functional-safety">
+/* Never let animation wrappers disable pointer input. */
+.faq-scroll-reveal,
+.faq-scroll-reveal.is-visible{
+  pointer-events:auto!important;
+}
+.faq-section .space-y-4>div,
+.faq-section .space-y-4 button{
+  pointer-events:auto!important;
+}
+.faq-section .space-y-4 button{
+  position:relative;
+  z-index:2;
+  cursor:pointer!important;
 }
 </style>
 
@@ -400,7 +604,7 @@ footer a:hover{color:#F2D997!important}
     </div>
 
     <!-- FAQ HERO BANNER -->
-    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
+    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden faq-hero-prepaint">
         <div class="absolute inset-0 opacity-10">
             <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
         </div>
@@ -413,7 +617,7 @@ footer a:hover{color:#F2D997!important}
     </section>
 
     <!-- FAQ ACCORDION SECTION -->
-    <section class="py-16 md:py-24 bg-cream min-h-[50vh]">
+    <section class="py-16 md:py-24 bg-cream min-h-[50vh] faq-section-prepaint">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <div class="space-y-4">
@@ -522,7 +726,7 @@ footer a:hover{color:#F2D997!important}
 
     <!-- FOOTER -->
     <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="faq-footer-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
                 <!-- Brand Info -->
                 <div class="max-w-md">
@@ -624,13 +828,30 @@ footer a:hover{color:#F2D997!important}
         function toggleFAQ(button) {
             const content = button.nextElementSibling;
             const icon = button.querySelector('.accordion-icon');
-            
+
+            if (!content) return;
+
             if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                icon.classList.remove('rotate');
+                // Close smoothly.
+                const currentHeight = content.scrollHeight;
+                content.style.maxHeight = currentHeight + 'px';
+                requestAnimationFrame(() => {
+                    content.classList.remove('open');
+                    if (icon) icon.classList.remove('rotate');
+                    content.style.maxHeight = '0px';
+                });
             } else {
+                // Open to the exact natural height — no fixed 500px ceiling.
                 content.classList.add('open');
-                icon.classList.add('rotate');
+                if (icon) icon.classList.add('rotate');
+
+                content.style.maxHeight = 'none';
+                const fullHeight = content.scrollHeight;
+                content.style.maxHeight = '0px';
+
+                requestAnimationFrame(() => {
+                    content.style.maxHeight = fullHeight + 'px';
+                });
             }
         }
 
@@ -781,44 +1002,173 @@ footer a:hover{color:#F2D997!important}
         }
     </script>
 
-<script id="faq-index-theme-hooks">
+<script id="faq-final-clean-js">
 (function(){
-  if(!document.querySelector('.faq-float')){
-    const wrap=document.createElement('div');
-    wrap.className='faq-float';wrap.setAttribute('aria-hidden','true');
-    [['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']]
-      .forEach(([l,d,delay])=>{const i=document.createElement('i');i.style.left=l;i.style.animationDuration=d;i.style.animationDelay=delay;wrap.appendChild(i)});
-    document.body.prepend(wrap);
-  }
+  function init(){
+    const hero=[...document.querySelectorAll('section')].find(s=>/Frequently Asked Questions/i.test(s.textContent||''));
+    const section=[...document.querySelectorAll('section')].find(s=>s.querySelector('.accordion-content'));
+    const footer=document.querySelector('footer');
 
-  const hero=[...document.querySelectorAll('section')].find(s=>/Frequently Asked Questions/i.test(s.textContent||''));
-  if(hero){
-    hero.id='faq-hero';
-    const span=hero.querySelector('span'),rule=hero.querySelector('div.w-24'),p=hero.querySelector('p');
-    if(span) span.classList.add('faq-kicker');
-    if(rule) rule.classList.add('faq-rule');
-  }
+    if(hero){
+      hero.id='faq-hero';
+      const kicker=hero.querySelector('span');
+      const rule=hero.querySelector('div.w-24');
+      if(kicker) kicker.classList.add('faq-kicker');
+      if(rule) rule.classList.add('faq-rule');
+    }
+    if(section) section.classList.add('faq-section');
 
-  const section=[...document.querySelectorAll('section')].find(s=>s.querySelector('.accordion-content'));
-  if(section) section.classList.add('faq-section');
+    /* Heritage particles */
+    if(!document.querySelector('.faq-float')){
+      const wrap=document.createElement('div');
+      wrap.className='faq-float';
+      wrap.setAttribute('aria-hidden','true');
+      [
+        ['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],
+        ['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']
+      ].forEach(([left,duration,delay])=>{
+        const i=document.createElement('i');
+        i.style.left=left;
+        i.style.animationDuration=duration;
+        i.style.animationDelay=delay;
+        wrap.appendChild(i);
+      });
+      document.body.prepend(wrap);
+    }
 
-  const header=document.querySelector('header');
-  if(header){
-    const update=()=>header.classList.toggle('scrolled',window.scrollY>20);
-    update();window.addEventListener('scroll',update,{passive:true});
-  }
-
-  // Recalculate accordion height when opened so longer answers animate cleanly.
-  document.querySelectorAll('.accordion-content').forEach(content=>{
-    const observer=new MutationObserver(()=>{
-      if(content.classList.contains('open')){
-        content.style.maxHeight=content.scrollHeight+'px';
-      }else{
-        content.style.maxHeight='0px';
+    /* Scroll reveals */
+    const revealTargets=[];
+    if(section){
+      section.querySelectorAll('.space-y-4 > div').forEach((card,index)=>{
+        card.classList.add('faq-scroll-reveal');
+        card.style.transitionDelay=Math.min(index*35,245)+'ms';
+        revealTargets.push(card);
+      });
+      const support=section.querySelector('.mt-12');
+      if(support){
+        support.classList.add('faq-support-scroll');
+        revealTargets.push(support);
       }
+    }
+    if(footer){
+      const inner=footer.querySelector(':scope > div');
+      if(inner){
+        inner.classList.add('faq-footer-inner');
+        revealTargets.push(inner);
+      }
+    }
+
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },{threshold:.05,rootMargin:'0px 0px -5% 0px'});
+      revealTargets.forEach(el=>io.observe(el));
+    }else{
+      revealTargets.forEach(el=>el.classList.add('is-visible'));
+    }
+
+    /* Robust exact-height accordion.
+       Important: temporarily clear max-height to measure real content height. */
+    document.querySelectorAll('.accordion-content').forEach(content=>{
+      const normalize = () => {
+        if(content.classList.contains('open')){
+          content.style.maxHeight='none';
+          const h=content.scrollHeight;
+          content.style.maxHeight=h+'px';
+        }else{
+          content.style.maxHeight='0px';
+        }
+      };
+
+      const observer=new MutationObserver(()=>{
+        requestAnimationFrame(normalize);
+      });
+      observer.observe(content,{attributes:true,attributeFilter:['class']});
+
+      if('ResizeObserver' in window){
+        const ro=new ResizeObserver(()=>{
+          if(content.classList.contains('open')){
+            content.style.maxHeight='none';
+            content.style.maxHeight=content.scrollHeight+'px';
+          }
+        });
+        ro.observe(content);
+      }
+
+      // Start closed without relying on a fixed pixel ceiling.
+      content.style.maxHeight='0px';
     });
-    observer.observe(content,{attributes:true,attributeFilter:['class']});
-  });
+
+    /* Header shadow */
+    const header=document.querySelector('header');
+    if(header){
+      const update=()=>header.classList.toggle('scrolled',window.scrollY>20);
+      update();
+      window.addEventListener('scroll',update,{passive:true});
+    }
+
+    /* Release prepaint lock as early as possible after the final classes are ready. */
+    requestAnimationFrame(()=>{
+      document.documentElement.classList.remove('faq-preload');
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
+})();
+</script>
+
+
+<script id="faq-functional-final-js">
+(function(){
+  function boot(){
+    const htmlEl=document.documentElement;
+
+    // Always release the prepaint lock even if a non-critical script fails.
+    requestAnimationFrame(()=>htmlEl.classList.remove('faq-preload'));
+
+    // Ensure nav buttons/links behave normally.
+    document.querySelectorAll('header a').forEach(a=>{
+      a.style.pointerEvents='auto';
+    });
+
+    // Robust accordion height handling after fonts/layout settle.
+    const refreshOpenAccordions=()=>{
+      document.querySelectorAll('.accordion-content.open').forEach(content=>{
+        content.style.maxHeight='none';
+        content.style.maxHeight=content.scrollHeight+'px';
+      });
+    };
+    window.addEventListener('resize',refreshOpenAccordions,{passive:true});
+
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(refreshOpenAccordions).catch(()=>{});
+    }
+
+    // Make Enter/Space keyboard activation work on focused FAQ buttons too.
+    document.querySelectorAll('.faq-section .space-y-4 button').forEach(button=>{
+      button.addEventListener('keydown',e=>{
+        if(e.key==='Enter' || e.key===' '){
+          e.preventDefault();
+          toggleFAQ(button);
+        }
+      });
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot,{once:true});
+  }else{
+    boot();
+  }
 })();
 </script>
 
