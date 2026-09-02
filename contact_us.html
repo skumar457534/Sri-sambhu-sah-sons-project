@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us | Sri Shambhu Sha & Sons</title>
-    <meta name="description" content="Get in touch with Sri Shambhu Sha & Sons. Find our shop location at Baidyanath Dham, Deoghar, or contact us online.">
-
+    <title>FAQ | Sri Shambhu Sha & Sons</title>
+    <meta name="description" content="Frequently Asked Questions about our Deoghar Peda, delivery, payments, and refunds.">
+    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
-
+    
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -38,14 +38,256 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #FDFBF7; }
         ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        
+        /* Smooth accordion transition */
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .accordion-content.open {
+            max-height: 500px;
+            opacity: 1;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+        .accordion-icon.rotate {
+            transform: rotate(180deg);
+        }
 
         /* Cart Drawer Animation Styles */
         .cart-open { transform: translateX(0) !important; }
         .overlay-open { opacity: 1 !important; visibility: visible !important; }
     </style>
+
+<style id="faq-index-theme">
+:root{
+  --ivory:#FBF8F1;--ivory-2:#F4EFE4;--paper:#FFFDF8;
+  --coffee:#3B2417;--coffee-2:#5A3925;--brown:#76543B;
+  --gold:#C99A3B;--gold-2:#E5C77B;--line:rgba(104,72,39,.16);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 8% 8%,rgba(201,154,59,.08),transparent 26%),
+    radial-gradient(circle at 92% 32%,rgba(118,84,59,.055),transparent 24%),
+    linear-gradient(180deg,var(--ivory) 0%,#F7F2E8 42%,var(--ivory-2) 100%) !important;
+  color:var(--coffee)!important;font-family:Inter,sans-serif!important;overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.024;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#EEE7DA}
+::-webkit-scrollbar-thumb{background:linear-gradient(#9A6E2E,#D4AE5A,#9A6E2E);border-radius:999px}
+section,footer{position:relative;z-index:1}
+
+/* Header matching index */
+header{
+  background:rgba(251,248,241,.78)!important;
+  border-bottom:1px solid rgba(104,72,39,.09)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:0 7px 24px rgba(68,44,24,.035)!important;
+  transition:background .35s ease,box-shadow .35s ease,border-color .35s ease!important;
+}
+header.scrolled{
+  background:rgba(251,248,241,.95)!important;
+  border-bottom-color:rgba(104,72,39,.15)!important;
+  box-shadow:0 16px 42px rgba(68,44,24,.09)!important;
+}
+header *{border-color:rgba(104,72,39,.11)!important}
+header a,.nav-link{color:#6A5544!important}
+header a:hover,.nav-link:hover,.nav-link.active{color:var(--coffee)!important}
+header .text-maroon{color:var(--coffee)!important}
+header .text-saffron{color:var(--gold)!important}
+header .bg-cream{background:transparent!important}
+header .rounded-full{
+  background:var(--paper)!important;border-color:rgba(201,154,59,.48)!important;
+  box-shadow:0 0 0 4px rgba(201,154,59,.045),0 7px 18px rgba(68,44,24,.08)!important
+}
+
+/* Cart badge */
+header #cart-badge{
+  position:absolute!important;top:-1px!important;right:-1px!important;z-index:20!important;
+  width:20px!important;min-width:20px!important;height:20px!important;min-height:20px!important;
+  padding:0!important;border-radius:9999px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#6A4127!important;color:#FFFDF8!important;border:1.5px solid #D8B15C!important;
+  font-size:10px!important;font-weight:800!important;line-height:1!important;box-shadow:0 3px 10px rgba(59,36,23,.18)!important
+}
+header #cart-badge.hidden{display:none!important}
+
+/* Mobile menu */
+@media(max-width:1023px){
+  #mobile-menu{
+    background:#FBF8F1!important;
+    background-image:linear-gradient(180deg,#FFFDF8 0%,#F8F2E8 58%,#F1E8DA 100%)!important;
+    color:#3B2417!important;opacity:1!important;visibility:visible!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    border-top:1px solid rgba(201,154,59,.18)!important;
+    border-bottom:1px solid rgba(104,72,39,.12)!important;
+    box-shadow:0 20px 42px rgba(67,45,26,.14)!important;
+    transform-origin:top center;isolation:isolate;z-index:999!important;
+  }
+  #mobile-menu.hidden{display:none!important}
+  #mobile-menu:not(.hidden){display:block!important;animation:menuReveal .36s cubic-bezier(.22,.78,.22,1) both!important}
+  #mobile-menu>div{background:transparent!important}
+  #mobile-menu a{
+    color:#614A38!important;background:transparent!important;border-bottom-color:rgba(104,72,39,.08)!important;
+    border-radius:12px!important;transition:background .22s ease,color .22s ease,transform .22s ease!important
+  }
+  #mobile-menu a:hover{background:rgba(201,154,59,.08)!important;color:#3B2417!important;transform:translateX(3px)!important}
+  #mobile-menu .bg-maroon{background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;color:#FFFDF8!important}
+  #mobile-menu:not(.hidden) .mobile-link{animation:menuItem .42s cubic-bezier(.22,.78,.22,1) both!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(1){animation-delay:.03s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(2){animation-delay:.065s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(3){animation-delay:.10s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(4){animation-delay:.135s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(5){animation-delay:.17s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(6){animation-delay:.205s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(7){animation-delay:.24s!important}
+}
+@keyframes menuReveal{0%{opacity:0;transform:translateY(-13px) scaleY(.92)}70%{opacity:1;transform:translateY(2px) scaleY(1.01)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
+@keyframes menuItem{0%{opacity:0;transform:translateX(-9px)}100%{opacity:1;transform:translateX(0)}}
+
+/* Heritage particles */
+.faq-float{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.faq-float:before,.faq-float:after{
+  content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(201,154,59,.11);border-radius:50%
+}
+.faq-float:before{top:16%;left:-150px}.faq-float:after{right:-160px;bottom:10%}
+.faq-float i{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:rgba(201,154,59,.44);box-shadow:0 0 10px rgba(201,154,59,.24);
+  animation:faqParticle linear infinite
+}
+@keyframes faqParticle{
+  0%{transform:translateY(108vh) translateX(0);opacity:0}
+  12%{opacity:.55}88%{opacity:.34}
+  100%{transform:translateY(-12vh) translateX(55px);opacity:0}
+}
+
+/* Hero */
+#faq-hero{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(229,199,123,.10),transparent 32%),
+    linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;
+  overflow:hidden;
+}
+#faq-hero:before{
+  content:"";position:absolute;inset:-25%;
+  background:
+    radial-gradient(circle at 24% 36%,rgba(229,199,123,.08),transparent 19%),
+    radial-gradient(circle at 76% 64%,rgba(201,154,59,.08),transparent 22%);
+  animation:heroGlow 10s ease-in-out infinite alternate;
+}
+#faq-hero .faq-kicker,#faq-hero h1,#faq-hero p{animation:heroIn .85s cubic-bezier(.22,.8,.25,1) both}
+#faq-hero h1{animation-delay:.08s;color:#FFF9EE!important;text-shadow:0 14px 36px rgba(26,14,7,.24)!important;letter-spacing:-.035em!important}
+#faq-hero p{animation-delay:.16s;color:rgba(255,250,240,.90)!important}
+#faq-hero .faq-rule{animation:ruleIn .8s .18s cubic-bezier(.22,.8,.25,1) both}
+@keyframes heroGlow{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.05)}}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes ruleIn{from{opacity:0;transform:scaleX(.2)}to{opacity:1;transform:scaleX(1)}}
+
+/* FAQ section */
+.faq-section{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,154,59,.055),transparent 28%),
+    linear-gradient(180deg,#FFFDF9 0%,#F4EEE3 100%)!important;
+}
+.faq-section>.max-w-4xl{position:relative}
+.faq-section .space-y-4>div{
+  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
+  border:1px solid rgba(104,72,39,.12)!important;
+  border-radius:18px!important;
+  box-shadow:0 12px 34px rgba(68,44,24,.06)!important;
+  overflow:hidden;
+  transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease!important;
+  animation:faqCardIn .65s cubic-bezier(.22,.8,.25,1) both;
+}
+.faq-section .space-y-4>div:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(201,154,59,.34)!important;
+  box-shadow:0 20px 44px rgba(68,44,24,.10)!important;
+}
+.faq-section .space-y-4>div:nth-child(2){animation-delay:.05s}
+.faq-section .space-y-4>div:nth-child(3){animation-delay:.10s}
+.faq-section .space-y-4>div:nth-child(4){animation-delay:.15s}
+.faq-section .space-y-4>div:nth-child(5){animation-delay:.20s}
+.faq-section .space-y-4>div:nth-child(6){animation-delay:.25s}
+.faq-section .space-y-4>div:nth-child(7){animation-delay:.30s}
+.faq-section .space-y-4>div:nth-child(8){animation-delay:.35s}
+@keyframes faqCardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.faq-section .space-y-4 button{
+  background:transparent!important;color:var(--coffee)!important;
+  transition:background .25s ease,color .25s ease,padding-left .25s ease!important;
+}
+.faq-section .space-y-4 button:hover{background:rgba(201,154,59,.055)!important;padding-left:1.7rem!important}
+.faq-section .space-y-4 h3{color:var(--coffee)!important}
+.accordion-icon{
+  color:#6A4127!important;
+  transition:transform .35s cubic-bezier(.22,.8,.25,1),color .25s ease!important;
+}
+.accordion-icon.rotate{transform:rotate(180deg)!important;color:var(--gold)!important}
+.accordion-content{
+  background:rgba(247,241,231,.72)!important;
+  border-top-color:rgba(104,72,39,.10)!important;color:#756252!important;
+}
+
+/* support box */
+.faq-section .mt-12{
+  background:linear-gradient(180deg,#FFFDF9,#F7F1E7)!important;
+  border:1px solid rgba(201,154,59,.34)!important;
+  border-radius:22px!important;
+  box-shadow:0 18px 44px rgba(68,44,24,.08)!important;
+  animation:faqCardIn .8s .35s cubic-bezier(.22,.8,.25,1) both;
+}
+.faq-section .mt-12 h3{color:var(--coffee)!important}
+.faq-section .mt-12 p{color:#756252!important}
+.faq-section .mt-12 a{
+  border-radius:13px!important;
+  box-shadow:0 10px 24px rgba(37,110,71,.12)!important;
+  transition:transform .25s ease,box-shadow .25s ease!important;
+}
+.faq-section .mt-12 a:hover{transform:translateY(-3px) scale(1.015)!important;box-shadow:0 16px 32px rgba(37,110,71,.16)!important}
+
+/* Cart + modal */
+#cart-overlay{background:rgba(48,29,17,.42)!important}
+#cart-drawer{background:#FBF7EF!important;border-left:1px solid rgba(104,72,39,.14)!important}
+#cart-drawer .bg-white{background:#FFFDF9!important}
+#cart-drawer #checkout-btn{background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;color:#FFFDF8!important;border-radius:13px!important}
+#cart-items>div{background:#F7F1E7!important;border-color:rgba(104,72,39,.10)!important;border-radius:16px!important}
+#guest-checkout-modal{background:rgba(48,29,17,.50)!important}
+#guest-checkout-modal>div{background:#FFFDF9!important;border-color:rgba(201,154,59,.25)!important;border-radius:24px!important}
+#guest-checkout-modal .bg-orange-50{background:#F6EEDD!important}
+#guest-checkout-modal a.bg-maroon{background:linear-gradient(110deg,#4B2B1B,#6A4127)!important}
+#guest-checkout-modal a.bg-white{background:#F7F1E7!important;color:#5A3925!important;border-color:rgba(104,72,39,.13)!important}
+
+/* Footer + map */
+footer{background:#3B2417!important;border-top:4px solid #C99A3B!important}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+.fixed.bottom-6.right-6,.fixed.bottom-5.right-5{
+  background:rgba(255,253,249,.94)!important;border:1px solid rgba(201,154,59,.26)!important;
+  backdrop-filter:blur(12px)!important;box-shadow:0 12px 28px rgba(68,44,24,.13)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
+    <!-- HEADER / NAVIGATION -->
     <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -67,8 +309,8 @@
                     <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
                     <a href="gallery.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
                     <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
-                    <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
-                    <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">Contact Us</a>
+                    <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">FAQ</a>
+                    <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
                     <!-- Dynamic Auth Link Desktop -->
                     <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
                         <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
@@ -96,8 +338,8 @@
                 <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
                 <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
                 <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
-                <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
-                <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">Contact Us</a>
+                <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">FAQ</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
                 <!-- Dynamic Auth Link Mobile -->
                 <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
                     <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
@@ -157,136 +399,124 @@
         </div>
     </div>
 
-    <!-- CONTACT HERO BANNER -->
+    <!-- FAQ HERO BANNER -->
     <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
         <div class="absolute inset-0 opacity-10">
             <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="text-golden font-bold tracking-widest uppercase text-sm mb-3 block">We are here to help</span>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Get in Touch</h1>
+            <span class="text-golden font-bold tracking-widest uppercase text-sm mb-3 block">Got Questions?</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Frequently Asked Questions</h1>
             <div class="w-24 h-1 bg-saffron mx-auto rounded mb-6"></div>
-            <p class="text-cream/90 max-w-xl mx-auto font-medium">Have questions about our Peda or your order? Visit our shop in Baidyanath Dham or contact us online.</p>
+            <p class="text-cream/90 max-w-xl mx-auto font-medium">Find answers to common questions about our authentic Deoghar Peda, orders, shipping, and more.</p>
         </div>
     </section>
 
-    <!-- MAIN CONTACT SECTION -->
-    <section class="py-16 md:py-24 bg-white relative border-t border-gray-100">
+    <!-- FAQ ACCORDION SECTION -->
+    <section class="py-16 md:py-24 bg-cream min-h-[50vh]">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="w-full">
+            
+            <div class="space-y-4">
                 
-                <!-- Contact Details -->
-                <div>
-                    <h2 class="text-3xl font-serif font-bold text-naturalBrown mb-8 text-center">Contact Information</h2>
-                    
-                    <div class="space-y-6">
-                        <!-- Shop 1 & Shop 2 Location Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- FAQ Item 1 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">What is Deoghar Peda?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        It is a traditional sweet made from pure milk khoya and sugar, offered as prasad at Baba Baidyanath Dham in Deoghar. It is famous nationwide for its authentic, rich taste and purity.
+                    </div>
+                </div>
 
-    <!-- Shop No. 01 -->
-    <div class="bg-cream p-6 md:p-8 rounded-2xl border border-golden/30 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-golden/5 rounded-bl-[100px] z-0"></div>
+                <!-- FAQ Item 2 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">Where do you deliver?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        We deliver PAN India! We use premium courier partners like Blue Dart, Delhivery, and XpressBees to ensure your peda reaches you fresh and safe.
+                    </div>
+                </div>
 
-        <div class="relative z-10">
-            <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 mb-4">
-                <i class="ph-fill ph-map-pin text-maroon text-3xl"></i>
-            </div>
+                <!-- FAQ Item 3 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">How can I order?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        Simply browse our menu, select your preferred peda and weight, check out securely online, and provide your delivery details. You can optionally log in to track your order easily!
+                    </div>
+                </div>
 
-            <span class="text-saffron font-bold text-xs uppercase tracking-widest block mb-1">
-                Shop No. 01
-            </span>
+                <!-- FAQ Item 4 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">What payment methods are available?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        We accept all major payment methods including UPI, Google Pay, PhonePe, Credit/Debit Cards, and Net Banking through our secure Razorpay integration.
+                    </div>
+                </div>
 
-            <h4 class="font-bold text-naturalBrown text-xl mb-2">
-                East Door of the Temple
-            </h4>
+                <!-- FAQ Item 5 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">How is delivery estimated and can I choose my courier?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        Delivery is estimated based on your PIN code. Yes, during checkout, you will see available courier options for your area along with estimated delivery dates and shipping prices, allowing you to choose the best one.
+                    </div>
+                </div>
 
-            <p class="text-gray-600 font-medium mb-4 leading-relaxed">
-                Deoghar, Jharkhand 814112, India
-            </p>
+                <!-- FAQ Item 6 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">What happens if my order is rejected?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        If for any rare reason we cannot fulfill your order (e.g., out of stock or non-serviceable PIN code), the order will be rejected from our end, and a full refund will be automatically initiated to your original payment method.
+                    </div>
+                </div>
 
-            <a href="https://maps.app.goo.gl/yYWQamBuURmRLsgS8"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="inline-flex items-center gap-2 text-maroon hover:text-saffron font-semibold transition-colors">
-                Open in Google Maps <i class="ph ph-arrow-right"></i>
-            </a>
-        </div>
-    </div>
+                <!-- FAQ Item 7 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">How does the refund work?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        Refunds are initiated instantly from our system via Razorpay. Settlement usually takes 3-5 business days to reflect in your bank account or card statement, depending on your bank's processing time.
+                    </div>
+                </div>
 
-
-    <!-- Shop No. 02 -->
-    <div class="bg-cream p-6 md:p-8 rounded-2xl border border-golden/30 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-golden/5 rounded-bl-[100px] z-0"></div>
-
-        <div class="relative z-10">
-            <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 mb-4">
-                <i class="ph-fill ph-map-pin text-maroon text-3xl"></i>
-            </div>
-
-            <span class="text-saffron font-bold text-xs uppercase tracking-widest block mb-1">
-                Shop No. 02
-            </span>
-
-            <h4 class="font-bold text-naturalBrown text-xl mb-2">
-                Bara Bazar, Baidyanath Dham
-            </h4>
-
-            <p class="text-gray-600 font-medium mb-4 leading-relaxed">
-                Deoghar, Jharkhand 814112, India
-            </p>
-
-            <a href="https://www.google.com/maps/search/?api=1&query=FPR2%2BQ57%2C+Shivganga+Muhalla%2C+Deoghar%2C+Jharkhand+814112%2C+India"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="inline-flex items-center gap-2 text-maroon hover:text-saffron font-semibold transition-colors">
-                Open in Google Maps <i class="ph ph-arrow-right"></i>
-            </a>
-        </div>
-    </div>
-
-</div>
-
-                        <!-- Mobile Fixed: Changed from grid-cols-2 to grid-cols-1 sm:grid-cols-2 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Phone -->
-                            <a href="tel:7295021513" class="block bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:border-maroon/30 hover:shadow-md transition-all group text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                                <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    <i class="ph-fill ph-phone-call text-maroon text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-naturalBrown text-base">Call Support</h4>
-                                    <p class="text-maroon font-semibold mt-1 text-sm">7295021513</p>
-                                </div>
-                            </a>
-
-                            <!-- Email -->
-                            <a href="mailto:support@srishambhushaandsons.in" class="block bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:border-blue-500/30 hover:shadow-md transition-all group text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    <i class="ph-fill ph-envelope-simple text-blue-500 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-naturalBrown text-base">Email Us</h4>
-                                    <!-- Using break-all or truncate to prevent overflow on mobile -->
-                                    <p class="text-blue-600 font-semibold mt-1 text-sm break-all">support@srishambhushaandsons.in</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- Hours -->
-                        <!-- Mobile Fixed: Changed layout to stack on mobile -->
-                        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
-                            <div class="w-12 h-12 rounded-full bg-cream flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
-                                <i class="ph-fill ph-clock text-maroon text-2xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-naturalBrown text-lg">Shop Hours</h4>
-                                <p class="text-gray-600 mt-1 text-sm">Open All Days: 8:00 AM - 10:00 PM</p>
-                            </div>
-                        </div>
+                <!-- FAQ Item 8 -->
+                <div class="bg-white border border-golden/20 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <button class="w-full px-6 py-5 text-left flex justify-between items-center bg-white hover:bg-gray-50 transition-colors" onclick="toggleFAQ(this)">
+                        <h3 class="font-serif font-bold text-naturalBrown text-lg pr-4">How can I contact or reach the shop?</h3>
+                        <i class="ph ph-caret-down text-maroon text-xl accordion-icon flex-shrink-0"></i>
+                    </button>
+                    <div class="accordion-content px-6 text-gray-600 text-sm md:text-base border-t border-gray-100 bg-gray-50/50">
+                        You can reach us directly via WhatsApp or call us at 7295021513. If you wish to visit us, our physical shop is located at FPR2+Q57, Shivganga Muhalla, Baidyanath Dham, Deoghar, Jharkhand – 814112.
                     </div>
                 </div>
 
             </div>
+
+            <!-- Support Box -->
+            <div class="mt-12 bg-white border-2 border-maroon p-8 rounded-2xl text-center shadow-sm">
+                <h3 class="font-serif font-bold text-2xl text-naturalBrown mb-2">Still have questions?</h3>
+                <p class="text-gray-600 mb-6">We are here to help. Reach out to us directly on WhatsApp for quick support.</p>
+                <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-md hover:shadow-lg hover:scale-105">
+                    <i class="ph ph-whatsapp-logo text-2xl"></i> Chat on WhatsApp
+                </a>
+            </div>
+
         </div>
     </section>
 
@@ -315,7 +545,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
+                <!-- Contact Info (Single WhatsApp Number Only) -->
                 <div>
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
@@ -329,7 +559,7 @@
     <span>Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</span>
 </div>
                         </li>
-                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4 justify-center md:justify-start">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
                             <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
                         </li>
@@ -352,7 +582,7 @@
         </span>
     </a>
 
-    <!-- UI & CART SCRIPTS -->
+    <!-- SCRIPTS -->
     <script>
         // --- Mobile Menu Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -390,6 +620,20 @@
             else header.classList.remove('shadow-md');
         });
 
+        // --- FAQ Accordion Logic ---
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('.accordion-icon');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.classList.remove('rotate');
+            } else {
+                content.classList.add('open');
+                icon.classList.add('rotate');
+            }
+        }
+
         // --- Cart Drawer Toggle ---
         function toggleCart() {
             const drawer = document.getElementById('cart-drawer');
@@ -408,10 +652,10 @@
 
         function saveCart() {
             localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
-            window.renderCartUI();
+            renderCartUI();
         }
 
-        window.renderCartUI = function() {
+        function renderCartUI() {
             const itemsContainer = document.getElementById('cart-items');
             const subtotalEl = document.getElementById('cart-subtotal');
             const badgeEl = document.getElementById('cart-badge');
@@ -478,12 +722,12 @@
                 });
             });
         }
-        
-        // Init Cart
-        window.renderCartUI();
+
+        // Init cart rendering
+        renderCartUI();
     </script>
 
-    <!-- FIREBASE IMPORT -->
+    <!-- FIREBASE AUTH & CHECKOUT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -497,9 +741,10 @@
             appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
             measurementId: "G-3EE0MXD090"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
+        
         let currentUser = null;
 
         // AUTHENTICATION LISTENER
@@ -525,13 +770,57 @@
         // CHECKOUT FLOW WITH AUTH CHECK
         window.proceedToCheckoutFlow = function() {
             if (currentUser) {
+                // Logged in, proceed directly
                 window.location.href = "checkout.html";
             } else {
+                // Not logged in, show Guest Checkout Modal
                 document.getElementById('guest-checkout-modal').classList.remove('hidden');
                 document.getElementById('guest-checkout-modal').classList.add('flex');
-                toggleCart(); 
+                toggleCart(); // Close cart drawer to focus on modal
             }
         }
     </script>
+
+<script id="faq-index-theme-hooks">
+(function(){
+  if(!document.querySelector('.faq-float')){
+    const wrap=document.createElement('div');
+    wrap.className='faq-float';wrap.setAttribute('aria-hidden','true');
+    [['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']]
+      .forEach(([l,d,delay])=>{const i=document.createElement('i');i.style.left=l;i.style.animationDuration=d;i.style.animationDelay=delay;wrap.appendChild(i)});
+    document.body.prepend(wrap);
+  }
+
+  const hero=[...document.querySelectorAll('section')].find(s=>/Frequently Asked Questions/i.test(s.textContent||''));
+  if(hero){
+    hero.id='faq-hero';
+    const span=hero.querySelector('span'),rule=hero.querySelector('div.w-24'),p=hero.querySelector('p');
+    if(span) span.classList.add('faq-kicker');
+    if(rule) rule.classList.add('faq-rule');
+  }
+
+  const section=[...document.querySelectorAll('section')].find(s=>s.querySelector('.accordion-content'));
+  if(section) section.classList.add('faq-section');
+
+  const header=document.querySelector('header');
+  if(header){
+    const update=()=>header.classList.toggle('scrolled',window.scrollY>20);
+    update();window.addEventListener('scroll',update,{passive:true});
+  }
+
+  // Recalculate accordion height when opened so longer answers animate cleanly.
+  document.querySelectorAll('.accordion-content').forEach(content=>{
+    const observer=new MutationObserver(()=>{
+      if(content.classList.contains('open')){
+        content.style.maxHeight=content.scrollHeight+'px';
+      }else{
+        content.style.maxHeight='0px';
+      }
+    });
+    observer.observe(content,{attributes:true,attributeFilter:['class']});
+  });
+})();
+</script>
+
 </body>
 </html>
