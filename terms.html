@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth theme-preload">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,15 +34,163 @@
             }
         }
     </script>
-    <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #FDFBF7; }
-        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
-        
-        /* Cart Drawer Animation Styles */
-        .cart-open { transform: translateX(0) !important; }
-        .overlay-open { opacity: 1 !important; visibility: visible !important; }
-    </style>
+
+
+<style id="latest-index-theme">
+:root{
+  --ivory:#FBF8F1;--ivory-2:#F4EFE4;--paper:#FFFDF8;
+  --coffee:#3B2417;--coffee-2:#5A3925;--brown:#76543B;
+  --gold:#C99A3B;--gold-2:#E5C77B;
+  --line:rgba(104,72,39,.16);--shadow:rgba(68,44,24,.12);
+}
+html{scroll-behavior:smooth}
+html.theme-preload,html.theme-preload body{visibility:hidden!important;background:var(--ivory)!important}
+html.theme-preload header{background:var(--ivory)!important}
+html.theme-preload .policy-hero-prepaint{background:linear-gradient(135deg,#4A2C1C,#3B2417 52%,#5A3925)!important}
+body{
+  background:
+    radial-gradient(circle at 8% 8%,rgba(201,154,59,.08),transparent 26%),
+    radial-gradient(circle at 92% 32%,rgba(118,84,59,.055),transparent 24%),
+    linear-gradient(180deg,var(--ivory) 0%,#F7F2E8 42%,var(--ivory-2) 100%)!important;
+  color:var(--coffee)!important;font-family:Inter,sans-serif!important;overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.024;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+section,footer{position:relative;z-index:1}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#EEE7DA}
+::-webkit-scrollbar-thumb{background:linear-gradient(#9A6E2E,#D4AE5A,#9A6E2E);border-radius:999px}
+
+header{
+  background:rgba(251,248,241,.78)!important;border-bottom:1px solid rgba(104,72,39,.09)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;-webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:0 7px 24px rgba(68,44,24,.035)!important;
+  transition:background .35s ease,box-shadow .35s ease,border-color .35s ease!important;
+}
+header.scrolled{background:rgba(251,248,241,.95)!important;border-bottom-color:rgba(104,72,39,.15)!important;box-shadow:0 16px 42px rgba(68,44,24,.09)!important}
+header *{border-color:rgba(104,72,39,.11)!important}
+header a,.nav-link{color:#6A5544!important}
+header a:hover,.nav-link:hover,.nav-link.active{color:var(--coffee)!important}
+header .text-maroon{color:var(--coffee)!important}
+header .text-saffron{color:var(--gold)!important}
+header .text-golden,.brand-ampersand{color:var(--gold)!important}
+header .rounded-full{
+  background:var(--paper)!important;border-color:rgba(201,154,59,.48)!important;
+  box-shadow:0 0 0 4px rgba(201,154,59,.045),0 7px 18px rgba(68,44,24,.08)!important;
+}
+header #cart-badge{
+  position:absolute!important;top:-1px!important;right:-1px!important;z-index:20!important;
+  width:20px!important;min-width:20px!important;height:20px!important;min-height:20px!important;
+  padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:9999px!important;background:#6A4127!important;color:#FFFDF8!important;
+  border:1.5px solid #D8B15C!important;font-size:10px!important;font-weight:800!important;
+  line-height:1!important;box-shadow:0 3px 10px rgba(59,36,23,.18)!important;
+}
+header #cart-badge.hidden{display:none!important}
+
+@media(max-width:1023px){
+  #mobile-menu{
+    background:#FBF8F1!important;background-image:linear-gradient(180deg,#FFFDF8 0%,#F8F2E8 58%,#F1E8DA 100%)!important;
+    color:#3B2417!important;opacity:1!important;visibility:visible!important;backdrop-filter:none!important;
+    border-top:1px solid rgba(201,154,59,.18)!important;border-bottom:1px solid rgba(104,72,39,.12)!important;
+    box-shadow:0 20px 42px rgba(67,45,26,.14)!important;transform-origin:top center;isolation:isolate;z-index:999!important;
+  }
+  #mobile-menu.hidden{display:none!important}
+  #mobile-menu:not(.hidden){display:block!important;animation:menuReveal .36s cubic-bezier(.22,.78,.22,1) both!important}
+  #mobile-menu>div{background:transparent!important}
+  #mobile-menu a{color:#614A38!important;background:transparent!important;border-radius:12px!important;border-bottom-color:rgba(104,72,39,.08)!important;transition:.22s ease!important}
+  #mobile-menu a:hover{background:rgba(201,154,59,.08)!important;color:#3B2417!important;transform:translateX(3px)!important}
+}
+@keyframes menuReveal{0%{opacity:0;transform:translateY(-13px) scaleY(.92)}70%{opacity:1;transform:translateY(2px) scaleY(1.01)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
+
+.policy-float{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.policy-float:before,.policy-float:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(201,154,59,.11);border-radius:50%}
+.policy-float:before{top:14%;left:-150px}.policy-float:after{right:-160px;bottom:12%}
+.policy-float i{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(201,154,59,.44);box-shadow:0 0 10px rgba(201,154,59,.24);animation:policyParticle linear infinite}
+@keyframes policyParticle{0%{transform:translateY(108vh) translateX(0);opacity:0}12%{opacity:.55}88%{opacity:.34}100%{transform:translateY(-12vh) translateX(55px);opacity:0}}
+
+.policy-hero{
+  background:radial-gradient(circle at 50% 0%,rgba(229,199,123,.10),transparent 32%),linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important;
+  overflow:hidden;
+}
+.policy-hero:before{
+  content:"";position:absolute;inset:-25%;
+  background:radial-gradient(circle at 24% 36%,rgba(229,199,123,.08),transparent 19%),radial-gradient(circle at 76% 64%,rgba(201,154,59,.08),transparent 22%);
+  animation:heroGlow 10s ease-in-out infinite alternate;
+}
+.policy-hero h1{color:#FFF9EE!important;text-shadow:0 14px 36px rgba(26,14,7,.24)!important;letter-spacing:-.035em!important}
+.policy-hero p{color:rgba(255,250,240,.90)!important}
+.policy-hero .policy-kicker{color:#E5C77B!important}
+.policy-hero .policy-rule{background:#C99A3B!important}
+@keyframes heroGlow{from{transform:translate3d(-1%,0,0) scale(1)}to{transform:translate3d(1%,1%,0) scale(1.05)}}
+
+.policy-content{
+  background:radial-gradient(circle at 50% 0%,rgba(201,154,59,.05),transparent 28%),linear-gradient(180deg,#FFFDF9,#F4EEE3)!important;
+}
+.policy-content .prose h2{color:var(--coffee)!important;letter-spacing:-.02em;position:relative}
+.policy-content .prose h2:after{content:"";display:block;width:52px;height:2px;margin-top:10px;background:linear-gradient(90deg,#C99A3B,#E5C77B);border-radius:99px}
+.policy-content .prose p,.policy-content .prose li{color:#6B5847!important}
+.policy-content .prose strong{color:#4B3020}
+.policy-content .prose a{color:#9A6E2E!important;text-decoration:none!important}
+.policy-content .prose a:hover{color:#3B2417!important;text-decoration:underline!important}
+
+#cart-overlay{background:rgba(48,29,17,.42)!important}
+#cart-drawer{background:#FBF7EF!important;border-left:1px solid rgba(104,72,39,.14)!important}
+#cart-drawer .bg-white{background:#FFFDF9!important}
+#cart-drawer #checkout-btn{background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;color:#FFFDF8!important;border-radius:13px!important}
+#cart-items>div{background:#F7F1E7!important;border-color:rgba(104,72,39,.10)!important;border-radius:16px!important}
+#guest-checkout-modal{background:rgba(48,29,17,.50)!important}
+#guest-checkout-modal>div{background:#FFFDF9!important;border-color:rgba(201,154,59,.25)!important;border-radius:24px!important}
+#guest-checkout-modal .bg-orange-50{background:#F6EEDD!important}
+#guest-checkout-modal a.bg-maroon{background:linear-gradient(110deg,#4B2B1B,#6A4127)!important}
+
+footer{background:#3B2417!important;border-top:4px solid #C99A3B!important}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .text-cream\/60{color:rgba(255,248,235,.52)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+
+.reveal-premium{opacity:0;transform:translateY(24px);transition:opacity .72s cubic-bezier(.22,.8,.25,1),transform .72s cubic-bezier(.22,.8,.25,1)}
+.reveal-premium.is-visible{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:translateY(18px) scale(.985);transition:opacity .72s cubic-bezier(.22,.8,.25,1),transform .72s cubic-bezier(.22,.8,.25,1)}
+.reveal-scale.is-visible{opacity:1;transform:none}
+.footer-reveal{opacity:0;transform:translateY(24px);transition:opacity .72s cubic-bezier(.22,.8,.25,1),transform .72s cubic-bezier(.22,.8,.25,1)}
+.footer-reveal.is-visible{opacity:1;transform:none}
+.policy-hero .hero-kicker{opacity:0;transform:translateY(18px);animation:heroIn .68s .08s both}
+.policy-hero h1{opacity:0;transform:translateY(22px);animation:heroIn .8s .14s both}
+.policy-hero .hero-rule{opacity:0;transform:scaleX(.25);animation:ruleIn .72s .24s both}
+.policy-hero p{opacity:0;transform:translateY(16px);animation:heroIn .72s .3s both}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes ruleIn{from{opacity:0;transform:scaleX(.2)}to{opacity:1;transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+</style>
+
+<style id="cart-slide-authoritative">
+#cart-drawer{
+  transform:translate3d(100%,0,0)!important;
+  transition:transform .38s cubic-bezier(.22,.8,.25,1)!important;
+  will-change:transform;
+}
+#cart-drawer.cart-open{
+  transform:translate3d(0,0,0)!important;
+}
+#cart-overlay{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:opacity .28s ease,visibility 0s linear .28s!important;
+}
+#cart-overlay.overlay-open{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  transition:opacity .28s ease!important;
+}
+body.cart-is-open{overflow:hidden}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
@@ -56,7 +204,7 @@
                         <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                     </div>
                     <a href="index.html" class="flex flex-col">
-                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
+                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden brand-ampersand">&amp;</span> Sons</span>
                         <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase">Deoghar</span>
                     </a>
                 </div>
@@ -78,7 +226,7 @@
 
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
+                    <button onclick="window.toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
                         <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                     </button>
@@ -108,13 +256,13 @@
     </header>
 
     <!-- SHOPPING CART DRAWER -->
-    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
+    <div id="cart-overlay" onclick="window.toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
             <h2 class="text-xl font-serif font-bold text-maroon flex items-center gap-2">
                 <i class="ph-fill ph-shopping-bag text-2xl"></i> Your Cart
             </h2>
-            <button onclick="toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
+            <button onclick="window.toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
                 <i class="ph ph-x text-2xl"></i>
             </button>
         </div>
@@ -159,19 +307,19 @@
     </div>
 
     <!-- PAGE HERO BANNER -->
-    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
+    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden policy-hero-prepaint policy-hero">
         <div class="absolute inset-0 opacity-10">
             <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-3xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Terms & Conditions</h1>
-            <div class="w-24 h-1 bg-saffron mx-auto rounded mb-4"></div>
+            <span class="policy-kicker"></span><h1 class="text-3xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Terms & Conditions</h1>
+            <div class="w-24 h-1 bg-saffron mx-auto rounded mb-4 policy-rule"></div>
             <p class="text-cream/80 text-sm md:text-base">Please read these terms carefully before using our website.</p>
         </div>
     </section>
 
     <!-- CONTENT SECTION -->
-    <section class="py-16 md:py-24 bg-white relative">
+    <section class="py-16 md:py-24 bg-white relative policy-content">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="prose prose-lg prose-maroon text-gray-600 max-w-none">
                 
@@ -228,7 +376,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
                 <!-- Brand Info -->
-                <div class="max-w-md">
+                <div class="max-w-md footer-reveal">
                     <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
                     <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
@@ -238,7 +386,7 @@
                 </div>
 
                 <!-- Policies -->
-                <div>
+                <div class="footer-reveal">
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
                     <ul class="space-y-2 text-sm text-cream/80">
                         <li><a href="privacy_policy.html" class="hover:text-golden transition-colors">Privacy Policy</a></li>
@@ -249,12 +397,18 @@
                 </div>
 
                 <!-- Contact Info -->
-                <div>
+                <div class="footer-reveal">
                     <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
                     <ul class="space-y-4 text-sm text-cream/80">
                         <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
-                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
+                            <div>
+    <strong>Shop No. 01</strong><br>
+    <span>East Door of the Temple in Deoghar, Jharkhand 814112, India</span><br><br>
+
+    <strong>Shop No. 02</strong><br>
+    <span>Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</span>
+</div>
                         </li>
                         <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
@@ -264,7 +418,7 @@
                 </div>
             </div>
 
-            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4 footer-reveal">
                 <p>© 2026 Sri Shambhu Sha & Sons. All Rights Reserved.</p>
                 <p>Regd. No.: 3271313</p>
             </div>
@@ -310,111 +464,16 @@
         });
 
         // --- Cart Drawer Toggle ---
-        function toggleCart() {
+        window.toggleCart = function() {
             const drawer = document.getElementById('cart-drawer');
             const overlay = document.getElementById('cart-overlay');
-            drawer.classList.toggle('cart-open');
-            overlay.classList.toggle('overlay-open');
-        }
+            if (!drawer || !overlay) return;
 
-        function closeGuestModal() {
-            document.getElementById('guest-checkout-modal').classList.add('hidden');
-            document.getElementById('guest-checkout-modal').classList.remove('flex');
-        }
+            const shouldOpen = !drawer.classList.contains('cart-open');
 
-        // --- LocalStorage Cart Logic ---
-        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
-
-        function saveCart() {
-            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
-            window.renderCartUI();
-        }
-
-        window.renderCartUI = function() {
-            const itemsContainer = document.getElementById('cart-items');
-            const subtotalEl = document.getElementById('cart-subtotal');
-            const badgeEl = document.getElementById('cart-badge');
-            const checkoutBtn = document.getElementById('checkout-btn');
-
-            let subtotal = 0;
-            let totalItems = 0;
-
-            if (cart.length === 0) {
-                itemsContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
-                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
-                        <p class="font-medium text-lg">Your cart is empty</p>
-                    </div>`;
-                subtotalEl.innerText = '₹0';
-                badgeEl.classList.add('hidden');
-                checkoutBtn.disabled = true;
-                return;
-            }
-
-            itemsContainer.innerHTML = cart.map((item, index) => {
-                subtotal += (item.price * item.qty);
-                totalItems += item.qty;
-                return `
-                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
-                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
-                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
-                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
-                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
-                    </div>
-                `;
-            }).join('');
-
-            subtotalEl.innerText = `₹${subtotal}`;
-            badgeEl.innerText = totalItems;
-            badgeEl.classList.remove('hidden');
-            checkoutBtn.disabled = false;
-
-            document.querySelectorAll('.update-qty').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.target.getAttribute('data-index'));
-                    const action = e.target.getAttribute('data-action');
-                    if(action === 'plus') cart[idx].qty += 1;
-                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
-                    saveCart();
-                });
-            });
-
-            document.querySelectorAll('.remove-item').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
-                    cart.splice(idx, 1);
-                    saveCart();
-                });
-            });
-        }
-        
-        // Init Cart
-        window.renderCartUI();
-    </script>
-
-    <!-- FIREBASE IMPORT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
-            authDomain: "srishambhushaandsons.firebaseapp.com",
-            projectId: "srishambhushaandsons",
-            storageBucket: "srishambhushaandsons.firebasestorage.app",
-            messagingSenderId: "711660800708",
-            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
-            measurementId: "G-3EE0MXD090"
+            drawer.classList.toggle('cart-open', shouldOpen);
+            overlay.classList.toggle('overlay-open', shouldOpen);
+            document.body.classList.toggle('cart-is-open', shouldOpen);
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -448,9 +507,85 @@
             } else {
                 document.getElementById('guest-checkout-modal').classList.remove('hidden');
                 document.getElementById('guest-checkout-modal').classList.add('flex');
-                toggleCart(); 
+                window.toggleCart(); 
             }
         }
     </script>
+
+<script id="latest-index-motion-hooks">
+(function(){
+  const release=()=>document.documentElement.classList.remove('theme-preload');
+
+  if(!document.querySelector('.policy-float')){
+    const wrap=document.createElement('div');
+    wrap.className='policy-float';wrap.setAttribute('aria-hidden','true');
+    [['8%','14s','-2s'],['22%','19s','-8s'],['39%','16s','-5s'],['57%','21s','-11s'],['74%','17s','-4s'],['91%','23s','-14s']]
+      .forEach(([left,duration,delay])=>{
+        const dot=document.createElement('i');
+        dot.style.left=left;dot.style.animationDuration=duration;dot.style.animationDelay=delay;
+        wrap.appendChild(dot);
+      });
+    document.body.prepend(wrap);
+  }
+
+  const hero=document.querySelector('.policy-hero');
+  if(hero){
+    const h1=hero.querySelector('h1');
+    const kicker=hero.querySelector('.policy-kicker');
+    const rule=hero.querySelector('.policy-rule');
+    const p=hero.querySelector('p');
+    if(kicker) kicker.remove(); // no unwanted blank element in layout
+    if(h1) h1.classList.add('policy-title');
+    if(rule) rule.classList.add('hero-rule');
+    if(p) p.classList.add('policy-copy');
+    if(h1) h1.style.animation='heroIn .8s .14s both';
+  }
+
+  const header=document.querySelector('header');
+  const updateHeader=()=>{if(header) header.classList.toggle('scrolled',window.scrollY>20)};
+  updateHeader();window.addEventListener('scroll',updateHeader,{passive:true});
+
+  const targets=[
+    ...document.querySelectorAll('.policy-content .prose > h2'),
+    ...document.querySelectorAll('.policy-content .prose > p'),
+    ...document.querySelectorAll('.policy-content .prose > ul'),
+    ...document.querySelectorAll('footer .footer-reveal')
+  ];
+  targets.forEach((el,i)=>{
+    if(!el.classList.contains('reveal-premium')&&!el.classList.contains('footer-reveal')){
+      el.classList.add('reveal-premium');
+      el.style.transitionDelay=Math.min(i*0.035,0.18)+'s';
+    }
+  });
+
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:.10,rootMargin:'0px 0px -40px 0px'});
+  targets.forEach(el=>observer.observe(el));
+
+  const footer=document.querySelector('footer');
+  if(footer){
+    const footerObserver=new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          footer.querySelectorAll('.footer-reveal').forEach((el,i)=>{
+            el.style.transitionDelay=Math.min(i*.08,.18)+'s';
+            el.classList.add('is-visible');
+          });
+          footerObserver.disconnect();
+        }
+      });
+    },{threshold:.08});
+    footerObserver.observe(footer);
+  }
+
+  requestAnimationFrame(()=>requestAnimationFrame(release));
+})();
+</script>
 </body>
 </html>
