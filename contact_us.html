@@ -2,7 +2,18 @@
 <html lang="en" class="scroll-smooth theme-preload">
 <head>
 <style id="theme-prepaint-gate">
-html.theme-preload body{visibility:hidden!important}
+/* Prevent FOUC: keep the page hidden until the final theme + Tailwind are ready. */
+html.theme-preload,
+html.theme-preload body{
+  visibility:hidden!important;
+  background:#FBF8F1!important;
+}
+html.theme-preload body:before{display:none!important}
+/* Critical first-paint colors match the final theme even before utility CSS settles. */
+html.theme-preload header{background:#FBF8F1!important;border-color:rgba(104,72,39,.10)!important}
+html.theme-preload section.relative.pt-32.pb-16.bg-maroon{background:linear-gradient(135deg,#4A2C1C 0%,#3B2417 52%,#5A3925 100%)!important}
+html.theme-preload section.py-16.md\:py-24.bg-white{background:#FFFDF9!important}
+html.theme-preload footer{background:#3B2417!important;border-top-color:#C99A3B!important}
 </style>
 
     <meta charset="UTF-8">
@@ -386,9 +397,6 @@ footer a:hover{color:#F2D997!important}
 
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
-<script>
-document.documentElement.classList.remove('theme-preload');
-</script>
 
 
     <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
@@ -960,5 +968,17 @@ document.documentElement.classList.remove('theme-preload');
 })();
 </script>
 
+<script id="theme-prepaint-release">
+(function(){
+  function reveal(){
+    document.documentElement.classList.remove('theme-preload');
+  }
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', reveal, {once:true});
+  } else {
+    reveal();
+  }
+})();
+</script>
 </body>
 </html>
