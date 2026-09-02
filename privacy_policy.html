@@ -19,11 +19,11 @@
             theme: {
                 extend: {
                     colors: {
-                        cream: "#FDFBF7",
-                        maroon: "#7B1818",
-                        golden: "#D4AF37",
-                        saffron: "#F48C06",
-                        naturalBrown: "#5C4033",
+                        cream: "#FBF8F1",
+                        maroon: "#3B2417",
+                        golden: "#C99A3B",
+                        saffron: "#A87525",
+                        naturalBrown: "#5A3925",
                     },
                     fontFamily: {
                         serif: ['"Playfair Display"', 'serif'],
@@ -36,13 +36,161 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #FDFBF7; }
-        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #FBF8F1; }
+        ::-webkit-scrollbar-thumb { background: #3B2417; border-radius: 4px; }
         
         /* Cart Drawer Animation Styles */
         .cart-open { transform: translateX(0) !important; }
         .overlay-open { opacity: 1 !important; visibility: visible !important; }
     </style>
+
+<style id="premium-theme-animation">
+/* ===== PREMIUM IVORY / COFFEE / GOLD THEME ===== */
+:root{
+  --ivory:#FBF8F1;
+  --ivory-soft:#F4EFE4;
+  --paper:#FFFDF8;
+  --coffee:#3B2417;
+  --coffee-2:#5A3925;
+  --brown:#76543B;
+  --gold:#C99A3B;
+  --gold-soft:#E5C77B;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--ivory)!important;
+  color:var(--coffee-2)!important;
+}
+::-webkit-scrollbar-track{background:var(--ivory)!important}
+::-webkit-scrollbar-thumb{background:var(--gold)!important}
+
+/* Header */
+header{
+  background:rgba(251,248,241,.94)!important;
+  border-bottom-color:rgba(201,154,59,.20)!important;
+  box-shadow:0 4px 20px rgba(59,36,23,.06)!important;
+  transition:box-shadow .45s ease,background-color .45s ease,transform .45s ease!important;
+}
+header.scrolled{
+  box-shadow:0 10px 30px rgba(59,36,23,.11)!important;
+  background:rgba(255,253,248,.97)!important;
+}
+header a:hover, header button:hover{color:var(--gold)!important}
+header .text-maroon, header .text-saffron{color:var(--coffee)!important}
+header .text-golden{color:var(--gold)!important}
+
+/* Mobile menu */
+#mobile-menu{
+  background:var(--ivory)!important;
+  border-color:rgba(201,154,59,.18)!important;
+}
+#mobile-menu a:hover{
+  background:var(--coffee)!important;
+  color:var(--ivory)!important;
+}
+
+/* Cart / modal */
+#cart-drawer{
+  background:var(--ivory)!important;
+  box-shadow:-16px 0 40px rgba(59,36,23,.16)!important;
+}
+#cart-drawer .bg-white,
+#guest-checkout-modal .bg-white{background:var(--paper)!important}
+#cart-drawer .text-maroon,
+#guest-checkout-modal .text-maroon{color:var(--coffee)!important}
+#cart-drawer .bg-maroon,
+#guest-checkout-modal .bg-maroon{background:var(--coffee)!important}
+#cart-drawer .bg-maroon:hover,
+#guest-checkout-modal .bg-maroon:hover{background:var(--coffee-2)!important}
+#guest-checkout-modal .border-maroon{border-color:var(--gold)!important}
+#guest-checkout-modal .text-saffron{color:var(--gold)!important}
+
+/* Hero */
+section.bg-maroon{
+  background:
+    radial-gradient(circle at 50% 10%,rgba(229,199,123,.16),transparent 42%),
+    linear-gradient(135deg,var(--coffee),#4A2D1C 55%,var(--coffee-2))!important;
+}
+section.bg-maroon .bg-saffron{background:var(--gold)!important}
+section.bg-maroon h1{
+  text-shadow:0 8px 28px rgba(0,0,0,.18);
+}
+
+/* Content */
+section.bg-white{background:var(--paper)!important}
+.prose h2{
+  color:var(--coffee)!important;
+  position:relative;
+}
+.prose h2::after{
+  content:"";
+  display:block;
+  width:42px;
+  height:2px;
+  margin-top:9px;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+.prose a{color:var(--gold)!important}
+section .bg-cream{background:var(--ivory-soft)!important}
+section .border-golden\/20{border-color:rgba(201,154,59,.22)!important}
+
+/* Footer — no vertical movement, only opacity */
+footer{
+  background:linear-gradient(145deg,#3B2417,#4A2D1C)!important;
+  border-top:4px solid var(--gold)!important;
+  opacity:0;
+  transition:opacity .9s cubic-bezier(.16,1,.3,1)!important;
+}
+footer.footer-visible{opacity:1}
+footer .text-golden{color:var(--gold-soft)!important}
+footer a:hover{color:var(--gold-soft)!important}
+footer .border-t{border-color:rgba(255,248,235,.16)!important}
+
+/* ===== SMOOTH PAGE ANIMATIONS ===== */
+.page-reveal{
+  opacity:0;
+  transform:translate3d(0,18px,0);
+  transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);
+}
+.page-reveal.is-visible{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+.hero-reveal{
+  opacity:0;
+  transform:translate3d(0,12px,0);
+  transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);
+}
+.hero-reveal.is-visible{opacity:1;transform:none}
+
+header{
+  animation:headerIn .7s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes headerIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+#cart-drawer{
+  transition:transform .38s cubic-bezier(.22,.8,.25,1)!important;
+}
+#cart-overlay{
+  transition:opacity .35s ease,visibility .35s ease!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  header,.page-reveal,.hero-reveal,footer{
+    animation:none!important;
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
@@ -161,7 +309,7 @@
     <!-- PAGE HERO BANNER -->
     <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
         <div class="absolute inset-0 opacity-10">
-            <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
+            <div class="w-full h-full" style="background-image: radial-gradient(#FBF8F1 1px, transparent 1px); background-size: 20px 20px;"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Privacy Policy</h1>
@@ -220,9 +368,9 @@
                 <p class="mb-4 leading-relaxed">If you have questions or comments about this Privacy Policy, please contact us at:</p>
                 <div class="bg-cream p-6 rounded-xl border border-golden/20 mb-6">
                     <p class="font-bold text-naturalBrown mb-1">Sri Shambhu Sha & Sons</p>
-                    <p class="text-sm text-gray-600 mb-4">FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</p>
-                    <p class="text-sm text-gray-600 mb-1"><strong class="text-naturalBrown">Email:</strong> support@srishambhushaandsons.in</p>
-                    <p class="text-sm text-gray-600"><strong class="text-naturalBrown">WhatsApp / Phone:</strong> +91 7295021513</p>
+                    <p class="text-sm text-gray-600 mb-4">Shop No. 01 - East Door of the Temple in Deoghar, Jharkhand 814112, India and Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India.</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong class="text-naturalBrown">Email:</strong> srishambhushaandsons@gmail.com</p>
+                    <p class="text-sm text-gray-600"><strong class="text-naturalBrown">WhatsApp :</strong> +91 7295021513</p>
                 </div>
 
             </div>
@@ -260,7 +408,13 @@
                     <ul class="space-y-4 text-sm text-cream/80">
                         <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
-                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
+                            <div>
+    <strong>Shop No. 01</strong><br>
+    <span>East Door of the Temple in Deoghar, Jharkhand 814112, India</span><br><br>
+
+    <strong>Shop No. 02</strong><br>
+    <span>Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</span>
+</div>
                         </li>
                         <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
@@ -458,5 +612,67 @@
             }
         }
     </script>
+
+<script id="premium-theme-animation-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const header=document.querySelector('header');
+  const hero=document.querySelector('section.bg-maroon');
+  const content=document.querySelector('section.py-16, section.py-24');
+
+  if(hero){
+    const heroBox=hero.querySelector('.relative.z-10');
+    if(heroBox) heroBox.classList.add('hero-reveal');
+    requestAnimationFrame(()=>heroBox && heroBox.classList.add('is-visible'));
+  }
+
+  if(content){
+    const wrapper=content.querySelector('.max-w-4xl');
+    if(wrapper) wrapper.classList.add('page-reveal');
+  }
+
+  const items=document.querySelectorAll('.prose h2, .prose p, .prose ul, .prose > div');
+  items.forEach((el,i)=>{
+    el.classList.add('page-reveal');
+    el.style.transitionDelay=Math.min(i*55,450)+'ms';
+  });
+
+  const revealEls=document.querySelectorAll('.page-reveal');
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver((entries,observer)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },{threshold:.08});
+    revealEls.forEach(el=>io.observe(el));
+  }else{
+    revealEls.forEach(el=>el.classList.add('is-visible'));
+  }
+
+  const footer=document.querySelector('footer');
+  if(footer){
+    if('IntersectionObserver' in window){
+      const fo=new IntersectionObserver((entries)=>{
+        if(entries.some(e=>e.isIntersecting)){
+          footer.classList.add('footer-visible');
+          fo.disconnect();
+        }
+      },{threshold:.05});
+      fo.observe(footer);
+    }else footer.classList.add('footer-visible');
+  }
+
+  if(header){
+    const onScroll=()=>{
+      header.classList.toggle('scrolled',window.scrollY>20);
+    };
+    onScroll();
+    window.addEventListener('scroll',onScroll,{passive:true});
+  }
+});
+</script>
+
 </body>
 </html>
