@@ -19,11 +19,11 @@
             theme: {
                 extend: {
                     colors: {
-                        cream: "#FDFBF7",
-                        maroon: "#7B1818",
-                        golden: "#D4AF37",
-                        saffron: "#F48C06",
-                        naturalBrown: "#5C4033",
+                        cream: "#FBF8F1",
+                        coffee: "#3B2417",
+                        golden: "#C99A3B",
+                        amber: "#A87525",
+                        naturalBrown: "#5A3925",
                     },
                     fontFamily: {
                         serif: ['"Playfair Display"', 'serif'],
@@ -36,13 +36,134 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #FDFBF7; }
-        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #FBF8F1; }
+        ::-webkit-scrollbar-thumb { background: #3B2417; border-radius: 4px; }
         
         /* Cart Drawer Animation Styles */
         .cart-open { transform: translateX(0) !important; }
         .overlay-open { opacity: 1 !important; visibility: visible !important; }
     </style>
+
+<style id="premium-theme-animation">
+:root{
+  --ivory:#FBF8F1;
+  --paper:#FFFDF8;
+  --coffee:#3B2417;
+  --coffee-2:#5A3925;
+  --brown:#76543B;
+  --gold:#C99A3B;
+  --gold-soft:#E5C77B;
+  --line:rgba(118,84,59,.16);
+}
+html{scroll-behavior:smooth}
+body{background:var(--ivory)!important;color:var(--coffee-2)!important}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--ivory)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:8px}
+
+/* Eliminate any legacy maroon palette even if an old utility remains */
+.text-maroon,.bg-maroon,.border-maroon,.hover\:text-maroon:hover,.hover\:bg-maroon:hover{
+  color:var(--coffee)!important;background-color:var(--coffee)!important;border-color:var(--coffee)!important;
+}
+.text-saffron,.bg-saffron,.hover\:text-saffron:hover,.hover\:bg-saffron:hover{
+  color:var(--gold)!important;background-color:var(--gold)!important;
+}
+
+/* Header */
+header{
+  background:rgba(251,248,241,.94)!important;
+  border-color:rgba(201,154,59,.22)!important;
+  box-shadow:0 5px 24px rgba(59,36,23,.06)!important;
+}
+header > div{animation:headerIn .75s cubic-bezier(.16,1,.3,1) both}
+@keyframes headerIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+header a,header button{transition:color .25s ease,transform .25s ease}
+header a:hover,header button:hover{transform:translateY(-1px)}
+
+/* Hero */
+section.relative.pt-32.pb-16.bg-coffee{
+  background:linear-gradient(135deg,#3B2417 0%,#4B2E1D 52%,#5A3925 100%)!important;
+  border-bottom:1px solid rgba(201,154,59,.3);
+}
+section.relative.pt-32.pb-16.bg-coffee > div:first-child{opacity:.08!important}
+section.relative.pt-32.pb-16.bg-coffee .relative{
+  animation:heroIn .9s cubic-bezier(.16,1,.3,1) .08s both;
+}
+section.relative.pt-32.pb-16.bg-coffee h1{
+  text-shadow:0 8px 24px rgba(0,0,0,.18);
+}
+section.relative.pt-32.pb-16.bg-coffee .w-24{
+  background:linear-gradient(90deg,transparent,#E5C77B,transparent)!important;
+}
+@keyframes heroIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}
+}
+
+/* Content reveal — gentle, no upward footer-style movement */
+#policy-content{
+  animation:contentFade .8s ease both;
+}
+@keyframes contentFade{from{opacity:0}to{opacity:1}}
+
+.prose > h2,.prose > p,.prose > ul,.prose > ol{
+  animation:contentItem .7s ease both;
+}
+.prose > h2{animation-delay:.08s}
+.prose > p{animation-delay:.12s}
+.prose > ul,.prose > ol{animation-delay:.16s}
+@keyframes contentItem{from{opacity:0}to{opacity:1}}
+
+/* Warning/contact cards */
+.bg-red-50{
+  background:#F7EFE5!important;
+  border-color:#B47A2B!important;
+}
+.text-red-600{color:#9A6724!important}
+.bg-cream{background:var(--ivory)!important}
+.border-golden\/20{border-color:rgba(201,154,59,.2)!important}
+
+/* Cart / modal: smooth but functional */
+#cart-overlay{transition:opacity .32s ease,visibility .32s ease,backdrop-filter .32s ease!important}
+#cart-drawer{background:var(--ivory)!important;transition:transform .38s cubic-bezier(.22,.8,.25,1)!important}
+#cart-drawer > div:first-child,#cart-drawer > div:last-child{background:var(--paper)!important}
+#cart-drawer h2{color:var(--coffee)!important}
+#guest-checkout-modal > div{
+  animation:modalIn .35s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+/* Footer — single smooth fade only, no translate */
+footer{
+  background:linear-gradient(145deg,#3B2417,#4B2E1D)!important;
+  color:#FBF8F1!important;
+  border-top:4px solid var(--gold)!important;
+  opacity:0;
+  transition:opacity 1s cubic-bezier(.16,1,.3,1);
+}
+footer.footer-visible{opacity:1}
+footer .text-golden{color:var(--gold-soft)!important}
+footer .text-cream\/80{color:rgba(251,248,241,.72)!important}
+footer .border-cream\/20{border-color:rgba(251,248,241,.16)!important}
+footer a{transition:color .25s ease,transform .25s ease,background-color .25s ease}
+footer .flex.space-x-4 a:hover{transform:translateY(-3px) scale(1.04)}
+footer .border-t{border-color:rgba(251,248,241,.16)!important}
+
+/* Strong gold accents */
+.text-golden{color:var(--gold)!important}
+.bg-golden{background-color:var(--gold)!important}
+.border-golden\/20{border-color:rgba(201,154,59,.2)!important}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
@@ -56,33 +177,33 @@
                         <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
                     </div>
                     <a href="index.html" class="flex flex-col">
-                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
-                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase">Deoghar</span>
+                        <span class="font-serif font-bold text-lg md:text-2xl text-coffee leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
+                        <span class="text-[10px] md:text-xs text-amber tracking-widest font-semibold uppercase">Deoghar</span>
                     </a>
                 </div>
 
                 <!-- Desktop Menu -->
                 <nav class="hidden lg:flex space-x-6 items-center text-sm xl:text-base">
-                    <a href="index.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Home</a>
-                    <a href="about_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">About Us</a>
-                    <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
-                    <a href="gallery.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
-                    <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
-                    <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
-                    <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
+                    <a href="index.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">Home</a>
+                    <a href="about_us.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">About Us</a>
+                    <a href="our_peda.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">Our Peda</a>
+                    <a href="gallery.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">Gallery</a>
+                    <a href="track_order.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">Track Order</a>
+                    <a href="faq.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">FAQ</a>
+                    <a href="contact_us.html" class="text-naturalBrown hover:text-coffee font-medium transition-colors">Contact Us</a>
                     <!-- Dynamic Auth Link Desktop -->
                     <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
-                        <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
+                        <i class="ph ph-spinner-gap animate-spin text-coffee"></i>
                     </span>
                 </nav>
 
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
+                    <button onclick="toggleCart()" class="relative text-coffee hover:text-amber transition-colors p-2" aria-label="Cart">
                         <i class="ph ph-shopping-cart text-2xl"></i>
-                        <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                        <span id="cart-badge" class="absolute top-0 right-0 bg-amber text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                     </button>
-                    <button id="mobile-menu-btn" class="lg:hidden text-maroon p-2">
+                    <button id="mobile-menu-btn" class="lg:hidden text-coffee p-2">
                         <i class="ph ph-list text-3xl"></i>
                     </button>
                 </div>
@@ -92,13 +213,13 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-cream border-t border-golden/20 absolute w-full shadow-xl max-h-[80vh] overflow-y-auto">
             <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
-                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
-                <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">About Us</a>
-                <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
-                <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
-                <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
-                <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
-                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
+                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Home</a>
+                <a href="about_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">About Us</a>
+                <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
+                <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
+                <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
+                <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
                 <!-- Dynamic Auth Link Mobile -->
                 <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
                     <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
@@ -111,10 +232,10 @@
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
-            <h2 class="text-xl font-serif font-bold text-maroon flex items-center gap-2">
+            <h2 class="text-xl font-serif font-bold text-coffee flex items-center gap-2">
                 <i class="ph-fill ph-shopping-bag text-2xl"></i> Your Cart
             </h2>
-            <button onclick="toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-coffee transition-colors p-1 rounded-full hover:bg-gray-100">
                 <i class="ph ph-x text-2xl"></i>
             </button>
         </div>
@@ -127,7 +248,7 @@
                 <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
             </div>
             <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
-            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-coffee text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-coffee/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                 Proceed to Checkout <i class="ph ph-arrow-right"></i>
             </button>
         </div>
@@ -135,37 +256,37 @@
 
     <!-- GUEST CHECKOUT WARNING MODAL -->
     <div id="guest-checkout-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-maroon">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-coffee">
             <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="ph-fill ph-user-circle text-4xl text-saffron"></i>
+                <i class="ph-fill ph-user-circle text-4xl text-amber"></i>
             </div>
             <h3 class="font-serif font-bold text-naturalBrown text-2xl mb-2">Login Required?</h3>
             <p class="text-sm text-gray-600 mb-4 leading-relaxed">You are not logged in. Creating an account allows you to track your live order history and manage addresses easily.</p>
             
             <div class="bg-gray-50 border border-gray-200 text-gray-700 text-xs p-3 rounded-lg mb-6 text-left shadow-sm">
-                <strong><i class="ph-fill ph-warning-circle text-saffron"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-maroon">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
+                <strong><i class="ph-fill ph-warning-circle text-amber"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-coffee">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
             </div>
             
             <div class="flex flex-col gap-3">
-                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-coffee text-cream px-4 py-3 rounded-lg font-bold hover:bg-coffee/90 shadow-md transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-sign-in"></i> Login / Signup Now
                 </a>
                 <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
                     Order Without Signup (Guest)
                 </a>
-                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-maroon underline transition-colors">Cancel</button>
+                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-coffee underline transition-colors">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- PAGE HERO BANNER -->
-    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden">
+    <section class="relative pt-32 pb-16 bg-coffee overflow-hidden">
         <div class="absolute inset-0 opacity-10">
-            <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
+            <div class="w-full h-full" style="background-image: radial-gradient(#FBF8F1 1px, transparent 1px); background-size: 20px 20px;"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">Return & Refund Policy</h1>
-            <div class="w-24 h-1 bg-saffron mx-auto rounded mb-4"></div>
+            <div class="w-24 h-1 bg-amber mx-auto rounded mb-4"></div>
             <p class="text-cream/80 text-sm md:text-base">Please read our strict policies regarding order cancellations and returns.</p>
         </div>
     </section>
@@ -184,7 +305,7 @@
                 </p>
             </div>
 
-            <div class="prose prose-lg prose-maroon text-gray-600 max-w-none">
+            <div id="policy-content" class="prose prose-lg text-gray-600 max-w-none">
                 
                 <h2 class="text-2xl font-serif font-bold text-naturalBrown mt-0 mb-4">1. Order Cancellations & Refunds</h2>
                 <p class="mb-4 leading-relaxed">Because our products are made fresh based on orders, customers cannot cancel their orders once payment is completed. However, a refund is applicable under one strict condition:</p>
@@ -214,8 +335,8 @@
                 <p class="mb-4 leading-relaxed">If you have any questions regarding your payment, refund status, or order rejection, please do not hesitate to contact our team:</p>
                 <div class="bg-cream p-6 rounded-xl border border-golden/20 mb-6">
                     <p class="font-bold text-naturalBrown mb-1">Sri Shambhu Sha & Sons</p>
-                    <p class="text-sm text-gray-600 mb-4">FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</p>
-                    <p class="text-sm text-gray-600 mb-1"><strong class="text-naturalBrown">Email:</strong> support@srishambhushaandsons.in</p>
+                    <p class="text-sm text-gray-600 mb-4">Shop No. 01 - East Door of the Temple in Deoghar, Jharkhand 814112, India<br><br>Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong class="text-naturalBrown">Email:</strong> srishambhushaandsons@gmail.com</p>
                     <p class="text-sm text-gray-600"><strong class="text-naturalBrown">WhatsApp Support:</strong> +91 7295021513</p>
                 </div>
 
@@ -224,7 +345,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
+    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-coffee">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
                 <!-- Brand Info -->
@@ -232,8 +353,8 @@
                     <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
                     <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
-                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
-                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-amber transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-amber transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
                     </div>
                 </div>
 
@@ -254,7 +375,7 @@
                     <ul class="space-y-4 text-sm text-cream/80">
                         <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
                             <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
-                            <span>FPR2+Q57, Shivganga Muhalla, Deoghar, Jharkhand 814112, India</span>
+                            <span><strong>Shop No. 01 -</strong> East Door of the Temple in Deoghar, Jharkhand 814112, India<br><br><strong>Shop No. 02 -</strong> Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</span>
                         </li>
                         <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
                             <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
@@ -361,11 +482,11 @@
                             <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
                             <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
                             <div class="flex items-center justify-between">
-                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <span class="font-bold text-coffee text-sm">₹${item.price}</span>
                                 <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-coffee update-qty" data-index="${index}" data-action="minus">-</button>
                                     <span class="px-2 text-sm font-semibold">${item.qty}</span>
-                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-coffee update-qty" data-index="${index}" data-action="plus">+</button>
                                 </div>
                             </div>
                         </div>
@@ -428,12 +549,12 @@
             
             if (user) {
                 currentUser = user;
-                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-maroon font-bold hover:text-saffron transition-colors">Logout</button>`;
-                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
+                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-coffee font-bold hover:text-amber transition-colors">Logout</button>`;
+                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
             } else {
                 currentUser = null;
-                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-maroon font-bold transition-colors">Login / Signup</a>`;
-                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
+                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-coffee font-bold transition-colors">Login / Signup</a>`;
+                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-coffee hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
             }
         });
 
@@ -452,5 +573,18 @@
             }
         }
     </script>
+
+<script id="premium-animation-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const footer=document.querySelector('footer');
+  if(!footer) return;
+  const show=()=>{footer.classList.add('footer-visible'); observer.disconnect();};
+  const observer=new IntersectionObserver(entries=>{
+    if(entries.some(e=>e.isIntersecting)) show();
+  },{threshold:.08});
+  observer.observe(footer);
+});
+</script>
+
 </body>
 </html>
