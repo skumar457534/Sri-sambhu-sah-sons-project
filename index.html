@@ -232,6 +232,67 @@ footer .border-cream\/20{border-color:var(--line)!important}
 }
 </style>
 
+
+<style id="mobile-final-fix">
+/* MOBILE ONLY: make the dropdown a solid premium panel.
+   Desktop glass navbar remains untouched. */
+@media (max-width: 1023px){
+  #mobile-menu{
+    background:#0B1017 !important;
+    background-image:linear-gradient(180deg,#111722 0%,#0B1017 100%) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    opacity:1 !important;
+    box-shadow:0 22px 45px rgba(0,0,0,.48) !important;
+    border-top:1px solid rgba(216,179,106,.18) !important;
+    border-bottom:1px solid rgba(216,179,106,.14) !important;
+    isolation:isolate;
+    z-index:999 !important;
+  }
+  #mobile-menu::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:#0B1017;
+    z-index:-1;
+  }
+  #mobile-menu > div{
+    background:#0B1017 !important;
+  }
+  #mobile-menu a,
+  #mobile-menu #auth-link-mob,
+  #mobile-menu button{
+    background-color:transparent;
+  }
+  #mobile-menu .bg-maroon{
+    background:linear-gradient(110deg,#551629,#7B1E3A) !important;
+    color:#fff !important;
+  }
+
+  /* Lighter hero image treatment on phones */
+  #home .slide > div:first-child{
+    background:
+      radial-gradient(circle at 50% 38%,rgba(0,0,0,.00),rgba(0,0,0,.18) 48%,rgba(4,7,11,.60) 100%) !important;
+  }
+  #home .slide:nth-child(2) > div:first-child{
+    background:
+      radial-gradient(circle at 50% 38%,rgba(0,0,0,.00),rgba(0,0,0,.16) 48%,rgba(4,7,11,.56) 100%) !important;
+  }
+}
+
+/* Smaller phones: keep the hero visibly brighter while preserving text readability. */
+@media (max-width: 640px){
+  #home .slide > div:first-child{
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.20) 0%,rgba(0,0,0,.10) 42%,rgba(4,7,11,.48) 100%) !important;
+  }
+  #home .slide:nth-child(2) > div:first-child{
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.08) 42%,rgba(4,7,11,.44) 100%) !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-obsidian text-[#F3F0E9] font-sans antialiased overflow-x-hidden">
 <div class="premium-float" aria-hidden="true">
