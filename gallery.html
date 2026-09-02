@@ -233,6 +233,215 @@ footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
 }
 </style>
 
+
+<style id="gallery-animation-upgrade">
+/* ===== PREMIUM ANIMATION UPGRADE — animation only ===== */
+html { scroll-behavior:smooth; }
+
+@keyframes galleryPageIn {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:none; }
+}
+/* Page-wide transforms are intentionally avoided so fixed cart/modal positioning stays intact. */
+
+@keyframes galleryHeroGlow {
+  0%,100% { transform:scale(1) translate3d(0,0,0); opacity:.75; }
+  50% { transform:scale(1.06) translate3d(1%, -1%, 0); opacity:1; }
+}
+body>section:first-of-type:before {
+  will-change:transform,opacity;
+  animation:galleryHeroGlow 9s ease-in-out infinite alternate !important;
+}
+
+@keyframes galleryHeroKicker {
+  from { opacity:0; transform:translateY(18px); }
+  to { opacity:1; transform:none; }
+}
+body>section:first-of-type span {
+  animation:galleryHeroKicker .8s .05s cubic-bezier(.22,.78,.22,1) both !important;
+}
+body>section:first-of-type h1 {
+  animation:galleryHeroKicker .9s .14s cubic-bezier(.22,.78,.22,1) both !important;
+}
+body>section:first-of-type .w-24 {
+  transform-origin:center;
+  animation:galleryHeroRule .8s .25s cubic-bezier(.22,.78,.22,1) both !important;
+}
+@keyframes galleryHeroRule {
+  from { opacity:0; transform:scaleX(.15); }
+  to { opacity:1; transform:scaleX(1); }
+}
+
+/* Smooth navbar interaction */
+header {
+  transition:background .35s ease, box-shadow .35s ease, border-color .35s ease,
+             transform .35s ease !important;
+}
+header a, header button {
+  transition:color .25s ease, transform .25s ease, background .25s ease,
+             box-shadow .25s ease !important;
+}
+header a:hover, header button:hover {
+  transform:translateY(-1px);
+}
+
+/* Gallery cards: entrance + elegant hover */
+#public-gallery-grid>div {
+  opacity:0;
+  transform:translateY(22px) scale(.985);
+  will-change:transform,opacity;
+}
+#public-gallery-grid>div.gallery-card-visible {
+  animation:galleryCardIn .72s cubic-bezier(.22,.78,.22,1) both;
+}
+@keyframes galleryCardIn {
+  from { opacity:0; transform:translateY(22px) scale(.985); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+#public-gallery-grid>div {
+  transition:transform .45s cubic-bezier(.2,.7,.2,1),
+             box-shadow .45s ease, border-color .35s ease !important;
+}
+#public-gallery-grid>div:hover {
+  transform:translateY(-8px) scale(1.008) !important;
+}
+#public-gallery-grid img {
+  will-change:transform;
+  transition:transform .75s cubic-bezier(.22,.61,.36,1),filter .5s ease !important;
+}
+
+/* Search icon pop */
+#public-gallery-grid>div .ph-magnifying-glass-plus {
+  transition:transform .35s cubic-bezier(.22,.78,.22,1),
+             opacity .3s ease, background .25s ease !important;
+}
+#public-gallery-grid>div:hover .ph-magnifying-glass-plus {
+  animation:galleryIconPop .45s cubic-bezier(.22,.78,.22,1) both;
+}
+@keyframes galleryIconPop {
+  0% { transform:scale(.78); }
+  65% { transform:scale(1.08); }
+  100% { transform:scale(1); }
+}
+
+/* Skeleton loading shimmer */
+#gallery-skeleton>div {
+  background-size:220% 100% !important;
+  animation:gallerySkeleton 1.35s linear infinite !important;
+}
+@keyframes gallerySkeleton {
+  from { background-position:120% 0; }
+  to { background-position:-120% 0; }
+}
+
+/* Lightbox entrance / image transition */
+#lightbox:not(.hidden) {
+  animation:lightboxIn .38s cubic-bezier(.22,.78,.22,1) both;
+}
+@keyframes lightboxIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+#lightbox-img {
+  will-change:transform,opacity;
+}
+#lightbox:not(.hidden) #lightbox-img {
+  animation:lightboxImageIn .48s cubic-bezier(.22,.78,.22,1) both;
+}
+@keyframes lightboxImageIn {
+  from { opacity:0; transform:scale(.965); }
+  to { opacity:1; transform:scale(1); }
+}
+#lightbox button {
+  transition:transform .25s ease, color .25s ease, opacity .25s ease !important;
+}
+#lightbox button:hover {
+  transform:scale(1.1) !important;
+}
+#lightbox-progress {
+  transition:width .08s linear;
+}
+
+/* Cart and modal motion */
+/* Cart safety: preserve the original drawer/overlay mechanics exactly. */
+#cart-drawer, #cart-overlay, #cart-items, #checkout-btn {
+  animation:none !important;
+}
+#cart-drawer { will-change:transform; }
+#cart-overlay { will-change:opacity; }
+
+#cart-overlay { transition:opacity .35s ease, visibility .35s ease, backdrop-filter .35s ease !important; }
+#guest-checkout-modal:not(.hidden) {
+  animation:modalFadeIn .3s ease both;
+}
+#guest-checkout-modal.hidden {
+  animation:none !important;
+}
+#guest-checkout-modal:not(.hidden)>div {
+  animation:modalCardIn .42s cubic-bezier(.22,.78,.22,1) both;
+  will-change:transform,opacity;
+}
+@keyframes modalFadeIn { from{opacity:0} to{opacity:1} }
+@keyframes modalCardIn {
+  from { opacity:0; transform:translateY(18px) scale(.97); }
+  to { opacity:1; transform:none; }
+}
+
+/* Footer reveal — animates only when the footer enters the viewport */
+footer .footer-animate {
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .65s cubic-bezier(.22,.78,.22,1),
+             transform .65s cubic-bezier(.22,.78,.22,1);
+  will-change:opacity,transform;
+}
+footer.footer-visible .footer-animate {
+  opacity:1;
+  transform:none;
+}
+footer.footer-visible .footer-animate:nth-child(2) { transition-delay:.08s; }
+footer.footer-visible .footer-animate:nth-child(3) { transition-delay:.16s; }
+footer.footer-visible .footer-animate:nth-child(4) { transition-delay:.24s; }
+footer .footer-social-animate {
+  opacity:0; transform:translateY(10px) scale(.96);
+  transition:opacity .5s ease .18s, transform .5s cubic-bezier(.22,.78,.22,1) .18s;
+}
+footer.footer-visible .footer-social-animate { opacity:1; transform:none; }
+
+/* Floating map button */
+.fixed.bottom-6.right-6,.fixed.bottom-5.right-5 {
+  transition:transform .3s cubic-bezier(.22,.78,.22,1), box-shadow .3s ease !important;
+}
+.fixed.bottom-6.right-6:hover,.fixed.bottom-5.right-5:hover {
+  transform:translateY(-4px) scale(1.04) !important;
+}
+
+/* Particle motion */
+.gallery-theme-particles i {
+  will-change:transform,opacity;
+}
+
+/* Button press feedback */
+button, a {
+  -webkit-tap-highlight-color:transparent;
+}
+button:active:not(#checkout-btn), a:active:not(#cart-drawer a) {
+  transform:scale(.985);
+}
+#cart-drawer button:active, #cart-drawer a:active, #guest-checkout-modal button:active, #guest-checkout-modal a:active {
+  transform:none !important;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
 
@@ -791,6 +1000,92 @@ document.addEventListener('DOMContentLoaded',()=>{
   100%{transform:translateY(-12vh) translateX(55px);opacity:0}
 }
 </style>
+
+
+<script id="gallery-animation-upgrade-js">
+document.addEventListener('DOMContentLoaded', () => {
+  /* Reveal dynamically-created gallery cards with stagger */
+  const grid = document.getElementById('public-gallery-grid');
+
+  function revealGalleryCards() {
+    if (!grid) return;
+    const cards = grid.querySelectorAll(':scope > div');
+    cards.forEach((card, index) => {
+      if (card.classList.contains('gallery-card-visible')) return;
+      card.style.animationDelay = Math.min(index * 0.055, 0.55) + 's';
+      requestAnimationFrame(() => card.classList.add('gallery-card-visible'));
+    });
+  }
+
+  if (grid) {
+    const observer = new MutationObserver(() => {
+      requestAnimationFrame(revealGalleryCards);
+    });
+    observer.observe(grid, {childList:true});
+    revealGalleryCards();
+  }
+
+  /* Scroll-aware header */
+  const header = document.querySelector('header');
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  function updateHeaderMotion() {
+    if (!header) return;
+    const y = window.scrollY;
+    if (y > 20) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+
+    /* tiny hide-on-scroll-down effect only after leaving the top */
+    if (window.innerWidth < 1024 && y > 120 && y > lastY + 8) {
+      header.style.transform = 'translateY(-2px)';
+    } else {
+      header.style.transform = '';
+    }
+    lastY = y;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateHeaderMotion);
+      ticking = true;
+    }
+  }, {passive:true});
+
+  updateHeaderMotion();
+
+  /* Footer reveal: no changes to footer layout or links */
+  const footer = document.querySelector('footer');
+  if (footer) {
+    const footerGroups = footer.querySelectorAll(':scope > div > div:first-child > div');
+    footerGroups.forEach(el => el.classList.add('footer-animate'));
+    footer.querySelectorAll(':scope > div > div:first-child > div:first-child a').forEach(el => el.classList.add('footer-social-animate'));
+
+    if ('IntersectionObserver' in window) {
+      const footerObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            footer.classList.add('footer-visible');
+            footerObserver.unobserve(footer);
+          }
+        });
+      }, {threshold:.12, rootMargin:'0px 0px -35px 0px'});
+      footerObserver.observe(footer);
+    } else {
+      footer.classList.add('footer-visible');
+    }
+  }
+
+  /* Button press feedback without changing behavior */
+  document.addEventListener('pointerdown', e => {
+    const el = e.target.closest('button, a');
+    if (!el) return;
+    el.classList.add('gallery-press');
+    setTimeout(() => el.classList.remove('gallery-press'), 180);
+  }, {passive:true});
+});
+</script>
 
 </body>
 </html>
