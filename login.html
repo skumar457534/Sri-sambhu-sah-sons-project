@@ -45,8 +45,257 @@
             font-weight: 700;
         }
     </style>
+
+<style id="login-index-theme">
+:root{
+  --ivory:#FBF8F1;
+  --ivory-2:#F4EFE4;
+  --paper:#FFFDF8;
+  --coffee:#3B2417;
+  --coffee-2:#5A3925;
+  --brown:#76543B;
+  --gold:#C99A3B;
+  --gold-2:#E5C77B;
+  --line:rgba(104,72,39,.16);
+  --shadow:rgba(68,44,24,.12);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 8% 8%,rgba(201,154,59,.08),transparent 26%),
+    radial-gradient(circle at 92% 86%,rgba(118,84,59,.055),transparent 25%),
+    linear-gradient(180deg,var(--ivory) 0%,#F7F2E8 48%,var(--ivory-2) 100%) !important;
+  color:var(--coffee)!important;
+  font-family:Inter,sans-serif!important;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.018;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+main,footer{position:relative;z-index:1}
+
+/* Header */
+header{
+  background:rgba(251,248,241,.88)!important;
+  border-bottom:1px solid rgba(104,72,39,.10)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:0 9px 28px rgba(68,44,24,.055)!important;
+}
+header .bg-white{background:transparent!important}
+header .border-golden\/20{border-color:rgba(104,72,39,.10)!important}
+header .border-golden\/80{border-color:rgba(201,154,59,.72)!important}
+header .text-maroon{color:var(--coffee)!important}
+header .text-gray-500{color:#6C5A49!important}
+header a:hover{color:#6A4127!important}
+header .rounded-full{
+  background:var(--paper)!important;
+  box-shadow:0 0 0 4px rgba(201,154,59,.04),0 7px 18px rgba(68,44,24,.08)!important;
+}
+
+/* Main */
+main{
+  min-height:calc(100vh - 132px)!important;
+  padding-top:2.5rem!important;
+  padding-bottom:2.8rem!important;
+  isolation:isolate;
+}
+main:before,main:after{
+  content:"";
+  position:absolute;
+  border:1px solid rgba(201,154,59,.10);
+  border-radius:50%;
+  pointer-events:none;
+}
+main:before{width:280px;height:280px;left:-170px;top:11%}
+main:after{width:340px;height:340px;right:-210px;bottom:5%}
+
+/* Decorative background glows */
+main > .bg-maroon\/5{
+  background:radial-gradient(circle,rgba(201,154,59,.12),transparent 70%)!important;
+}
+main > .bg-golden\/10{
+  background:radial-gradient(circle,rgba(118,84,59,.075),transparent 70%)!important;
+}
+
+/* Auth card */
+main > div.w-full.max-w-md{
+  background:linear-gradient(180deg,#FFFDF9 0%,#F8F3EA 100%)!important;
+  border:1px solid rgba(104,72,39,.13)!important;
+  border-radius:24px!important;
+  box-shadow:
+    0 24px 65px rgba(68,44,24,.12),
+    0 0 0 1px rgba(201,154,59,.035)!important;
+  position:relative;
+}
+main > div.w-full.max-w-md:before{
+  content:"";
+  position:absolute;
+  width:160px;height:160px;
+  right:-90px;top:-88px;
+  border:1px solid rgba(201,154,59,.14);
+  border-radius:50%;
+  pointer-events:none;
+}
+main > div.w-full.max-w-md:after{
+  content:"✦";
+  position:absolute;
+  right:28px;top:18px;
+  color:rgba(201,154,59,.42);
+  font-size:13px;
+  pointer-events:none;
+}
+
+/* Notification */
+#notification-banner{
+  border-radius:22px 22px 0 0!important;
+}
+#notification-banner.bg-red-50{
+  background:#F8EDE5!important;
+  color:#9D4A37!important;
+  border-color:#E7CFC0!important;
+}
+#notification-banner.bg-green-50{
+  background:#EFF4E9!important;
+  color:#54724A!important;
+  border-color:#D5E2C9!important;
+}
+
+/* Heading */
+#auth-title{
+  color:var(--coffee)!important;
+  letter-spacing:-.02em;
+}
+#auth-subtitle{color:#7D6855!important}
+
+/* Tabs */
+main .border-gray-200{border-color:rgba(104,72,39,.12)!important}
+.auth-tab{
+  color:#907D69!important;
+  transition:color .22s ease,transform .22s ease,border-color .22s ease!important;
+}
+.auth-tab:hover{color:#6A4127!important}
+.auth-tab.active{
+  border-bottom-color:#C99A3B!important;
+  color:#3B2417!important;
+  font-weight:700!important;
+}
+
+/* Labels / inputs */
+main label{color:#695746!important}
+main input{
+  background:#FCF8F0!important;
+  color:var(--coffee)!important;
+  border-color:rgba(104,72,39,.14)!important;
+  border-radius:12px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8)!important;
+}
+main input::placeholder{color:#A49280!important}
+main input:focus{
+  outline:none!important;
+  border-color:rgba(201,154,59,.78)!important;
+  box-shadow:0 0 0 3px rgba(201,154,59,.10)!important;
+}
+main .text-maroon{color:#6A4127!important}
+main .text-saffron{color:#A87525!important}
+main .text-gray-500{color:#7D6855!important}
+main .text-gray-400{color:#9B8A78!important}
+
+/* Primary buttons */
+#btn-login,#btn-signup{
+  background:linear-gradient(110deg,#4B2B1B 0%,#C99A3B 54%,#6A4127 100%)!important;
+  color:#FFFDF8!important;
+  border:1px solid rgba(229,199,123,.38)!important;
+  border-radius:13px!important;
+  box-shadow:0 13px 28px rgba(68,44,24,.15)!important;
+  transition:transform .24s ease,box-shadow .24s ease,filter .24s ease!important;
+}
+#btn-login:hover:not(:disabled),#btn-signup:hover:not(:disabled){
+  transform:translateY(-3px)!important;
+  box-shadow:0 19px 38px rgba(68,44,24,.21)!important;
+  filter:saturate(1.05)!important;
+}
+#btn-login:disabled,#btn-signup:disabled{opacity:.72!important}
+#btn-login .ph,#btn-signup .ph{color:#F6E7BE!important}
+
+/* Google button */
+#btn-google{
+  background:#FFFDF9!important;
+  color:#5E4B3B!important;
+  border-color:rgba(104,72,39,.14)!important;
+  border-radius:13px!important;
+  box-shadow:0 7px 19px rgba(68,44,24,.055)!important;
+}
+#btn-google:hover{
+  background:#F7F1E7!important;
+  border-color:rgba(201,154,59,.38)!important;
+  transform:translateY(-2px);
+}
+
+/* Legal links */
+main a.text-maroon{color:#6A4127!important}
+
+/* Footer */
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+  color:#FFF8EB!important;
+}
+footer p{color:rgba(255,248,235,.58)!important}
+
+/* Subtle card entrance */
+main > div.w-full.max-w-md{
+  animation:loginCardRise .72s cubic-bezier(.22,.78,.22,1) both;
+}
+@keyframes loginCardRise{
+  from{opacity:0;transform:translateY(20px) scale(.985)}
+  to{opacity:1;transform:none}
+}
+
+/* Mobile */
+@media(max-width:640px){
+  header .h-20{height:4.5rem!important}
+  header .font-serif{font-size:1rem!important}
+  main{padding:1.1rem!important}
+  main > div.w-full.max-w-md{
+    border-radius:19px!important;
+  }
+  main > div.w-full.max-w-md .p-6{
+    padding:1.15rem!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-gray-50 text-naturalBrown font-sans antialiased overflow-x-hidden min-h-screen flex flex-col">
+
+<div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+  <span style="position:absolute;left:12%;bottom:-12px;width:5px;height:5px;border-radius:50%;background:rgba(201,154,59,.32);animation:loginParticle 15s linear infinite;"></span>
+  <span style="position:absolute;left:36%;bottom:-12px;width:4px;height:4px;border-radius:50%;background:rgba(201,154,59,.25);animation:loginParticle 20s linear infinite -6s;"></span>
+  <span style="position:absolute;left:71%;bottom:-12px;width:4px;height:4px;border-radius:50%;background:rgba(201,154,59,.28);animation:loginParticle 18s linear infinite -10s;"></span>
+  <span style="position:absolute;left:89%;bottom:-12px;width:5px;height:5px;border-radius:50%;background:rgba(201,154,59,.22);animation:loginParticle 23s linear infinite -14s;"></span>
+</div>
+<style id="login-particles">
+@keyframes loginParticle{
+  0%{transform:translateY(8vh) translateX(0);opacity:0}
+  13%{opacity:.48}
+  86%{opacity:.28}
+  100%{transform:translateY(-105vh) translateX(38px);opacity:0}
+}
+</style>
+
 
     <!-- MINIMAL HEADER -->
     <header class="w-full top-0 z-50 bg-white border-b border-golden/20 shadow-sm shrink-0">
