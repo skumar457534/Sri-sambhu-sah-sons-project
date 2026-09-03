@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Dashboard | Sri Shambhu Sha & Sons</title>
-    
+    <link rel="icon" href="images/logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpg">
+
+<link rel="manifest" href="admin-manifest.json">
+<meta name="theme-color" content="#7B1818">
     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
@@ -1122,9 +1128,14 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             });
             
             const shipData = await shipRes.json();
-            if(!shipData.success) throw new Error(shipData.error || "Failed to create shipment");
             
-            const generatedAWB = 'SR-SHIP-' + shipData.shipment_id; 
+            if(!shipData.success) {
+                console.error("Shiprocket API Error:", shipData.details);
+                throw new Error(shipData.error || "Failed to create shipment");
+            }
+            
+            // CHANGED: Use the REAL AWB returned by our updated Worker
+            const generatedAWB = shipData.awb; 
             
             const orderRef = doc(db, "orders", order.id);
             await updateDoc(orderRef, {
@@ -1137,19 +1148,26 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             });
 
             // Trigger Email
-            fetch("https://api.srishambhushaandsons.in/api/email/send", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: 'ACCEPT',
-                    email: order.customerEmail || order.email,
-                    name: order.customerName || 'Customer',
-                    orderId: order.id,
-                    awb: generatedAWB
-                })
-            }).catch(e => console.error("Mail error", e));
+            try {
+                await fetch("https://api.srishambhushaandsons.in/api/email/send", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'ACCEPT',
+                        email: order.customerEmail || order.email,
+                        name: order.customerName || 'Customer',
+                        orderId: order.id,
+                        awb: generatedAWB
+                    })
+                });
+            } catch (mailErr) {
+                console.error("Mail send failed", mailErr);
+            }
 
-            showToast("Order Accepted & Synced! Email Sent.", "success");
+            document.getElementById('new-awb').innerText = generatedAWB;
+            document.getElementById('shiprocket-check-loading').classList.add('hidden');
+            document.getElementById('shipment-success').classList.remove('hidden');
+            showToast("Order Accepted & Synced with Shiprocket! Email Sent.", "success");
         }
 
         // --- REJECT ORDER LOGIC ---
@@ -1171,6 +1189,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             try {
                 const o = globalOrders.find(x => x.id === actionOrderId);
                 
+                // Call Cloudflare Refund API
                 const refundRes = await fetch("https://api.srishambhushaandsons.in/api/admin/refund", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1183,6 +1202,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 const refundData = await refundRes.json();
                 if(!refundData.success) throw new Error(refundData.error || "Refund API Failed");
 
+                // Update status in Firestore
                 const orderRef = doc(db, "orders", actionOrderId);
                 await updateDoc(orderRef, {
                     status: 'REJECTED',
@@ -1190,17 +1210,22 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     refundId: refundData.refund_id || refundData.id || ''
                 });
 
-                fetch("https://api.srishambhushaandsons.in/api/email/send", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        type: 'REJECT',
-                        email: o.customerEmail || o.email,
-                        name: o.customerName || 'Customer',
-                        orderId: o.id,
-                        amount: o.amount
-                    })
-                }).catch(e => console.error(e));
+                // Trigger Email via Brevo
+                try {
+                    await fetch("https://api.srishambhushaandsons.in/api/email/send", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'REJECT',
+                            email: o.customerEmail || o.email,
+                            name: o.customerName || 'Customer',
+                            orderId: o.id,
+                            amount: o.amount
+                        })
+                    });
+                } catch (mailErr) {
+                    console.error("Mail send failed", mailErr);
+                }
 
                 closeModals();
                 showToast("Order Rejected & Refund Processed. Email Sent.", "success");
@@ -1242,7 +1267,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 showToast("Shipment ID not found. Cannot generate label.", "error");
                 return;
             }
-            showToast("Generating Label from Shiprocket...", "success");
+            showToast("Generating Label from Shiprocket...", "info");
             try {
                 const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
                     method: 'POST',
