@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Dashboard | Sri Shambhu Sha & Sons</title>
-    
+    <link rel="icon" href="images/logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpg">
+
+<link rel="manifest" href="admin-manifest.json">
+<meta name="theme-color" content="#7B1818">
     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
@@ -39,24 +45,22 @@
 
         /* Order filter active button - keep maroon even on hover */
         .filter-btn.active:hover {
-            background-color: #7B1818 !important;
-            color: #ffffff !important;
-            border-color: transparent !important;
-        }
-        
+    background-color: #7B1818 !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    }
         /* Mobile / Touch devices */
-        @media (hover: none) and (pointer: coarse) {
-            .filter-btn.active,
-            .filter-btn.active:hover,
-            .filter-btn.active:focus,
-            .filter-btn.active:active {
-                background-color: #7B1818 !important;
-                color: #ffffff !important;
-                border-color: transparent !important;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-            }
-        }
-
+@media (hover: none) and (pointer: coarse) {
+    .filter-btn.active,
+    .filter-btn.active:hover,
+    .filter-btn.active:focus,
+    .filter-btn.active:active {
+        background-color: #7B1818 !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+}
         /* Fast Rendering for heavy tables */
         .fast-render { content-visibility: auto; will-change: transform; }
 
@@ -64,32 +68,39 @@
         button, a { -webkit-tap-highlight-color: transparent; outline: none; }
 
         /* Toast Animation */
-        @keyframes slideDown {
-            from { transform: translateY(-120%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .toast-enter { animation: slideDown 0.3s ease-out forwards; }
+    @keyframes slideDown {
+    from {
+        transform: translateY(-120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 
-        #toast-container {
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: calc(100% - 24px) !important;
-            max-width: 420px !important;
-        }
+.toast-enter {
+    animation: slideDown 0.3s ease-out forwards;
+}
 
-        @media (max-width: 640px) {
-            #toast-container {
-                width: calc(100% - 24px) !important;
-                max-width: 380px !important;
-            }
-            .mobile-workspace { padding-top: 8px !important; }
-        }
+#toast-container {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 24px) !important;
+    max-width: 420px !important;
+}
+
+@media (max-width: 640px) {
+    #toast-container {
+        width: calc(100% - 24px) !important;
+        max-width: 380px !important;
+    }
+
+    .mobile-workspace {
+        padding-top: 8px !important;
+    }
+}
         
-        .courier-scroll::-webkit-scrollbar { width: 4px; }
-        .courier-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .courier-scroll::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
-        .courier-radio:checked + div { border-color: #7B1818; background-color: #FDFBF7; }
-        .courier-radio:checked + div .check-icon { opacity: 1; transform: scale(1); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden flex h-screen relative">
@@ -182,13 +193,14 @@
 
                 <!-- DASHBOARD TAB -->
                 <div id="tab-dashboard" class="tab-content block fast-render">
+                    <!-- STATS GRID -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
                             <div class="w-12 h-12 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-2xl shrink-0">
                                 <i class="ph-fill ph-currency-inr"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-1">Net Sales</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Total Sales</p>
                                 <h3 class="text-2xl font-bold text-gray-900" id="dash-sales">₹0</h3>
                             </div>
                         </div>
@@ -206,7 +218,7 @@
                                 <i class="ph-fill ph-package"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-1">Valid Orders</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Total Orders</p>
                                 <h3 class="text-2xl font-bold text-gray-900" id="dash-orders">0</h3>
                             </div>
                         </div>
@@ -221,6 +233,7 @@
                         </div>
                     </div>
 
+                    <!-- Quick Actions & Alerts -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                             <h3 class="text-lg font-bold text-gray-900 mb-4">Action Needed</h3>
@@ -236,8 +249,8 @@
                             <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
                                 <i class="ph-fill ph-database text-2xl"></i>
                             </div>
-                            <h3 class="font-bold text-gray-800">Real-Time Sync Active</h3>
-                            <p class="text-sm text-gray-500 mt-1">Dashboard is securely connected and receiving live updates instantly.</p>
+                            <h3 class="font-bold text-gray-800">Firebase Live Sync Active</h3>
+                            <p class="text-sm text-gray-500 mt-1">Dashboard is securely connected and receiving real-time updates.</p>
                         </div>
                     </div>
                 </div>
@@ -245,10 +258,11 @@
                 <!-- ORDERS TAB -->
                 <div id="tab-orders" class="tab-content hidden fast-render">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+                        <!-- Order Header & Filters -->
                         <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Manage Orders</h3>
-                                <p class="text-xs text-gray-500 mt-1">Only confirmed orders (Pending, Accepted, Rejected) are shown here.</p>
+                                <p class="text-xs text-gray-500 mt-1">Only active processing orders (Pending, Accepted, Rejected) are shown here.</p>
                             </div>
                             <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                                 <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md outline-none" data-status="ALL">All Active</button>
@@ -258,6 +272,7 @@
                             </div>
                         </div>
 
+                        <!-- Orders Table -->
                         <div class="flex-1 overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
                                 <thead class="bg-white sticky top-0 z-10 shadow-sm border-b border-gray-200">
@@ -518,6 +533,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Base Price per 1 Kg (₹)</label>
                         <input type="number" id="prod-price" required placeholder="e.g. 480" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                        <p class="text-[10px] text-gray-500 mt-1">Prices for 500g, 1.5Kg etc. will be calculated automatically.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -542,16 +558,17 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             const toast = document.createElement('div');
             
             const isSuccess = type === 'success';
-            const bgColor = isSuccess ? 'bg-green-600' : (type === 'info' ? 'bg-blue-600' : 'bg-red-600');
-            const icon = isSuccess ? 'ph-check-circle' : (type === 'info' ? 'ph-info' : 'ph-warning-circle');
+            const bgColor = isSuccess ? 'bg-green-600' : 'bg-red-600';
+            const icon = isSuccess ? 'ph-check-circle' : 'ph-warning-circle';
 
-            toast.className = `toast-enter w-full flex items-center justify-between p-4 rounded-lg shadow-lg text-white pointer-events-auto ${bgColor}`;
+            // Fixed pointing events and sizing for mobile screens
+            toast.className = `toast-enter w-full max-w-md flex items-center justify-between p-4 rounded-lg shadow-xl text-white pointer-events-auto ${bgColor}`;
             toast.innerHTML = `
                 <div class="flex items-center gap-3 font-medium text-sm">
                     <i class="ph-fill ${icon} text-2xl"></i>
                     <span>${message}</span>
                 </div>
-                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white outline-none"><i class="ph ph-x"></i></button>
+                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white outline-none"><i class="ph ph-x text-lg"></i></button>
             `;
             
             container.appendChild(toast);
@@ -749,9 +766,11 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         function updateDashboardStats() {
             let totalSales = 0, pendingCount = 0, validOrderCount = 0;
             globalOrders.forEach(o => {
-                // Count valid orders (Paid and Not Rejected)
-                if (o.paymentStatus === 'PAID' && ['PENDING', 'ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)) {
-                    totalSales += Number(o.amount || 0);
+                // CHANGED: Count valid orders (Paid and Not Rejected)
+                if (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') {
+                    if (['PENDING', 'ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)) {
+                        totalSales += Number(o.amount || 0);
+                    }
                     validOrderCount++;
                 }
                 if(o.status === 'PENDING' && o.paymentStatus === 'PAID') pendingCount++;
@@ -817,25 +836,13 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         }
 
-        // --- SAFE DIMENSION CALCULATOR ---
-        function getSafeDimensions(weightKg) {
-            if (weightKg <= 1.0) return { l: 15, b: 15, h: 15 };
-            if (weightKg <= 1.5) return { l: 20, b: 15, h: 15 };
-            if (weightKg <= 2.0) return { l: 20, b: 20, h: 15 };
-            if (weightKg <= 3.0) return { l: 25, b: 20, h: 15 };
-            if (weightKg <= 4.0) return { l: 25, b: 25, h: 15 };
-            if (weightKg <= 5.0) return { l: 30, b: 25, h: 20 };
-            if (weightKg <= 7.5) return { l: 35, b: 30, h: 20 };
-            return { l: 40, b: 30, h: 25 }; 
-        }
-
         // --- ORDER MANAGEMENT ---
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             
-            // STRICTLY SHOW ONLY PAID ORDERS
+            // CHANGED: SHOW PAID AND REFUNDED ORDERS ONLY
             let visibleOrders = globalOrders.filter(o => 
-                o.paymentStatus === 'PAID' && 
+                (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') && 
                 ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING')
             );
             
@@ -939,6 +946,18 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             
             document.getElementById('order-modal').classList.remove('hidden');
             document.getElementById('order-modal').classList.add('flex');
+        }
+
+        // --- SAFE DIMENSION CALCULATOR ---
+        function getSafeDimensions(weightKg) {
+            if (weightKg <= 1.0) return { l: 15, b: 15, h: 15 };
+            if (weightKg <= 1.5) return { l: 20, b: 15, h: 15 };
+            if (weightKg <= 2.0) return { l: 20, b: 20, h: 15 };
+            if (weightKg <= 3.0) return { l: 25, b: 20, h: 15 };
+            if (weightKg <= 4.0) return { l: 25, b: 25, h: 15 };
+            if (weightKg <= 5.0) return { l: 30, b: 25, h: 20 };
+            if (weightKg <= 7.5) return { l: 35, b: 30, h: 20 };
+            return { l: 40, b: 30, h: 25 }; 
         }
 
         // --- SMART ACCEPT ORDER LOGIC ---
@@ -1056,6 +1075,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         async function processShipmentAndAccept(order, courierId, courierName, totalWeight) {
             const dims = getSafeDimensions(totalWeight);
                 
+            // CHANGED: USING CORRECT PHONE AND EMAIL VARIABLE FOR SHIPROCKET API
             const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1071,8 +1091,8 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     billing_pincode: order.shippingAddress?.pincode || "814112",
                     billing_state: order.shippingAddress?.state || "Jharkhand",
                     billing_country: "India",
-                    billing_email: order.email || "support@srishambhushaandsons.in",
-                    billing_phone: order.phone || "0000000000",
+                    billing_email: order.customerEmail || order.email || "support@srishambhushaandsons.in",
+                    billing_phone: order.customerPhone || order.phone || "0000000000",
                     shipping_is_billing: true,
                     order_items: order.items.map(item => ({
                         name: item.name,
