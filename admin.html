@@ -553,8 +553,8 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             const toast = document.createElement('div');
             
             const isSuccess = type === 'success';
-            const bgColor = isSuccess ? 'bg-green-600' : 'bg-red-600';
-            const icon = isSuccess ? 'ph-check-circle' : 'ph-warning-circle';
+            const bgColor = isSuccess ? 'bg-green-600' : (type === 'info' ? 'bg-blue-600' : 'bg-red-600');
+            const icon = isSuccess ? 'ph-check-circle' : (type === 'info' ? 'ph-info' : 'ph-warning-circle');
 
             // Fixed pointing events and sizing for mobile screens
             toast.className = `toast-enter w-full max-w-md flex items-center justify-between p-4 rounded-lg shadow-xl text-white pointer-events-auto ${bgColor}`;
@@ -845,7 +845,12 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             }
 
             if(visibleOrders.length === 0) {
-                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active PAID orders found for this filter.</td></tr>`;
+                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>`;
+                 setTimeout(() => {
+                     if(visibleOrders.length === 0) {
+                         tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active orders found for this filter.</td></tr>`;
+                     }
+                 }, 500);
                  return;
             }
 
@@ -860,8 +865,12 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     `;
                 } else if (status === 'ACCEPTED' && order.awb) {
                     const shipmentIdParam = order.shiprocketShipmentId || '';
-                    if (!order.labelPrinted) {
-                        btns = `<button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Print Label</button>`;
+                    
+                    // NEW: Flow - Pickup -> Label -> Ship
+                    if (!order.pickupScheduled) {
+                        btns = `<button onclick="window.schedulePickup('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-calendar-check"></i> Schedule Pickup</button>`;
+                    } else if (!order.labelPrinted) {
+                        btns = `<button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Print Label</button>`;
                     } else {
                         btns = `
                             <button onclick="window.markAsShipped('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph-fill ph-truck"></i> Mark Shipped</button>
@@ -1144,6 +1153,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 courier: courierName, 
                 shiprocketOrderId: shipData.shiprocket_order_id,
                 shiprocketShipmentId: shipData.shipment_id,
+                pickupScheduled: false,
                 labelPrinted: false 
             });
 
@@ -1262,27 +1272,54 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             `).join('');
         }
 
+        // NEW: Schedule Pickup Function
+        window.schedulePickup = async function(orderId, shipmentId) {
+            if(!shipmentId || shipmentId === 'undefined') {
+                showToast("Shipment ID not found. Cannot schedule pickup.", "error");
+                return;
+            }
+            showToast("Scheduling Pickup...", "info");
+            try {
+                const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/pickup", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    await updateDoc(doc(db, "orders", orderId), { pickupScheduled: true });
+                    showToast("Pickup Scheduled Successfully!", "success");
+                } else {
+                    let errorMsg = data.details?.message || data.error || "Pickup scheduling failed.";
+                    showToast("Shiprocket Error: " + errorMsg, "error");
+                }
+            } catch(e) {
+                showToast("Failed to schedule pickup.", "error");
+            }
+        }
+
         window.printShippingLabel = async function(orderId, shipmentId) {
             if(!shipmentId || shipmentId === 'undefined') {
                 showToast("Shipment ID not found. Cannot generate label.", "error");
                 return;
             }
-            showToast("Generating Label from Shiprocket...", "info");
+            showToast("Generating Label from Shiprocket...", "success");
             try {
                 const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // FIX: Passing shipmentId as Integer
                     body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
                 });
                 const data = await res.json();
                 if(data.success && data.label_url) {
                     window.open(data.label_url, '_blank');
-                    // Mark as Label Printed in DB to reveal "Mark Shipped" button
+                    // Automatically mark as Label Printed
                     await updateDoc(doc(db, "orders", orderId), { labelPrinted: true });
                 } else {
-                    console.error("Shiprocket Label Error Details:", data); // For debugging
-                    showToast("Label not generated yet. Please check console.", "error");
+                    // SHOW EXACT ERROR
+                    let errorMsg = data.details?.message || data.error || "Label not generated yet.";
+                    showToast("Shiprocket Error: " + errorMsg, "error");
                 }
             } catch(e) {
                 showToast("Failed to fetch label.", "error");
