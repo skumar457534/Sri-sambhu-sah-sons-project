@@ -959,12 +959,12 @@ footer .track-footer-inner.is-visible{
                     const awb = String(orderData.awb).trim();
 
                     msgBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
-                    msgBox.innerHTML = `<i class="ph-fill ph-check-circle text-lg align-middle mr-1"></i> <strong>AWB ${awb}</strong> found. Redirecting to live tracking...`;
+                    msgBox.innerHTML = `<i class="ph-fill ph-check-circle text-lg align-middle mr-1"></i> <strong>AWB ${awb}</strong> found. Redirecting to Shiprocket tracking...`;
                     msgBox.classList.remove('hidden');
 
                     setTimeout(() => {
-                        window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(awb)}`;
-                    }, 500);
+                        window.location.assign(`https://shiprocket.co/tracking/${encodeURIComponent(awb)}`);
+                    }, 300);
 
                     return;
                 }
