@@ -919,6 +919,15 @@ footer .track-footer-inner.is-visible{
         });
 
         async function executeTracking(id) {
+            const cleanId = String(id || '').trim();
+
+            // AWB entered/selected: go directly to Shiprocket.
+            // This bypasses Firestore so tracking cannot fail before the redirect.
+            if (/^\d+$/.test(cleanId)) {
+                window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(cleanId)}`;
+                return;
+            }
+
             const btn = trackForm.querySelector('button');
             const originalText = btn.innerHTML;
             btn.innerHTML = `<i class="ph ph-spinner animate-spin text-xl"></i> Checking...`;
@@ -971,9 +980,7 @@ footer .track-footer-inner.is-visible{
                     msgBox.innerHTML = `<i class="ph-fill ph-check-circle text-lg align-middle mr-1"></i> <strong>AWB ${awb}</strong> found. Redirecting to Shiprocket tracking...`;
                     msgBox.classList.remove('hidden');
 
-                    setTimeout(() => {
-                        window.location.assign(`https://shiprocket.co/tracking/${encodeURIComponent(awb)}`);
-                    }, 300);
+                    window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(awb)}`;
 
                     return;
                 }
