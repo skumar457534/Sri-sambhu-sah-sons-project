@@ -915,9 +915,11 @@ footer .track-footer-inner.is-visible{
 
         trackForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const id = orderIdInput.value.trim();
-            if(id === '') return;
-            executeTracking(id);
+            const trackingValue = String(orderIdInput.value || '').trim();
+            if (trackingValue === '') return;
+
+            // Manual tracking input: directly open Shiprocket tracking with the entered AWB.
+            window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(trackingValue)}`;
         });
 
         async function executeTracking(id) {
