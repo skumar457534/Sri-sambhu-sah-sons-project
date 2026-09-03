@@ -4,14 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Dashboard | Sri Shambhu Sha & Sons</title>
-    <link rel="icon" href="images/logo.jpg" type="image/jpeg">
-<link rel="apple-touch-icon" href="images/logo.jpg">
-
-<link rel="manifest" href="admin-manifest.json">
-<meta name="theme-color" content="#7B1818">
+    
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
@@ -45,22 +39,24 @@
 
         /* Order filter active button - keep maroon even on hover */
         .filter-btn.active:hover {
-    background-color: #7B1818 !important;
-    color: #ffffff !important;
-    border-color: transparent !important;
-    }
+            background-color: #7B1818 !important;
+            color: #ffffff !important;
+            border-color: transparent !important;
+        }
+        
         /* Mobile / Touch devices */
-@media (hover: none) and (pointer: coarse) {
-    .filter-btn.active,
-    .filter-btn.active:hover,
-    .filter-btn.active:focus,
-    .filter-btn.active:active {
-        background-color: #7B1818 !important;
-        color: #ffffff !important;
-        border-color: transparent !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-    }
-}
+        @media (hover: none) and (pointer: coarse) {
+            .filter-btn.active,
+            .filter-btn.active:hover,
+            .filter-btn.active:focus,
+            .filter-btn.active:active {
+                background-color: #7B1818 !important;
+                color: #ffffff !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            }
+        }
+
         /* Fast Rendering for heavy tables */
         .fast-render { content-visibility: auto; will-change: transform; }
 
@@ -68,39 +64,32 @@
         button, a { -webkit-tap-highlight-color: transparent; outline: none; }
 
         /* Toast Animation */
-    @keyframes slideDown {
-    from {
-        transform: translateY(-120%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
+        @keyframes slideDown {
+            from { transform: translateY(-120%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideDown 0.3s ease-out forwards; }
 
-.toast-enter {
-    animation: slideDown 0.3s ease-out forwards;
-}
+        #toast-container {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: calc(100% - 24px) !important;
+            max-width: 420px !important;
+        }
 
-#toast-container {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: calc(100% - 24px) !important;
-    max-width: 420px !important;
-}
-
-@media (max-width: 640px) {
-    #toast-container {
-        width: calc(100% - 24px) !important;
-        max-width: 380px !important;
-    }
-
-    .mobile-workspace {
-        padding-top: 8px !important;
-    }
-}
+        @media (max-width: 640px) {
+            #toast-container {
+                width: calc(100% - 24px) !important;
+                max-width: 380px !important;
+            }
+            .mobile-workspace { padding-top: 8px !important; }
+        }
         
+        .courier-scroll::-webkit-scrollbar { width: 4px; }
+        .courier-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .courier-scroll::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+        .courier-radio:checked + div { border-color: #7B1818; background-color: #FDFBF7; }
+        .courier-radio:checked + div .check-icon { opacity: 1; transform: scale(1); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden flex h-screen relative">
@@ -218,7 +207,7 @@
                                 <i class="ph-fill ph-package"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-500 mb-1">Total Orders</p>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Valid Orders</p>
                                 <h3 class="text-2xl font-bold text-gray-900" id="dash-orders">0</h3>
                             </div>
                         </div>
@@ -766,7 +755,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         function updateDashboardStats() {
             let totalSales = 0, pendingCount = 0, validOrderCount = 0;
             globalOrders.forEach(o => {
-                // CHANGED: Count valid orders (Paid and Not Rejected)
+                // Count valid orders (Paid and Not Rejected)
                 if (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') {
                     if (['PENDING', 'ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)) {
                         totalSales += Number(o.amount || 0);
@@ -840,7 +829,6 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             
-            // CHANGED: SHOW PAID AND REFUNDED ORDERS ONLY
             let visibleOrders = globalOrders.filter(o => 
                 (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') && 
                 ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING')
@@ -851,12 +839,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             }
 
             if(visibleOrders.length === 0) {
-                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>`;
-                 setTimeout(() => {
-                     if(visibleOrders.length === 0) {
-                         tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active orders found for this filter.</td></tr>`;
-                     }
-                 }, 500);
+                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active PAID orders found for this filter.</td></tr>`;
                  return;
             }
 
@@ -899,16 +882,39 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget;
+
                 if (target.classList.contains('active')) return;
 
                 document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
-                    b.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                    b.classList.remove(
+                        'bg-maroon',
+                        'text-white',
+                        'border-transparent',
+                        'shadow-md',
+                        'active'
+                    );
+
+                    b.classList.add(
+                        'bg-white',
+                        'text-gray-600',
+                        'border-gray-200'
+                    );
                 });
 
-                target.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                target.classList.add('bg-maroon', 'text-white', 'border-transparent', 'shadow-md', 'active');
-                
+                target.classList.remove(
+                    'bg-white',
+                    'text-gray-600',
+                    'border-gray-200'
+                );
+
+                target.classList.add(
+                    'bg-maroon',
+                    'text-white',
+                    'border-transparent',
+                    'shadow-md',
+                    'active'
+                );
+
                 currentOrderFilter = target.getAttribute('data-status');
                 renderOrders();
             });
@@ -1075,7 +1081,6 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         async function processShipmentAndAccept(order, courierId, courierName, totalWeight) {
             const dims = getSafeDimensions(totalWeight);
                 
-            // CHANGED: USING CORRECT PHONE AND EMAIL VARIABLE FOR SHIPROCKET API
             const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1237,21 +1242,22 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 showToast("Shipment ID not found. Cannot generate label.", "error");
                 return;
             }
-            showToast("Generating Label from Shiprocket...", "info");
+            showToast("Generating Label from Shiprocket...", "success");
             try {
                 const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ shipment_id: shipmentId })
+                    // FIX: Passing shipmentId as Integer
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
                 });
                 const data = await res.json();
                 if(data.success && data.label_url) {
                     window.open(data.label_url, '_blank');
-                    // Automatically mark as SHIPPED since label is printed
+                    // Mark as Label Printed in DB to reveal "Mark Shipped" button
                     await updateDoc(doc(db, "orders", orderId), { labelPrinted: true });
-                    showToast("Label Printed!", "success");
                 } else {
-                    showToast("Label not generated yet. Try again later.", "error");
+                    console.error("Shiprocket Label Error Details:", data); // For debugging
+                    showToast("Label not generated yet. Please check console.", "error");
                 }
             } catch(e) {
                 showToast("Failed to fetch label.", "error");
