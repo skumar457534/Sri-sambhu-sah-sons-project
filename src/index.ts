@@ -251,6 +251,7 @@ export default {
         const orderDetails = await request.json() as any;
         const token = await getShiprocketToken();
 
+        // 4.1 Create Order
         const createRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -258,8 +259,38 @@ export default {
         });
 
         const createData = await createRes.json() as any;
+        
         if (createRes.ok && createData.order_id) {
-          return new Response(JSON.stringify({ success: true, shiprocket_order_id: createData.order_id, shipment_id: createData.shipment_id }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          const shipmentId = createData.shipment_id;
+
+          // 4.2 Assign AWB (Trigger "Ship Now")
+          const awbRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/assign/awb", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({
+                shipment_id: shipmentId,
+                courier_id: orderDetails.courier_id
+            })
+          });
+
+          const awbData = await awbRes.json() as any;
+
+          if (awbData.awb_assign_status === 1) {
+             // Return the REAL AWB back to frontend
+             return new Response(JSON.stringify({ 
+                 success: true, 
+                 shiprocket_order_id: createData.order_id, 
+                 shipment_id: shipmentId,
+                 awb: awbData.response.data.awb_code // The Real Tracking Number
+             }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          } else {
+             return new Response(JSON.stringify({ 
+                 success: false, 
+                 error: "Order created, but AWB Assignment failed", 
+                 details: awbData 
+             }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          }
+
         } else {
           return new Response(JSON.stringify({ success: false, error: "Failed to generate Shiprocket Order", details: createData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
@@ -304,7 +335,7 @@ export default {
 
         const labelData = await labelRes.json() as any;
         
-        // FIX: Check directly for label_url instead of label_created strictly
+        // FIX: Check directly for label_url
         if (labelRes.ok && labelData.label_url) {
           return new Response(JSON.stringify({ success: true, label_url: labelData.label_url }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         } else {
@@ -315,7 +346,6 @@ export default {
       // =========================================================
       // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
       // =========================================================
-      // Notice: The path matches exactly what Shiprocket allowed
       if (path === '/api/webhook/tracking') {
         
         // Shiprocket pings with GET first to verify the URL
@@ -348,8 +378,6 @@ export default {
             else if (currentStatus === 'SHIPPED' || currentStatus === 'PICKED UP') firebaseStatus = 'SHIPPED';
 
             if (firebaseStatus !== '') {
-               // Full automation requires document ID lookup which is complex via REST.
-               // We acknowledge the hook for now. In future you can add logic here to auto-update Firestore.
                console.log(`Shiprocket Webhook: AWB ${payload.awb} is now ${firebaseStatus}`);
             }
 
