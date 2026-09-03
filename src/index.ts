@@ -264,32 +264,69 @@ export default {
           const shipmentId = createData.shipment_id;
 
           // 4.2 Assign AWB (Trigger "Ship Now")
-          const awbRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/assign/awb", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({
-                shipment_id: shipmentId,
-                courier_id: orderDetails.courier_id
-            })
-          });
+          // Shiprocket expects courier_id as a numeric value.
+          const parsedCourierId = parseInt(String(orderDetails.courier_id), 10);
 
-          const awbData = await awbRes.json() as any;
-
-          if (awbData.awb_assign_status === 1) {
-             // Return the REAL AWB back to frontend
-             return new Response(JSON.stringify({ 
-                 success: true, 
-                 shiprocket_order_id: createData.order_id, 
-                 shipment_id: shipmentId,
-                 awb: awbData.response.data.awb_code // The Real Tracking Number
-             }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-          } else {
-             return new Response(JSON.stringify({ 
-                 success: false, 
-                 error: "Order created, but AWB Assignment failed", 
-                 details: awbData 
-             }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+          if (!Number.isFinite(parsedCourierId)) {
+            return new Response(JSON.stringify({
+              success: false,
+              error: "Invalid courier ID",
+              details: { courier_id: orderDetails.courier_id }
+            }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
           }
+
+          let awbData: any = null;
+          let awbResOk = false;
+
+          // AWB assignment can take a moment after order creation, so retry it.
+          for (let attempt = 1; attempt <= 3; attempt++) {
+            const awbRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/assign/awb", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                shipment_id: parseInt(String(shipmentId), 10),
+                courier_id: parsedCourierId
+              })
+            });
+
+            awbData = await awbRes.json().catch(() => ({}));
+            awbResOk = awbRes.ok;
+
+            if (awbResOk && awbData.awb_assign_status === 1) {
+              const awbCode =
+                awbData?.response?.data?.awb_code ||
+                awbData?.response?.data?.awb ||
+                awbData?.awb_code;
+
+              if (awbCode) {
+                // Return the REAL AWB back to frontend
+                return new Response(JSON.stringify({
+                  success: true,
+                  shiprocket_order_id: createData.order_id,
+                  shipment_id: shipmentId,
+                  awb: awbCode
+                }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+              }
+            }
+
+            if (attempt < 3) {
+              await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+          }
+
+          // Return the actual Shiprocket response so the admin can see the
+          // real reason instead of only the generic AWB error.
+          return new Response(JSON.stringify({
+            success: false,
+            error: awbData?.message || awbData?.error || "Order created, but AWB Assignment failed",
+            details: awbData,
+            courier_id: parsedCourierId,
+            shipment_id: shipmentId,
+            http_ok: awbResOk
+          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
 
         } else {
           return new Response(JSON.stringify({ success: false, error: "Failed to generate Shiprocket Order", details: createData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
