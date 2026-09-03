@@ -687,38 +687,63 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
 
-        // STRICT AUTHENTICATION CHECK
+        // FIXED AUTHENTICATION CHECK
+        // Admin access is determined by the presence of the user's UID in the
+        // Firestore `admins` collection. This matches the Firestore security rules
+        // and avoids getting stuck when the optional `role` field is missing.
+        let dashboardInitialized = false;
+        let authCheckFinished = false;
+
+        function showAdminDashboard(user) {
+            document.getElementById("admin-user-email").innerText = user?.email || "Admin";
+            document.getElementById("auth-loading-overlay").classList.add("hidden");
+            document.getElementById("main-dashboard-container").classList.remove("hidden");
+
+            if (!dashboardInitialized) {
+                dashboardInitialized = true;
+                initRealtimeListeners();
+                showToast("Verified Admin Access Granted.", "success");
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
+            authCheckFinished = true;
+
             if (!user) {
                 window.location.replace("admin-login.html");
                 return;
             }
 
             try {
-                // Verify Admin Role strictly from Firestore 'admins' collection
+                // The admins collection itself is the source of truth for admin access.
                 const adminDoc = await getDoc(doc(db, "admins", user.uid));
-                
-                if (adminDoc.exists() && adminDoc.data().role === 'admin') {
-                    // Valid Admin. Remove overlay and initialize dashboard.
-                    document.getElementById('admin-user-email').innerText = user.email;
-                    document.getElementById('auth-loading-overlay').classList.add('hidden');
-                    document.getElementById('main-dashboard-container').classList.remove('hidden');
-                    
-                    initRealtimeListeners();
-                    showToast("Verified Admin Access Granted.", "success");
-                } else {
-                    // Normal user trying to access admin page
-                    showToast("Access Denied. Administrator Privileges Required.", "error");
-                    await signOut(auth);
-                    window.location.replace("admin-login.html");
+
+                if (adminDoc.exists()) {
+                    showAdminDashboard(user);
+                    return;
                 }
-            } catch (error) {
-                console.error("Auth Error:", error);
-                showToast("Security check failed.", "error");
+
+                showToast("Access Denied. Administrator Privileges Required.", "error");
                 await signOut(auth);
+                window.location.replace("admin-login.html");
+            } catch (error) {
+                console.error("Admin authentication check failed:", error);
+                showToast("Unable to verify administrator access. Please log in again.", "error");
+                try { await signOut(auth); } catch (_) {}
                 window.location.replace("admin-login.html");
             }
         });
+
+        // Never leave the user on a blank verification screen forever.
+        // This is only a safety fallback; normally onAuthStateChanged resolves immediately.
+        setTimeout(() => {
+            const overlay = document.getElementById("auth-loading-overlay");
+            if (!authCheckFinished && overlay && !overlay.classList.contains("hidden")) {
+                console.error("Firebase authentication check timed out.");
+                showToast("Login session could not be verified. Please log in again.", "error");
+                window.location.replace("admin-login.html");
+            }
+        }, 12000);
 
         window.logoutAdmin = function() {
             signOut(auth).then(() => window.location.replace("admin-login.html"));
