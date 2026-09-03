@@ -293,14 +293,19 @@ export default {
         const { shipment_id } = await request.json() as any;
         const token = await getShiprocketToken();
 
+        // FIX: Shiprocket requires shipment_id to be an Integer, not a String
+        const parsedShipmentId = parseInt(shipment_id, 10);
+
         const labelRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/label", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ shipment_id: [shipment_id] })
+          body: JSON.stringify({ shipment_id: [parsedShipmentId] })
         });
 
         const labelData = await labelRes.json() as any;
-        if (labelRes.ok && labelData.label_created === 1) {
+        
+        // FIX: Check directly for label_url instead of label_created strictly
+        if (labelRes.ok && labelData.label_url) {
           return new Response(JSON.stringify({ success: true, label_url: labelData.label_url }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         } else {
           return new Response(JSON.stringify({ success: false, error: "Label not ready yet or failed", details: labelData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
