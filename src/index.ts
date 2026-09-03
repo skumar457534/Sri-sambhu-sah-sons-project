@@ -412,7 +412,7 @@ if (path === '/api/shiprocket/track' && method === 'GET') {
       // 9. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
       // =========================================================
       if (path === '/api/email/send' && method === 'POST') {
-        const { type, email, name, orderId, awb, amount } = await request.json() as any;
+        const { type, email, name, orderId, awb, amount, courier, dispatchDate } = await request.json() as any;
 
         if (!env.BREVO_API_KEY) {
            return new Response(JSON.stringify({ success: false, error: "Brevo API key not set" }), { status: 500, headers: corsHeaders });
@@ -433,6 +433,8 @@ if (path === '/api/shiprocket/track' && method === 'GET') {
                   <p style="color: #555; line-height: 1.5;">Thank you for your order! Your authentic Baba Dham Peda order has been <strong>successfully accepted</strong> and is currently being packed with care.</p>
                   <div style="background-color: #fcfcfc; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #eee;">
                       <p style="margin: 0 0 10px 0; color: #555;"><strong>Order ID:</strong> ${orderId}</p>
+                      <p style="margin: 0 0 10px 0; color: #555;"><strong>Dispatch Date:</strong> ${dispatchDate || '—'}</p>
+                      <p style="margin: 0 0 10px 0; color: #555;"><strong>Courier Partner:</strong> ${courier || '—'}</p>
                       <p style="margin: 0; color: #555;"><strong>Tracking AWB:</strong> <span style="color: #D4AF37; font-weight: bold; font-size: 16px;">${awb}</span></p>
                   </div>
                   <p style="color: #555;">As soon as our courier partner picks up and scans your package, you will automatically receive an SMS/Email with live tracking updates.</p>
