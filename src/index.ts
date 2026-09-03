@@ -252,10 +252,17 @@ export default {
         const token = await getShiprocketToken();
 
         // 4.1 Create Order
+        // Use a fresh unique Shiprocket order_id for every new shipment attempt.
+        // The original order_id from Firebase remains the internal order reference.
+        const shiprocketOrderDetails = {
+          ...orderDetails,
+          order_id: `${String(orderDetails.order_id || 'ORDER')}-${Date.now()}`
+        };
+
         const createRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify(orderDetails)
+          body: JSON.stringify(shiprocketOrderDetails)
         });
 
         const createData = await createRes.json() as any;
