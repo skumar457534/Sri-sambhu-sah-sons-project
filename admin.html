@@ -439,7 +439,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         </div>
     </div>
 
-    <!-- NEW: PROCESS SHIPMENT MODAL WITH DATE & COURIER SELECTION -->
+    <!-- PROCESS SHIPMENT MODAL WITH DATE & COURIER SELECTION -->
     <div id="accept-shipment-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
@@ -1190,6 +1190,26 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             }
             
             const generatedAWB = shipData.awb; 
+            const shipmentId = shipData.shiprocketShipmentId || shipData.shipment_id;
+
+            // NEW: Auto-Schedule Pickup
+            showToast("Scheduling Pickup automatically...", "info");
+            let isPickupScheduled = false;
+            try {
+                const pickupRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/pickup", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const pickupData = await pickupRes.json();
+                if(pickupData.success) {
+                    isPickupScheduled = true;
+                } else {
+                    console.warn("Auto-Pickup failed:", pickupData);
+                }
+            } catch(e) {
+                console.warn("Auto-Pickup error:", e);
+            }
             
             const orderRef = doc(db, "orders", order.id);
             await updateDoc(orderRef, {
@@ -1197,8 +1217,8 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 awb: generatedAWB,
                 courier: courierName, 
                 shiprocketOrderId: shipData.shiprocket_order_id,
-                shiprocketShipmentId: shipData.shipment_id,
-                pickupScheduled: false,
+                shiprocketShipmentId: shipmentId,
+                pickupScheduled: isPickupScheduled, 
                 labelPrinted: false 
             });
 
@@ -1219,7 +1239,11 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 console.error("Mail send failed", mailErr);
             }
 
-            showToast("Order Accepted & AWB Generated! Email Sent.", "success");
+            if(isPickupScheduled) {
+                showToast("Order Accepted, Pickup Scheduled & AWB Generated!", "success");
+            } else {
+                showToast("Order Accepted & AWB Generated! (Please schedule pickup manually)", "success");
+            }
         }
 
         // --- REJECT ORDER LOGIC ---
