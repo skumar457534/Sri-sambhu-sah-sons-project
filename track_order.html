@@ -954,35 +954,18 @@ footer .track-footer-inner.is-visible{
                     msgBox.classList.remove('hidden');
                     return;
                 }
-                // SCENARIO 3: AWB Exists -> Track directly on this page
+                // SCENARIO 3: AWB Exists -> Redirect to Shiprocket tracking with AWB
                 if (orderData.awb) {
                     const awb = String(orderData.awb).trim();
-                    msgBox.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
-                    msgBox.innerHTML = `<div class="flex items-center justify-center gap-2"><i class="ph ph-spinner-gap animate-spin text-lg"></i><span>Loading live tracking for AWB <strong>${awb}</strong>...</span></div>`;
+
+                    msgBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                    msgBox.innerHTML = `<i class="ph-fill ph-check-circle text-lg align-middle mr-1"></i> <strong>AWB ${awb}</strong> found. Redirecting to live tracking...`;
                     msgBox.classList.remove('hidden');
-                    try {
-                        const trackRes = await fetch(`https://api.srishambhushaandsons.in/api/shiprocket/track?awb=${encodeURIComponent(awb)}`);
-                        const trackResult = await trackRes.json();
-                        if (!trackRes.ok || !trackResult.success) throw new Error(trackResult.error || 'Unable to fetch live tracking.');
-                        const raw = trackResult.data || {};
-                        const track = raw.tracking_data || raw.data || raw;
-                        const currentStatus = track.current_status || raw.current_status || 'Tracking information available';
-                        const activities = Array.isArray(track.shipment_track_activities) ? track.shipment_track_activities : (Array.isArray(track.shipment_track) ? track.shipment_track : []);
-                        const activityHtml = activities.slice(0, 6).map(activity => {
-                            const status = activity.activity || activity.status || activity.current_status || 'Update';
-                            const location = activity.location ? ` • ${activity.location}` : '';
-                            const dateTime = activity.date || activity.timestamp || '';
-                            return `<div class="border-b border-green-100 last:border-0 py-3 text-left"><p class="font-semibold text-gray-800">${status}${location}</p>${dateTime ? `<p class="text-xs text-gray-500 mt-1">${dateTime}</p>` : ''}</div>`;
-                        }).join('');
-                        msgBox.className = "mt-6 max-w-lg mx-auto p-4 rounded-lg text-sm font-medium text-left border bg-green-50 text-green-700 border-green-200 transition-all duration-300";
-                        msgBox.innerHTML = `<div class="flex items-start gap-2"><i class="ph-fill ph-check-circle text-xl mt-0.5"></i><div class="flex-1"><p><strong>AWB:</strong> <span class="font-mono">${awb}</span></p><p class="mt-1"><strong>Current Status:</strong> ${currentStatus}</p></div></div>${activityHtml ? `<div class="mt-4 pt-3 border-t border-green-200"><p class="font-bold text-gray-800 mb-1">Tracking Updates</p>${activityHtml}</div>` : ''}`;
-                        msgBox.classList.remove('hidden');
-                    } catch (trackingError) {
-                        console.error('Live tracking error:', trackingError);
-                        msgBox.className = "mt-6 max-w-lg mx-auto p-4 rounded-lg text-sm font-medium text-center border bg-yellow-50 text-yellow-700 border-yellow-200 transition-all duration-300";
-                        msgBox.innerHTML = `<i class="ph-fill ph-info text-lg align-middle mr-1"></i><strong>AWB ${awb}</strong> is generated, but live tracking is not available yet.`;
-                        msgBox.classList.remove('hidden');
-                    }
+
+                    setTimeout(() => {
+                        window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(awb)}`;
+                    }, 500);
+
                     return;
                 }
 
