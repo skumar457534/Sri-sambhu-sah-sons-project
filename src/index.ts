@@ -345,30 +345,67 @@ if (path === '/api/shiprocket/track' && method === 'GET') {
       // =========================================================
       if (path === '/api/shiprocket/label' && method === 'POST') {
         const { shipment_id } = await request.json() as any;
-        const token = await getShiprocketToken();
 
-        // FIX: Shiprocket requires shipment_id to be an Integer, not a String
-        const parsedShipmentId = parseInt(shipment_id, 10);
-
-        const labelRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/label", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ shipment_id: [parsedShipmentId] })
-        });
-
-        const labelData = await labelRes.json() as any;
-        
-        // FIX: Check directly for label_url
-        if (labelRes.ok && labelData.label_url) {
-          return new Response(JSON.stringify({ success: true, label_url: labelData.label_url }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-        } else {
-          return new Response(JSON.stringify({ success: false, error: "Label not ready yet or failed", details: labelData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        if (!shipment_id) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: "Shipment ID required"
+          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
         }
+
+        const token = await getShiprocketToken();
+        const parsedShipmentId = parseInt(String(shipment_id), 10);
+
+        if (!Number.isFinite(parsedShipmentId)) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: "Invalid Shipment ID"
+          }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+
+        // Shiprocket can take a few seconds after AWB assignment
+        // before the PDF label is available. Retry automatically.
+        let lastLabelData: any = null;
+
+        for (let attempt = 1; attempt <= 5; attempt++) {
+          const labelRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/label", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ shipment_id: [parsedShipmentId] })
+          });
+
+          lastLabelData = await labelRes.json().catch(() => ({}));
+
+          if (labelRes.ok && lastLabelData.label_url) {
+            return new Response(JSON.stringify({
+              success: true,
+              label_url: lastLabelData.label_url
+            }), {
+              headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+          }
+
+          if (attempt < 5) {
+            await new Promise(resolve => setTimeout(resolve, 1200));
+          }
+        }
+
+        return new Response(JSON.stringify({
+          success: false,
+          error: "Label not ready yet or failed",
+          details: lastLabelData,
+          attempts: 5
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
       }
 
       // =========================================================
-      // 8. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
-      // =========================================================
+      // 8. SHIPROCKET: WEBHOOK
       if (path === '/api/webhook/tracking') {
         
         // Shiprocket pings with GET first to verify the URL
