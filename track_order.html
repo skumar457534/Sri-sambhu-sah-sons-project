@@ -898,8 +898,17 @@ footer .track-footer-inner.is-visible{
         const msgBox = document.getElementById('tracking-message-box');
         
         window.triggerAutoTrack = function(trackingId) {
-            orderIdInput.value = trackingId;
-            executeTracking(trackingId);
+            const trackingValue = String(trackingId || '').trim();
+
+            // AWB from the user's order card: go directly to Shiprocket.
+            // This avoids an unnecessary Firestore tracking lookup.
+            if (/^\d{8,20}$/.test(trackingValue)) {
+                window.location.href = `https://shiprocket.co/tracking/${encodeURIComponent(trackingValue)}`;
+                return;
+            }
+
+            orderIdInput.value = trackingValue;
+            executeTracking(trackingValue);
         };
 
         trackForm.addEventListener('submit', (e) => {
