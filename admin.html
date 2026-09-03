@@ -439,30 +439,53 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         </div>
     </div>
 
-    <!-- ACCEPT ORDER / SHIPROCKET MODAL (FALLBACK) -->
+    <!-- PROCESS SHIPMENT MODAL WITH DATE & COURIER SELECTION -->
     <div id="accept-shipment-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-lg text-red-600 flex items-center gap-2"><i class="ph-fill ph-warning-circle"></i> Courier Not Available</h3>
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+                <h3 class="font-bold text-lg text-naturalBrown flex items-center gap-2"><i class="ph-fill ph-package"></i> Process Shipment & AWB</h3>
                 <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
 
-            <div class="p-6">
-                <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg mb-4">
-                    <p class="text-orange-800 font-medium text-sm">Customer's selected courier (<strong id="orig-courier-name"></strong>) is currently <strong>UNAVAILABLE</strong> for this PIN code.</p>
-                    <p class="text-xs text-orange-700 mt-2">Please select an alternative partner below to dispatch this order:</p>
+            <div class="p-6 overflow-y-auto" id="shipment-modal-body">
+                <!-- Loading State -->
+                <div id="shiprocket-check-loading" class="text-center py-8">
+                    <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon mb-4 inline-block"></i>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1">Checking Live Couriers...</h3>
+                    <p class="text-sm text-gray-500">Fetching serviceability for this PIN code.</p>
                 </div>
-                
-                <div id="courier-options" class="space-y-2 max-h-[250px] overflow-y-auto courier-scroll mb-6">
-                    <!-- Options injected via API -->
+
+                <!-- Content State -->
+                <div id="shiprocket-content-state" class="hidden space-y-5">
+                    
+                    <!-- Alert Box -->
+                    <div id="courier-alert-box" class="p-4 rounded-lg text-sm font-medium"></div>
+
+                    <!-- Dispatch Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Dispatch / Order Date *</label>
+                        <input type="date" id="order-dispatch-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 focus:outline-none focus:border-maroon transition-colors text-gray-700">
+                    </div>
+
+                    <!-- Couriers List -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Courier Partner *</label>
+                        <div id="courier-options" class="space-y-2 max-h-[250px] overflow-y-auto courier-scroll p-1">
+                            <!-- Options injected via API -->
+                        </div>
+                    </div>
                 </div>
+            </div>
+            
+            <div class="p-5 border-t border-gray-100 bg-gray-50 flex justify-between gap-3 shrink-0 hidden" id="shiprocket-footer-actions">
+                <button onclick="rejectFromAcceptModal()" class="px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg outline-none transition-colors flex items-center gap-1"><i class="ph-fill ph-x-circle"></i> Reject Order</button>
                 
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button onclick="closeModals()" class="px-5 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg outline-none transition-colors">Cancel</button>
+                <div class="flex gap-2">
+                    <button onclick="closeModals()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg outline-none transition-colors">Cancel</button>
                     <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md outline-none transition-colors flex items-center gap-2">
-                        Generate AWB
+                        Confirm
                     </button>
                 </div>
             </div>
@@ -687,63 +710,38 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         let currentOrderFilter = 'ALL';
         let actionOrderId = null;
 
-        // FIXED AUTHENTICATION CHECK
-        // Admin access is determined by the presence of the user's UID in the
-        // Firestore `admins` collection. This matches the Firestore security rules
-        // and avoids getting stuck when the optional `role` field is missing.
-        let dashboardInitialized = false;
-        let authCheckFinished = false;
-
-        function showAdminDashboard(user) {
-            document.getElementById("admin-user-email").innerText = user?.email || "Admin";
-            document.getElementById("auth-loading-overlay").classList.add("hidden");
-            document.getElementById("main-dashboard-container").classList.remove("hidden");
-
-            if (!dashboardInitialized) {
-                dashboardInitialized = true;
-                initRealtimeListeners();
-                showToast("Verified Admin Access Granted.", "success");
-            }
-        }
-
+        // STRICT AUTHENTICATION CHECK
         onAuthStateChanged(auth, async (user) => {
-            authCheckFinished = true;
-
             if (!user) {
                 window.location.replace("admin-login.html");
                 return;
             }
 
             try {
-                // The admins collection itself is the source of truth for admin access.
+                // Verify Admin Role strictly from Firestore 'admins' collection
                 const adminDoc = await getDoc(doc(db, "admins", user.uid));
-
-                if (adminDoc.exists()) {
-                    showAdminDashboard(user);
-                    return;
+                
+                if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+                    // Valid Admin. Remove overlay and initialize dashboard.
+                    document.getElementById('admin-user-email').innerText = user.email;
+                    document.getElementById('auth-loading-overlay').classList.add('hidden');
+                    document.getElementById('main-dashboard-container').classList.remove('hidden');
+                    
+                    initRealtimeListeners();
+                    showToast("Verified Admin Access Granted.", "success");
+                } else {
+                    // Normal user trying to access admin page
+                    showToast("Access Denied. Administrator Privileges Required.", "error");
+                    await signOut(auth);
+                    window.location.replace("admin-login.html");
                 }
-
-                showToast("Access Denied. Administrator Privileges Required.", "error");
-                await signOut(auth);
-                window.location.replace("admin-login.html");
             } catch (error) {
-                console.error("Admin authentication check failed:", error);
-                showToast("Unable to verify administrator access. Please log in again.", "error");
-                try { await signOut(auth); } catch (_) {}
+                console.error("Auth Error:", error);
+                showToast("Security check failed.", "error");
+                await signOut(auth);
                 window.location.replace("admin-login.html");
             }
         });
-
-        // Never leave the user on a blank verification screen forever.
-        // This is only a safety fallback; normally onAuthStateChanged resolves immediately.
-        setTimeout(() => {
-            const overlay = document.getElementById("auth-loading-overlay");
-            if (!authCheckFinished && overlay && !overlay.classList.contains("hidden")) {
-                console.error("Firebase authentication check timed out.");
-                showToast("Login session could not be verified. Please log in again.", "error");
-                window.location.replace("admin-login.html");
-            }
-        }, 12000);
 
         window.logoutAdmin = function() {
             signOut(auth).then(() => window.location.replace("admin-login.html"));
@@ -888,7 +886,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                         <button onclick="window.initAcceptOrder('${order.id}', this)" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2 outline-none">Accept</button>
                         <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2 outline-none">Reject</button>
                     `;
-                } else if (status === 'ACCEPTED') {
+                } else if (status === 'ACCEPTED' && order.awb) {
                     const shipmentIdParam = order.shiprocketShipmentId || '';
                     
                     // NEW: Flow - Pickup -> Label -> Ship
@@ -1016,6 +1014,13 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             btnObj.innerHTML = `<i class="ph ph-spinner animate-spin"></i>`;
             btnObj.disabled = true;
 
+            // Open modal, show loading
+            const modal = document.getElementById('accept-shipment-modal');
+            document.getElementById('shiprocket-check-loading').classList.remove('hidden');
+            document.getElementById('shiprocket-content-state').classList.add('hidden');
+            document.getElementById('shiprocket-footer-actions').classList.add('hidden');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+
             try {
                 // Calculate weight
                 let totalWeight = 0;
@@ -1040,25 +1045,28 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
 
                 if (result.success && result.data && result.data.available_courier_companies) {
                     let couriers = result.data.available_courier_companies;
-                    
-                    // Check if original courier is available
                     let matchedCourier = couriers.find(c => c.courier_name.toLowerCase() === originalCourier.toLowerCase());
-
+                    
+                    const alertBox = document.getElementById('courier-alert-box');
                     if (matchedCourier) {
-                        // AUTO-ACCEPT FLOW
-                        await processShipmentAndAccept(o, matchedCourier.courier_company_id, matchedCourier.courier_name, totalWeight);
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-blue-50 border border-blue-200 text-blue-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-info"></i> Customer selected <strong>${originalCourier}</strong>. It is available, but you can change it below.`;
                     } else {
-                        // FALLBACK FLOW
-                        btnObj.innerHTML = originalText;
-                        btnObj.disabled = false;
-                        
-                        document.getElementById('orig-courier-name').innerText = originalCourier;
-                        const optionsBox = document.getElementById('courier-options');
-                        
-                        // Render available couriers
-                        optionsBox.innerHTML = couriers.map((c, idx) => `
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-orange-50 border border-orange-200 text-orange-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Customer selected <strong>${originalCourier}</strong>, but it is currently unavailable. Please select another.`;
+                    }
+
+                    // Populate date (default today)
+                    document.getElementById('order-dispatch-date').value = new Date().toISOString().split('T')[0];
+
+                    const optionsBox = document.getElementById('courier-options');
+                    couriers.sort((a,b) => a.rate - b.rate);
+
+                    optionsBox.innerHTML = couriers.map((c, idx) => {
+                        let isChecked = matchedCourier ? (c.courier_company_id === matchedCourier.courier_company_id) : (idx === 0);
+                        return `
                             <label class="cursor-pointer relative block mb-2">
-                                <input type="radio" name="admin-courier-selection" value="${c.courier_company_id}" data-name="${c.courier_name}" class="courier-radio sr-only" ${idx === 0 ? 'checked' : ''}>
+                                <input type="radio" name="admin-courier-selection" value="${c.courier_company_id}" data-name="${c.courier_name}" class="courier-radio sr-only" ${isChecked ? 'checked' : ''}>
                                 <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center transition-all hover:border-maroon/30 shadow-sm bg-white">
                                     <div class="flex items-center gap-3">
                                         <div class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center shrink-0">
@@ -1069,9 +1077,25 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                                     <span class="font-bold text-sm text-maroon">₹${Math.ceil(c.rate)}</span>
                                 </div>
                             </label>
-                        `).join('');
+                        `;
+                    }).join('');
 
-                        const modal = document.getElementById('accept-shipment-modal');
+                    document.getElementById('shiprocket-check-loading').classList.add('hidden');
+                    document.getElementById('shiprocket-content-state').classList.remove('hidden');
+                    document.getElementById('shiprocket-footer-actions').classList.remove('hidden');
+                } else {
+                    throw new Error(result.error || "No couriers available for this PIN.");
+                }
+            } catch(e) {
+                console.error(e);
+                closeModals();
+                showToast("Failed to fetch couriers: " + e.message, "error");
+            } finally {
+                btnObj.innerHTML = originalText;
+                btnObj.disabled = false;
+            }
+        }
+
         // Helper to reject order directly from the accept modal
         window.rejectFromAcceptModal = function() {
             closeModals();
@@ -1083,10 +1107,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         // Triggered from Final Accept Modal
         document.getElementById('confirm-shipment-btn').addEventListener('click', async () => {
             const selectedCourierRadio = document.querySelector('input[name="admin-courier-selection"]:checked');
-            if(!selectedCourierRadio) {
-                showToast("Please select a courier", "error");
-                return;
-            }
+            if(!selectedCourierRadio) return;
             
             const selectedCourierId = selectedCourierRadio.value;
             const selectedCourierName = selectedCourierRadio.getAttribute('data-name');
@@ -1112,25 +1133,22 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 await processShipmentAndAccept(o, selectedCourierId, selectedCourierName, totalWeight, selectedDate);
                 closeModals();
             } catch(e) {
-                console.error(e);
-                showToast("Failed: " + e.message, "error");
-            } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         });
 
-        // The core logic for generating AWB and saving to Firebase
+        // The core logic for generating AWB, label and saving the selected shipment details
         async function processShipmentAndAccept(order, courierId, courierName, totalWeight, dispatchDate) {
             const dims = getSafeDimensions(totalWeight);
-                
+
             const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     order_id: order.id,
-                    order_date: dispatchDate, 
-                    pickup_location: "Primary", 
+                    order_date: dispatchDate,
+                    pickup_location: "Primary",
                     billing_customer_name: order.customerName || "Guest",
                     billing_last_name: "",
                     billing_address: order.shippingAddress?.line1 || "N/A",
@@ -1155,39 +1173,86 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     giftwrap_charges: 0,
                     transaction_charges: 0,
                     total_discount: 0,
-                    sub_total: order.amount || 0,
+                    sub_total: order.subtotal || 0,
                     length: dims.l,
                     breadth: dims.b,
                     height: dims.h,
                     weight: totalWeight,
-                    courier_id: courierId 
+                    courier_id: courierId
                 })
             });
-            
+
             const shipData = await shipRes.json();
-            
-            if(!shipData.success) {
+
+            if(!shipRes.ok || !shipData.success) {
                 console.error("Shiprocket API Error:", shipData.details);
                 throw new Error(shipData.error || "Failed to create shipment");
             }
-            
+
+            const generatedAWB = shipData.awb;
             const shipmentId = shipData.shiprocketShipmentId || shipData.shipment_id;
-            const generatedAWB = shipData.awb || ('SR-SHIP-' + shipmentId); 
-            
+
+            if (!generatedAWB || !shipmentId) {
+                throw new Error("AWB or Shipment ID was not returned by Shiprocket.");
+            }
+
+            // Auto-schedule pickup (existing behavior preserved)
+            showToast("Scheduling Pickup automatically...", "info");
+            let isPickupScheduled = false;
+            try {
+                const pickupRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/pickup", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const pickupData = await pickupRes.json();
+                if(pickupData.success) {
+                    isPickupScheduled = true;
+                } else {
+                    console.warn("Auto-Pickup failed:", pickupData);
+                }
+            } catch(e) {
+                console.warn("Auto-Pickup error:", e);
+            }
+
+            // Generate the shipping label immediately so it is ready in admin for printing.
+            showToast("Preparing shipping label...", "info");
+            let generatedLabelUrl = "";
+            try {
+                const labelRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const labelData = await labelRes.json();
+
+                if(labelData.success && labelData.label_url) {
+                    generatedLabelUrl = labelData.label_url;
+                } else {
+                    console.warn("Initial label generation failed:", labelData);
+                }
+            } catch(e) {
+                console.warn("Initial label generation error:", e);
+            }
+
+            // Save the selected date, selected courier, AWB and label URL.
             const orderRef = doc(db, "orders", order.id);
             await updateDoc(orderRef, {
                 status: 'ACCEPTED',
                 awb: generatedAWB,
-                courier: courierName, 
+                courier: courierName,
+                courierId: String(courierId),
+                dispatchDate: dispatchDate,
                 shiprocketOrderId: shipData.shiprocket_order_id,
                 shiprocketShipmentId: shipmentId,
-                pickupScheduled: false, 
-                labelPrinted: false 
+                pickupScheduled: isPickupScheduled,
+                labelUrl: generatedLabelUrl,
+                labelPrinted: false
             });
 
-            // Trigger Email
+            // Customer email with final AWB + selected courier/date.
             try {
-                await fetch("https://api.srishambhushaandsons.in/api/email/send", {
+                const mailRes = await fetch("https://api.srishambhushaandsons.in/api/email/send", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1195,14 +1260,52 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                         email: order.customerEmail || order.email,
                         name: order.customerName || 'Customer',
                         orderId: order.id,
-                        awb: generatedAWB
+                        awb: generatedAWB,
+                        courier: courierName,
+                        dispatchDate: dispatchDate
                     })
                 });
+
+                const mailData = await mailRes.json().catch(() => ({}));
+                if (!mailRes.ok || mailData.success === false) {
+                    console.warn("Mail send failed:", mailData);
+                }
             } catch (mailErr) {
                 console.error("Mail send failed", mailErr);
             }
 
-            showToast("Order Accepted! AWB Generated & Email Sent.", "success");
+            if(generatedLabelUrl) {
+                showToast(
+                    isPickupScheduled
+                        ? "Confirmed, AWB & Label Ready, Pickup Scheduled & Email Sent."
+                        : "Confirmed, AWB & Label Ready & Email Sent. Pickup needs manual scheduling.",
+                    "success"
+                );
+            } else {
+                showToast(
+                    isPickupScheduled
+                        ? "Confirmed, AWB Generated & Pickup Scheduled. Label can be generated from Print Label."
+                        : "Confirmed & AWB Generated. Label can be generated from Print Label.",
+                    "success"
+                );
+            }
+
+            // Update the in-memory order so the current admin page immediately reflects the new data.
+            const liveOrder = globalOrders.find(x => x.id === order.id);
+            if (liveOrder) {
+                liveOrder.status = 'ACCEPTED';
+                liveOrder.awb = generatedAWB;
+                liveOrder.courier = courierName;
+                liveOrder.courierId = String(courierId);
+                liveOrder.dispatchDate = dispatchDate;
+                liveOrder.shiprocketOrderId = shipData.shiprocket_order_id;
+                liveOrder.shiprocketShipmentId = shipmentId;
+                liveOrder.pickupScheduled = isPickupScheduled;
+                liveOrder.labelUrl = generatedLabelUrl;
+                liveOrder.labelPrinted = false;
+            }
+
+            renderShipments();
         }
 
         // --- REJECT ORDER LOGIC ---
@@ -1276,7 +1379,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         // --- SHIPMENTS TAB LOGIC ---
         function renderShipments() {
             const tbody = document.getElementById('shipments-table-body');
-            const shippedOrders = globalOrders.filter(o => ['SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
+            const shippedOrders = globalOrders.filter(o => ['ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
             
             if(shippedOrders.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active shipments found.</td></tr>`;
@@ -1290,7 +1393,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     <td class="py-4 px-4 sm:px-6 text-sm font-semibold text-gray-700">${o.courier || 'Standard'}</td>
                     <td class="py-4 px-4 sm:px-6">${getStatusBadge(o.status)}</td>
                     <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
-                        <button onclick="window.printShippingLabel('${o.id}', '${o.shiprocketShipmentId}')" class="text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none mr-2" title="Re-Print Label"><i class="ph ph-printer"></i> Re-Print</button>
+                        <button onclick="window.printShippingLabel('${o.id}', '${o.shiprocketShipmentId}')" class="text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none mr-2" title="Print Label"><i class="ph ph-printer"></i> Print Label</button>
                         <a href="https://shiprocket.co/tracking/${o.awb}" target="_blank" class="text-xs font-bold text-maroon hover:text-white border border-maroon hover:bg-maroon px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none" title="Track Live"><i class="ph ph-navigation-arrow"></i> Track Live</a>
                     </td>
                 </tr>
@@ -1310,14 +1413,6 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
                 });
-                
-                if (!res.ok && res.status === 404) {
-                     console.warn("Pickup API not found. Mocking success.");
-                     await updateDoc(doc(db, "orders", orderId), { pickupScheduled: true });
-                     showToast("Pickup Scheduled Successfully (Mocked)!", "success");
-                     return;
-                }
-                
                 const data = await res.json();
                 
                 if(data.success) {
@@ -1326,16 +1421,9 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 } else {
                     let errorMsg = data.details?.message || data.error || "Pickup scheduling failed.";
                     showToast("Shiprocket Error: " + errorMsg, "error");
-                    // Bypass if already scheduled
-                    if(errorMsg.toLowerCase().includes("already") || errorMsg.toLowerCase().includes("exist")) {
-                        await updateDoc(doc(db, "orders", orderId), { pickupScheduled: true });
-                    }
                 }
             } catch(e) {
-                console.warn(e);
-                // Fallback success for demo
-                await updateDoc(doc(db, "orders", orderId), { pickupScheduled: true });
-                showToast("Pickup Scheduled (Fallback).", "success");
+                showToast("Failed to schedule pickup.", "error");
             }
         }
 
@@ -1344,6 +1432,22 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 showToast("Shipment ID not found. Cannot generate label.", "error");
                 return;
             }
+
+            const order = globalOrders.find(x => x.id === orderId);
+
+            // Open the label generated during confirmation.
+            if (order?.labelUrl) {
+                window.open(order.labelUrl, '_blank');
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { labelPrinted: true });
+                    order.labelPrinted = true;
+                } catch(e) {
+                    console.warn("Failed to mark label as printed:", e);
+                }
+                return;
+            }
+
+            // Fallback for older orders that do not have a saved label URL.
             showToast("Generating Label from Shiprocket...", "success");
             try {
                 const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
@@ -1352,12 +1456,20 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
                 });
                 const data = await res.json();
+
                 if(data.success && data.label_url) {
                     window.open(data.label_url, '_blank');
-                    // Automatically mark as Label Printed
-                    await updateDoc(doc(db, "orders", orderId), { labelPrinted: true });
+
+                    await updateDoc(doc(db, "orders", orderId), {
+                        labelPrinted: true,
+                        labelUrl: data.label_url
+                    });
+
+                    if (order) {
+                        order.labelPrinted = true;
+                        order.labelUrl = data.label_url;
+                    }
                 } else {
-                    // SHOW EXACT ERROR
                     let errorMsg = data.details?.message || data.error || "Label not generated yet.";
                     showToast("Shiprocket Error: " + errorMsg, "error");
                 }
