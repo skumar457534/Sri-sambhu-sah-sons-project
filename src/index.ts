@@ -299,7 +299,7 @@ export default {
       // =========================================================
       // 5. SHIPROCKET: LIVE TRACKING BY AWB
       // =========================================================
-      if (path === '/api/shiprocket/track' && method === 'GET') {
+if (path === '/api/shiprocket/track' && method === 'GET') {
         const awb = url.searchParams.get('awb');
         if (!awb) return new Response(JSON.stringify({ success: false, error: "AWB required" }), { status: 400, headers: corsHeaders });
         
@@ -318,7 +318,30 @@ export default {
       }
 
       // =========================================================
-      // 6. SHIPROCKET: GENERATE LABEL (PDF)
+      // 6: SHIPROCKET: SCHEDULE PICKUP
+      // =========================================================
+      if (path === '/api/shiprocket/pickup' && method === 'POST') {
+        const { shipment_id } = await request.json() as any;
+        const token = await getShiprocketToken();
+        const parsedShipmentId = typeof shipment_id === 'string' ? parseInt(shipment_id, 10) : shipment_id;
+
+        const pickupRes = await fetch("https://apiv2.shiprocket.in/v1/external/courier/generate/pickup", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ shipment_id: [parsedShipmentId] })
+        });
+
+        const pickupData = await pickupRes.json() as any;
+        
+        if (pickupRes.ok && pickupData.pickup_status === 1) {
+          return new Response(JSON.stringify({ success: true, message: "Pickup Scheduled" }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        } else {
+          return new Response(JSON.stringify({ success: false, error: pickupData.message || "Pickup scheduling failed", details: pickupData }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+        }
+      }
+
+      // =========================================================
+      // 7. SHIPROCKET: GENERATE LABEL (PDF)
       // =========================================================
       if (path === '/api/shiprocket/label' && method === 'POST') {
         const { shipment_id } = await request.json() as any;
@@ -344,7 +367,7 @@ export default {
       }
 
       // =========================================================
-      // 7. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
+      // 8. SHIPROCKET WEBHOOK (AUTOMATIC TRACKING UPDATE)
       // =========================================================
       if (path === '/api/webhook/tracking') {
         
@@ -386,7 +409,7 @@ export default {
       }
 
       // =========================================================
-      // 8. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
+      // 9. SEND EMAIL VIA BREVO (ACCEPT / REJECT)
       // =========================================================
       if (path === '/api/email/send' && method === 'POST') {
         const { type, email, name, orderId, awb, amount } = await request.json() as any;
