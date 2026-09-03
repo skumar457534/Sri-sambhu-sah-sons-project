@@ -439,28 +439,51 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         </div>
     </div>
 
-    <!-- ACCEPT ORDER / SHIPROCKET MODAL (FALLBACK) -->
+    <!-- NEW: PROCESS SHIPMENT MODAL WITH DATE & COURIER SELECTION -->
     <div id="accept-shipment-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-lg text-red-600 flex items-center gap-2"><i class="ph-fill ph-warning-circle"></i> Courier Not Available</h3>
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+                <h3 class="font-bold text-lg text-naturalBrown flex items-center gap-2"><i class="ph-fill ph-package"></i> Process Shipment & AWB</h3>
                 <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
 
-            <div class="p-6">
-                <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg mb-4">
-                    <p class="text-orange-800 font-medium text-sm">Customer's selected courier (<strong id="orig-courier-name"></strong>) is currently <strong>UNAVAILABLE</strong> for this PIN code.</p>
-                    <p class="text-xs text-orange-700 mt-2">Please select an alternative partner below to dispatch this order:</p>
+            <div class="p-6 overflow-y-auto" id="shipment-modal-body">
+                <!-- Loading State -->
+                <div id="shiprocket-check-loading" class="text-center py-8">
+                    <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon mb-4 inline-block"></i>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1">Checking Live Couriers...</h3>
+                    <p class="text-sm text-gray-500">Fetching serviceability for this PIN code.</p>
                 </div>
-                
-                <div id="courier-options" class="space-y-2 max-h-[250px] overflow-y-auto courier-scroll mb-6">
-                    <!-- Options injected via API -->
+
+                <!-- Content State -->
+                <div id="shiprocket-content-state" class="hidden space-y-5">
+                    
+                    <!-- Alert Box -->
+                    <div id="courier-alert-box" class="p-4 rounded-lg text-sm font-medium"></div>
+
+                    <!-- Dispatch Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Dispatch / Order Date *</label>
+                        <input type="date" id="order-dispatch-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 focus:outline-none focus:border-maroon transition-colors text-gray-700">
+                    </div>
+
+                    <!-- Couriers List -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Courier Partner *</label>
+                        <div id="courier-options" class="space-y-2 max-h-[250px] overflow-y-auto courier-scroll p-1">
+                            <!-- Options injected via API -->
+                        </div>
+                    </div>
                 </div>
+            </div>
+            
+            <div class="p-5 border-t border-gray-100 bg-gray-50 flex justify-between gap-3 shrink-0 hidden" id="shiprocket-footer-actions">
+                <button onclick="rejectFromAcceptModal()" class="px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg outline-none transition-colors flex items-center gap-1"><i class="ph-fill ph-x-circle"></i> Reject Order</button>
                 
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button onclick="closeModals()" class="px-5 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg outline-none transition-colors">Cancel</button>
+                <div class="flex gap-2">
+                    <button onclick="closeModals()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg outline-none transition-colors">Cancel</button>
                     <button id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg font-bold hover:bg-maroon/90 shadow-md outline-none transition-colors flex items-center gap-2">
                         Generate AWB
                     </button>
@@ -991,6 +1014,13 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             btnObj.innerHTML = `<i class="ph ph-spinner animate-spin"></i>`;
             btnObj.disabled = true;
 
+            // Open modal, show loading
+            const modal = document.getElementById('accept-shipment-modal');
+            document.getElementById('shiprocket-check-loading').classList.remove('hidden');
+            document.getElementById('shiprocket-content-state').classList.add('hidden');
+            document.getElementById('shiprocket-footer-actions').classList.add('hidden');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+
             try {
                 // Calculate weight
                 let totalWeight = 0;
@@ -1015,25 +1045,28 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
 
                 if (result.success && result.data && result.data.available_courier_companies) {
                     let couriers = result.data.available_courier_companies;
-                    
-                    // Check if original courier is available
                     let matchedCourier = couriers.find(c => c.courier_name.toLowerCase() === originalCourier.toLowerCase());
-
+                    
+                    const alertBox = document.getElementById('courier-alert-box');
                     if (matchedCourier) {
-                        // AUTO-ACCEPT FLOW
-                        await processShipmentAndAccept(o, matchedCourier.courier_company_id, matchedCourier.courier_name, totalWeight);
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-blue-50 border border-blue-200 text-blue-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-info"></i> Customer selected <strong>${originalCourier}</strong>. It is available, but you can change it below.`;
                     } else {
-                        // FALLBACK FLOW
-                        btnObj.innerHTML = originalText;
-                        btnObj.disabled = false;
-                        
-                        document.getElementById('orig-courier-name').innerText = originalCourier;
-                        const optionsBox = document.getElementById('courier-options');
-                        
-                        // Render available couriers
-                        optionsBox.innerHTML = couriers.map((c, idx) => `
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-orange-50 border border-orange-200 text-orange-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Customer selected <strong>${originalCourier}</strong>, but it is currently unavailable. Please select another.`;
+                    }
+
+                    // Populate date (default today)
+                    document.getElementById('order-dispatch-date').value = new Date().toISOString().split('T')[0];
+
+                    const optionsBox = document.getElementById('courier-options');
+                    couriers.sort((a,b) => a.rate - b.rate);
+
+                    optionsBox.innerHTML = couriers.map((c, idx) => {
+                        let isChecked = matchedCourier ? (c.courier_company_id === matchedCourier.courier_company_id) : (idx === 0);
+                        return `
                             <label class="cursor-pointer relative block mb-2">
-                                <input type="radio" name="admin-courier-selection" value="${c.courier_company_id}" data-name="${c.courier_name}" class="courier-radio sr-only" ${idx === 0 ? 'checked' : ''}>
+                                <input type="radio" name="admin-courier-selection" value="${c.courier_company_id}" data-name="${c.courier_name}" class="courier-radio sr-only" ${isChecked ? 'checked' : ''}>
                                 <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center transition-all hover:border-maroon/30 shadow-sm bg-white">
                                     <div class="flex items-center gap-3">
                                         <div class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center shrink-0">
@@ -1044,29 +1077,42 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                                     <span class="font-bold text-sm text-maroon">₹${Math.ceil(c.rate)}</span>
                                 </div>
                             </label>
-                        `).join('');
+                        `;
+                    }).join('');
 
-                        const modal = document.getElementById('accept-shipment-modal');
-                        modal.classList.remove('hidden'); modal.classList.add('flex');
-                    }
+                    document.getElementById('shiprocket-check-loading').classList.add('hidden');
+                    document.getElementById('shiprocket-content-state').classList.remove('hidden');
+                    document.getElementById('shiprocket-footer-actions').classList.remove('hidden');
                 } else {
                     throw new Error(result.error || "No couriers available for this PIN.");
                 }
             } catch(e) {
                 console.error(e);
+                closeModals();
+                showToast("Failed to fetch couriers: " + e.message, "error");
+            } finally {
                 btnObj.innerHTML = originalText;
                 btnObj.disabled = false;
-                showToast("Failed to fetch couriers: " + e.message, "error");
             }
         }
 
-        // Triggered from Fallback Modal
+        // Helper to reject order directly from the accept modal
+        window.rejectFromAcceptModal = function() {
+            closeModals();
+            setTimeout(() => {
+                window.initRejectOrder(actionOrderId);
+            }, 300);
+        }
+
+        // Triggered from Final Accept Modal
         document.getElementById('confirm-shipment-btn').addEventListener('click', async () => {
             const selectedCourierRadio = document.querySelector('input[name="admin-courier-selection"]:checked');
             if(!selectedCourierRadio) return;
             
             const selectedCourierId = selectedCourierRadio.value;
             const selectedCourierName = selectedCourierRadio.getAttribute('data-name');
+            const selectedDate = document.getElementById('order-dispatch-date').value || new Date().toISOString().split('T')[0];
+
             const btn = document.getElementById('confirm-shipment-btn');
             const originalText = btn.innerHTML;
             
@@ -1084,7 +1130,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             if (totalWeight === 0) totalWeight = 1;
 
             try {
-                await processShipmentAndAccept(o, selectedCourierId, selectedCourierName, totalWeight);
+                await processShipmentAndAccept(o, selectedCourierId, selectedCourierName, totalWeight, selectedDate);
                 closeModals();
             } catch(e) {
                 btn.innerHTML = originalText;
@@ -1093,7 +1139,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         });
 
         // The core logic for generating AWB and saving to Firebase
-        async function processShipmentAndAccept(order, courierId, courierName, totalWeight) {
+        async function processShipmentAndAccept(order, courierId, courierName, totalWeight, dispatchDate) {
             const dims = getSafeDimensions(totalWeight);
                 
             const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
@@ -1101,7 +1147,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     order_id: order.id,
-                    order_date: new Date(order.createdAt).toISOString().split('T')[0],
+                    order_date: dispatchDate, 
                     pickup_location: "Primary", 
                     billing_customer_name: order.customerName || "Guest",
                     billing_last_name: "",
@@ -1143,7 +1189,6 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 throw new Error(shipData.error || "Failed to create shipment");
             }
             
-            // CHANGED: Use the REAL AWB returned by our updated Worker
             const generatedAWB = shipData.awb; 
             
             const orderRef = doc(db, "orders", order.id);
@@ -1174,10 +1219,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 console.error("Mail send failed", mailErr);
             }
 
-            document.getElementById('new-awb').innerText = generatedAWB;
-            document.getElementById('shiprocket-check-loading').classList.add('hidden');
-            document.getElementById('shipment-success').classList.remove('hidden');
-            showToast("Order Accepted & Synced with Shiprocket! Email Sent.", "success");
+            showToast("Order Accepted & AWB Generated! Email Sent.", "success");
         }
 
         // --- REJECT ORDER LOGIC ---
