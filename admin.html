@@ -254,16 +254,38 @@
                 <div id="tab-orders" class="tab-content hidden fast-render">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
                         <!-- Order Header & Filters -->
-                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Manage Orders</h3>
                                 <p class="text-xs text-gray-500 mt-1">Only active processing orders (Pending, Accepted, Rejected) are shown here.</p>
                             </div>
-                            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                                <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md outline-none" data-status="ALL">All Active</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="PENDING">Pending</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="ACCEPTED">Accepted</button>
-                                <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="REJECTED">Rejected</button>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full xl:w-auto">
+                                <div class="relative w-full sm:w-72">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none"></i>
+                                    <input
+                                        id="order-search"
+                                        type="search"
+                                        inputmode="search"
+                                        autocomplete="off"
+                                        placeholder="Search by Order ID"
+                                        aria-label="Search orders by Order ID"
+                                        class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon"
+                                    >
+                                    <button
+                                        id="order-search-clear"
+                                        type="button"
+                                        aria-label="Clear order search"
+                                        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <i class="ph ph-x text-base"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                    <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md outline-none" data-status="ALL">All Active</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="PENDING">Pending</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="ACCEPTED">Accepted</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="REJECTED">Rejected</button>
+                                </div>
                             </div>
                         </div>
 
@@ -730,6 +752,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         let globalProducts = [];
         let globalGallery = [];
         let currentOrderFilter = 'ALL';
+        let orderSearchQuery = '';
         let shipmentSearchQuery = '';
         let actionOrderId = null;
 
@@ -880,30 +903,53 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         // --- ORDER MANAGEMENT ---
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-            
-            let visibleOrders = globalOrders.filter(o => 
-                (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') && 
+            const searchInput = document.getElementById('order-search');
+            const clearButton = document.getElementById('order-search-clear');
+
+            let visibleOrders = globalOrders.filter(o =>
+                (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') &&
                 ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING')
             );
-            
+
+            const query = orderSearchQuery.trim().toLowerCase();
+
+            if (query) {
+                visibleOrders = visibleOrders.filter(o =>
+                    String(o.id || '').toLowerCase().includes(query)
+                );
+            }
+
             if (currentOrderFilter !== 'ALL') {
                 visibleOrders = visibleOrders.filter(o => o.status === currentOrderFilter);
             }
 
+            if (searchInput && searchInput.value !== orderSearchQuery) {
+                searchInput.value = orderSearchQuery;
+            }
+
+            if (clearButton) {
+                clearButton.classList.toggle('hidden', orderSearchQuery.length === 0);
+                clearButton.classList.toggle('flex', orderSearchQuery.length > 0);
+            }
+
             if(visibleOrders.length === 0) {
-                 tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>`;
-                 setTimeout(() => {
-                     if(visibleOrders.length === 0) {
-                         tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">No active orders found for this filter.</td></tr>`;
-                     }
-                 }, 500);
-                 return;
+                const emptyMessage = query
+                    ? `No order found for "<span class="font-medium">${orderSearchQuery.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}</span>".`
+                    : 'No active orders found for this filter.';
+
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>`;
+                setTimeout(() => {
+                    if(visibleOrders.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">${emptyMessage}</td></tr>`;
+                    }
+                }, 500);
+                return;
             }
 
             tbody.innerHTML = visibleOrders.map(order => {
                 let btns = '';
                 const status = order.status || 'PENDING';
-                
+
                 if(status === 'PENDING') {
                     btns = `
                         <button onclick="window.initAcceptOrder('${order.id}', this)" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2 outline-none">Accept</button>
@@ -911,7 +957,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                     `;
                 } else if (status === 'ACCEPTED' && order.awb) {
                     const shipmentIdParam = order.shiprocketShipmentId || '';
-                    
+
                     // NEW: Flow - Pickup -> Label -> Ship
                     if (!order.pickupScheduled) {
                         btns = `<button onclick="window.schedulePickup('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-calendar-check"></i> Schedule Pickup</button>`;
@@ -939,6 +985,31 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             }).join('');
         }
 
+        const orderSearchInput = document.getElementById('order-search');
+        const orderSearchClear = document.getElementById('order-search-clear');
+
+        if (orderSearchInput) {
+            orderSearchInput.addEventListener('input', (e) => {
+                orderSearchQuery = e.target.value;
+                renderOrders();
+            });
+
+            orderSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    orderSearchQuery = '';
+                    renderOrders();
+                    orderSearchInput.focus();
+                }
+            });
+        }
+
+        if (orderSearchClear) {
+            orderSearchClear.addEventListener('click', () => {
+                orderSearchQuery = '';
+                renderOrders();
+                orderSearchInput?.focus();
+            });
+        }
         // Order Filters Listener
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
