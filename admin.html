@@ -308,12 +308,34 @@
                 <!-- SHIPMENTS TAB -->
                 <div id="tab-shipments" class="tab-content hidden fast-render">
                     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                        <div class="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 bg-gray-50/50">
                             <div>
                                 <h3 class="text-lg font-bold text-gray-900">Shipments & Tracking</h3>
                                 <p class="text-xs text-gray-500 mt-1">Orders picked up by the courier are moved here.</p>
                             </div>
-                            <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
+                                <div class="relative w-full sm:w-80">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none"></i>
+                                    <input
+                                        id="shipment-search"
+                                        type="search"
+                                        inputmode="search"
+                                        autocomplete="off"
+                                        placeholder="Search by AWB / Order ID"
+                                        aria-label="Search shipments by AWB or Order ID"
+                                        class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon"
+                                    >
+                                    <button
+                                        id="shipment-search-clear"
+                                        type="button"
+                                        aria-label="Clear shipment search"
+                                        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <i class="ph ph-x text-base"></i>
+                                    </button>
+                                </div>
+                                <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1 self-start sm:self-auto"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
+                            </div>
                         </div>
                         <div class="flex-1 overflow-x-auto">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
@@ -708,6 +730,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         let globalProducts = [];
         let globalGallery = [];
         let currentOrderFilter = 'ALL';
+        let shipmentSearchQuery = '';
         let actionOrderId = null;
 
         // STRICT AUTHENTICATION CHECK
@@ -1437,14 +1460,43 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
         // --- SHIPMENTS TAB LOGIC ---
         function renderShipments() {
             const tbody = document.getElementById('shipments-table-body');
-            const shippedOrders = globalOrders.filter(o => ['ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status));
-            
-            if(shippedOrders.length === 0) {
+            const searchInput = document.getElementById('shipment-search');
+            const clearButton = document.getElementById('shipment-search-clear');
+
+            const shippedOrders = globalOrders.filter(o =>
+                ['ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)
+            );
+
+            const query = shipmentSearchQuery.trim().toLowerCase();
+
+            const visibleShipments = query
+                ? shippedOrders.filter(o => {
+                    const orderId = String(o.id || '').toLowerCase();
+                    const awb = String(o.awb || '').toLowerCase();
+                    return orderId.includes(query) || awb.includes(query);
+                })
+                : shippedOrders;
+
+            if (searchInput && searchInput.value !== shipmentSearchQuery) {
+                searchInput.value = shipmentSearchQuery;
+            }
+
+            if (clearButton) {
+                clearButton.classList.toggle('hidden', shipmentSearchQuery.length === 0);
+                clearButton.classList.toggle('flex', shipmentSearchQuery.length > 0);
+            }
+
+            if (shippedOrders.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active shipments found.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = shippedOrders.map(o => `
+            if (visibleShipments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No shipment found for "<span class="font-medium">${shipmentSearchQuery.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}</span>".</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = visibleShipments.map(o => `
                 <tr class="hover:bg-gray-50/50">
                     <td class="py-4 px-4 sm:px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
                     <td class="py-4 px-4 sm:px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb || 'Pending Sync'}</span></td>
@@ -1458,6 +1510,31 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             `).join('');
         }
 
+        const shipmentSearchInput = document.getElementById('shipment-search');
+        const shipmentSearchClear = document.getElementById('shipment-search-clear');
+
+        if (shipmentSearchInput) {
+            shipmentSearchInput.addEventListener('input', (e) => {
+                shipmentSearchQuery = e.target.value;
+                renderShipments();
+            });
+
+            shipmentSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    shipmentSearchQuery = '';
+                    renderShipments();
+                    shipmentSearchInput.focus();
+                }
+            });
+        }
+
+        if (shipmentSearchClear) {
+            shipmentSearchClear.addEventListener('click', () => {
+                shipmentSearchQuery = '';
+                renderShipments();
+                shipmentSearchInput?.focus();
+            });
+        }
         // NEW: Schedule Pickup Function
         window.schedulePickup = async function(orderId, shipmentId) {
             if(!shipmentId || shipmentId === 'undefined') {
