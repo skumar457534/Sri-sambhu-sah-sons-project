@@ -598,9 +598,22 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                         <p class="text-[10px] text-gray-500 mt-1">Prices for other weights will be calculated automatically.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Selling Price per 1 Kg (₹) - Optional</label>
-                        <input type="number" id="prod-selling-price" min="1" step="1" placeholder="e.g. 600" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
-                        <p class="text-[10px] text-gray-500 mt-1">Must be less than or equal to MRP. Leave blank to show no discount.</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Selling Price by Weight (₹) - Optional</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="text-xs text-gray-600">1 Kg
+                                <input type="number" id="prod-selling-price-1" min="1" step="1" placeholder="e.g. 600" class="mt-1 w-full bg-white border border-gray-200 rounded-md p-2.5 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                            </label>
+                            <label class="text-xs text-gray-600">2 Kg
+                                <input type="number" id="prod-selling-price-2" min="1" step="1" placeholder="Optional" class="mt-1 w-full bg-white border border-gray-200 rounded-md p-2.5 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                            </label>
+                            <label class="text-xs text-gray-600">5 Kg
+                                <input type="number" id="prod-selling-price-5" min="1" step="1" placeholder="Optional" class="mt-1 w-full bg-white border border-gray-200 rounded-md p-2.5 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                            </label>
+                            <label class="text-xs text-gray-600">10 Kg
+                                <input type="number" id="prod-selling-price-10" min="1" step="1" placeholder="Optional" class="mt-1 w-full bg-white border border-gray-200 rounded-md p-2.5 text-sm focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">Har price us weight se agle set price tak lagega. Blank chhodne par pichhla price continue hoga; MRP se zyada nahi ho sakta.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -1725,7 +1738,7 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                         <p class="text-xs text-gray-500 mb-4 flex-1">${p.description || p.desc || ''}</p>
                         <div class="flex justify-between items-center pt-3 border-t border-gray-100">
                             <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Base (1 Kg)</span>
-                            <span class="text-right"><span class="block font-bold text-maroon text-lg">${p.sellingPrice && p.sellingPrice < (p.basePrice || p.price) ? `₹${p.sellingPrice} <span class="text-sm text-gray-400 line-through">₹${p.basePrice || p.price}</span>` : `₹${p.basePrice || p.price}`}</span></span>
+                            <span class="text-right"><span class="block font-bold text-maroon text-lg">${p.sellingPrices?.[1] || p.sellingPrice ? `₹${p.sellingPrices?.[1] || p.sellingPrice} <span class="text-sm text-gray-400 line-through">₹${p.basePrice || p.price}</span>` : `₹${p.basePrice || p.price}`}</span><span class="block text-xs text-gray-500">${[2, 5, 10].filter(kg => p.sellingPrices?.[kg]).map(kg => `${kg} Kg: ₹${p.sellingPrices[kg]}`).join(' · ')}</span></span>
                         </div>
                     </div>
                 </div>
@@ -1739,7 +1752,11 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             document.getElementById('edit-prod-id').value = p.id;
             document.getElementById('prod-name').value = p.name;
             document.getElementById('prod-price').value = p.basePrice || p.price;
-            document.getElementById('prod-selling-price').value = p.sellingPrice || '';
+            const sellingPrices = p.sellingPrices || {};
+            document.getElementById('prod-selling-price-1').value = sellingPrices[1] || p.sellingPrice || '';
+            [2, 5, 10].forEach(kg => {
+                document.getElementById(`prod-selling-price-${kg}`).value = sellingPrices[kg] || '';
+            });
             document.getElementById('prod-desc').value = p.description || p.desc;
             document.getElementById('prod-img-b64').value = p.img || '';
             
@@ -1767,16 +1784,19 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
             const editId = document.getElementById('edit-prod-id').value;
             const name = document.getElementById('prod-name').value.trim();
             const price = Number(document.getElementById('prod-price').value);
-            const sellingPriceInput = document.getElementById('prod-selling-price').value;
-            const sellingPrice = sellingPriceInput === '' ? null : Number(sellingPriceInput);
+            const sellingPrices = {};
+            for (const kg of [1, 2, 5, 10]) {
+                const input = document.getElementById(`prod-selling-price-${kg}`).value;
+                const sellingPrice = input === '' ? null : Number(input);
+                if (sellingPrice !== null && (!Number.isFinite(sellingPrice) || sellingPrice <= 0 || sellingPrice > price * kg)) {
+                    showToast(`${kg} Kg selling price must be greater than 0 and no higher than its MRP.`, "error");
+                    btn.innerHTML = originalText; btn.disabled = false;
+                    return;
+                }
+                sellingPrices[kg] = sellingPrice;
+            }
             const desc = document.getElementById('prod-desc').value.trim();
             const imgBase64 = document.getElementById('prod-img-b64').value;
-
-            if (sellingPrice !== null && (!Number.isFinite(sellingPrice) || sellingPrice <= 0 || sellingPrice > price)) {
-                showToast("Selling price must be greater than 0 and no higher than MRP.", "error");
-                btn.innerHTML = originalText; btn.disabled = false;
-                return;
-            }
 
             if(!imgBase64) {
                 showToast("Please select an image first.", "error");
@@ -1788,7 +1808,8 @@ Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</t
                 const productData = {
                     name: name,
                     basePrice: price,
-                    sellingPrice: sellingPrice,
+                    sellingPrice: sellingPrices[1],
+                    sellingPrices: sellingPrices,
                     description: desc,
                     img: imgBase64,
                     inStock: true
