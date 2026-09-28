@@ -1118,6 +1118,7 @@ header #cart-badge.rounded-full{
                         img: data.img || data.image,
                         basePrice: data.basePrice || data.price, // Price per 1Kg (1000g)
                         sellingPrice: data.sellingPrice || null,
+                        sellingPrices: data.sellingPrices || {},
                         order: data.order || 99
                     });
                 });
@@ -1133,6 +1134,25 @@ header #cart-badge.rounded-full{
             });
         }
 
+        window.getProductPriceDetails = function(product, grams) {
+            const mrp = Math.round((product.basePrice / 1000) * grams);
+            const sellingPrices = product.sellingPrices || {};
+            let pricePerKg = product.sellingPrice > 0 && product.sellingPrice <= product.basePrice
+                ? product.sellingPrice
+                : product.basePrice;
+
+            for (const kg of [1, 2, 5, 10]) {
+                const tierPrice = Number(sellingPrices[kg]);
+                if (kg * 1000 <= grams && Number.isFinite(tierPrice) && tierPrice > 0 && tierPrice <= product.basePrice * kg) {
+                    pricePerKg = tierPrice / kg;
+                }
+            }
+
+            const price = Math.round((pricePerKg / 1000) * grams);
+            const discountPercent = price < mrp ? Math.round((1 - price / mrp) * 100) : 0;
+            return { mrp, price, discountPercent };
+        };
+
         // Render Products UI
         function renderProductGrid() {
             const grid = document.getElementById('home-product-grid');
@@ -1145,8 +1165,7 @@ header #cart-badge.rounded-full{
                     }
                     
                     const currentGrams = window.productSelections[product.id];
-                    const displayMrp = Math.round((product.basePrice / 1000) * currentGrams);
-                    const displayPrice = Math.round(((product.sellingPrice || product.basePrice) / 1000) * currentGrams);
+                    const priceDetails = window.getProductPriceDetails(product, currentGrams);
                     const displayWeight = window.formatWeight(currentGrams);
 
                     return `
@@ -1176,7 +1195,7 @@ header #cart-badge.rounded-full{
                                     </div>
                                     <div class="text-right">
                                         <span class="block text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Price</span>
-                                        ${product.sellingPrice && product.sellingPrice < product.basePrice ? `<span class="block text-xs text-gray-500 line-through">₹${displayMrp}</span><span class="block text-2xl font-bold text-maroon" id="price-${product.id}">₹${displayPrice}</span><span class="inline-block mt-1 text-xs font-bold text-green-700">${Math.round((1 - product.sellingPrice / product.basePrice) * 100)}% OFF</span>` : `<span class="block text-2xl font-bold text-maroon" id="price-${product.id}">₹${displayPrice}</span>`}
+                                        <span class="block text-xs text-gray-500 line-through ${priceDetails.discountPercent ? '' : 'hidden'}" id="mrp-${product.id}">₹${priceDetails.mrp}</span><span class="block text-2xl font-bold text-maroon" id="price-${product.id}">₹${priceDetails.price}</span><span class="inline-block mt-1 text-xs font-bold text-green-700 ${priceDetails.discountPercent ? '' : 'hidden'}" id="discount-${product.id}">${priceDetails.discountPercent}% OFF</span>
                                     </div>
                                 </div>
                                 <button onclick="window.triggerAddToCart('${product.id}')" class="w-full bg-maroon text-cream py-3.5 rounded-md font-semibold hover:bg-maroon/90 transition-colors shadow-md text-sm md:text-base flex items-center justify-center gap-2">
@@ -1209,9 +1228,12 @@ header #cart-badge.rounded-full{
             // Update UI dynamically
             document.getElementById(`weight-display-${productId}`).innerText = window.formatWeight(currentGrams);
             
-            // Calculate new price based on Base Price (1kg)
-            const newPrice = Math.round(((product.sellingPrice || product.basePrice) / 1000) * currentGrams);
-            document.getElementById(`price-${productId}`).innerText = `₹${newPrice}`;
+            const priceDetails = window.getProductPriceDetails(product, currentGrams);
+            document.getElementById(`mrp-${productId}`).innerText = `₹${priceDetails.mrp}`;
+            document.getElementById(`mrp-${productId}`).classList.toggle('hidden', !priceDetails.discountPercent);
+            document.getElementById(`price-${productId}`).innerText = `₹${priceDetails.price}`;
+            document.getElementById(`discount-${productId}`).innerText = `${priceDetails.discountPercent}% OFF`;
+            document.getElementById(`discount-${productId}`).classList.toggle('hidden', !priceDetails.discountPercent);
         }
 
         // Add to Cart triggered from Button
@@ -1221,7 +1243,8 @@ header #cart-badge.rounded-full{
 
             const currentGrams = window.productSelections[productId] || 1000;
             const weightStr = window.formatWeight(currentGrams);
-            const itemPrice = Math.round(((product.sellingPrice || product.basePrice) / 1000) * currentGrams);
+            const priceDetails = window.getProductPriceDetails(product, currentGrams);
+            const itemPrice = priceDetails.price;
             
             const existingItem = cart.find(item => item.id === productId && item.weight === weightStr);
             
@@ -1234,6 +1257,8 @@ header #cart-badge.rounded-full{
                     img: product.img,
                     weight: weightStr,
                     price: itemPrice,
+                    mrp: priceDetails.mrp,
+                    discountPercent: priceDetails.discountPercent,
                     qty: 1
                 });
             }
@@ -1284,7 +1309,7 @@ header #cart-badge.rounded-full{
                             <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
                             <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
                             <div class="flex items-center justify-between">
-                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <span><span class="font-bold text-maroon text-sm">₹${item.price}</span>${item.discountPercent ? `<span class="ml-1 text-xs text-gray-400 line-through">₹${item.mrp}</span><span class="ml-1 text-xs font-bold text-green-700">${item.discountPercent}% OFF</span>` : ''}</span>
                                 <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
                                     <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
                                     <span class="px-2 text-sm font-semibold">${item.qty}</span>
