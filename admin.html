@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard | Sri Shambhu Sha & Sons</title>
+    <link rel="icon" href="images/logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpg">
+
+<link rel="manifest" href="admin-manifest.json">
+<meta name="theme-color" content="#7B1818">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        maroon: "#7B1818",
+                        golden: "#D4AF37",
+                        saffron: "#F48C06",
+                        naturalBrown: "#5C4033",
+                        cream: "#FDFBF7",
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Order filter active button - keep maroon even on hover */
+        .filter-btn.active:hover {
+            background-color: #7B1818 !important;
+            color: #ffffff !important;
+            border-color: transparent !important;
+        }
+        
+        /* Mobile / Touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .filter-btn.active,
+            .filter-btn.active:hover,
+            .filter-btn.active:focus,
+            .filter-btn.active:active {
+                background-color: #7B1818 !important;
+                color: #ffffff !important;
+                border-color: transparent !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            }
+        }
+
+        /* Fast Rendering for heavy tables */
+        .fast-render { content-visibility: auto; will-change: transform; }
+
+        /* Remove Mobile Tap Highlight Flashes */
+        button, a { -webkit-tap-highlight-color: transparent; outline: none; }
+
+        /* Toast Animation */
+        @keyframes slideDown {
+            from { transform: translateY(-120%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideDown 0.3s ease-out forwards; }
+
+        #toast-container {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: calc(100% - 24px) !important;
+            max-width: 420px !important;
+        }
+
+        @media (max-width: 640px) {
+            #toast-container {
+                width: calc(100% - 24px) !important;
+                max-width: 380px !important;
+            }
+            .mobile-workspace { padding-top: 8px !important; }
+        }
+        
+        .courier-scroll::-webkit-scrollbar { width: 4px; }
+        .courier-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .courier-scroll::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+        .courier-radio:checked + div { border-color: #7B1818; background-color: #FDFBF7; }
+        .courier-radio:checked + div .check-icon { opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-hidden flex h-screen relative">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 inset-x-0 z-[9999] flex flex-col items-center gap-2 px-4 pointer-events-none"></div>
+
+    <!-- INITIALIZING OVERLAY -->
+    <div id="auth-loading-overlay" class="fixed inset-0 bg-cream z-[999] flex flex-col items-center justify-center transition-opacity duration-300">
+        <i class="ph ph-shield-check text-5xl text-maroon mb-4 animate-pulse"></i>
+        <h2 class="text-xl font-bold text-naturalBrown mb-1">Verifying Secure Access...</h2>
+        <p class="text-sm text-gray-500">Checking administrator privileges</p>
+    </div>
+
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-maroon text-cream transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center justify-center border-b border-white/10 px-4 gap-3 shrink-0">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-maroon to-red-900 flex items-center justify-center shadow-sm border border-golden/50">
+                <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover rounded-full" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+            </div>
+            <div class="text-left">
+                <h1 class="font-bold text-sm leading-tight text-white">Sri Shambhu Sha</h1>
+                <p class="text-[10px] text-golden uppercase tracking-widest">Admin Panel</p>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active-nav w-full flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-squares-four text-xl"></i> Dashboard
+            </button>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-shopping-cart text-xl"></i> Orders
+                <span id="nav-pending-badge" class="ml-auto bg-saffron text-white text-xs font-bold px-2 py-0.5 rounded-full hidden">0</span>
+            </button>
+            <button onclick="switchTab('products')" id="nav-products" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-package text-xl"></i> Products
+            </button>
+            <button onclick="switchTab('shipments')" id="nav-shipments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-truck text-xl"></i> Shipments
+            </button>
+            <button onclick="switchTab('gallery')" id="nav-gallery" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-image text-xl"></i> Gallery
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-white/5 hover:text-white rounded-lg font-medium transition-colors outline-none">
+                <i class="ph ph-gear text-xl"></i> Settings
+            </button>
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-4 border-t border-white/10 shrink-0">
+            <button onclick="logoutAdmin()" class="flex items-center gap-3 px-4 py-3 text-cream/70 hover:bg-red-500/20 hover:text-white rounded-lg font-medium transition-colors w-full outline-none">
+                <i class="ph ph-sign-out text-xl"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50/50 hidden" id="main-dashboard-container">
+        
+        <!-- Top Header -->
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 shrink-0 z-30">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-maroon p-2 rounded-md outline-none">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+                <h2 id="page-title" class="text-xl font-bold text-naturalBrown hidden sm:block">Overview Dashboard</h2>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
+                    <div class="w-10 h-10 rounded-full bg-maroon/10 flex items-center justify-center text-maroon font-bold border border-maroon/20">
+                        <i class="ph-fill ph-shield-check text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <p class="text-sm font-semibold text-gray-700" id="admin-user-email">Admin</p>
+                        <p class="text-xs text-green-600 font-medium">Verified Online</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SCROLLABLE WORKSPACE -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-8 pb-32 mobile-workspace">
+            <div class="max-w-7xl mx-auto space-y-8 relative">
+
+                <!-- DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content block fast-render">
+                    <!-- STATS GRID -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-2xl shrink-0">
+                                <i class="ph-fill ph-currency-inr"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Total Sales</p>
+                                <h3 class="text-2xl font-bold text-gray-900" id="dash-sales">₹0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-2xl shrink-0">
+                                <i class="ph-fill ph-clock"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Pending Orders</p>
+                                <h3 class="text-2xl font-bold text-gray-900" id="dash-pending">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shrink-0">
+                                <i class="ph-fill ph-package"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Valid Orders</p>
+                                <h3 class="text-2xl font-bold text-gray-900" id="dash-orders">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center text-2xl shrink-0">
+                                <i class="ph-fill ph-storefront"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Live Products</p>
+                                <h3 class="text-2xl font-bold text-gray-900" id="dash-products">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions & Alerts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Action Needed</h3>
+                            <div id="action-needed-box" class="bg-gray-50 border border-gray-100 p-4 rounded-lg flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-green-500 text-xl mt-0.5"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">All Caught Up!</h4>
+                                    <p class="text-sm text-gray-600 mt-1">There are no pending orders waiting for your action right now.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex flex-col justify-center items-center text-center">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+                                <i class="ph-fill ph-database text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800">Firebase Live Sync Active</h3>
+                            <p class="text-sm text-gray-500 mt-1">Dashboard is securely connected and receiving real-time updates.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ORDERS TAB -->
+                <div id="tab-orders" class="tab-content hidden fast-render">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+                        <!-- Order Header & Filters -->
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 bg-gray-50/50">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">Manage Orders</h3>
+                                <p class="text-xs text-gray-500 mt-1">Only active processing orders (Pending, Accepted, Rejected) are shown here.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full xl:w-auto">
+                                <div class="relative w-full sm:w-72">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none"></i>
+                                    <input
+                                        id="order-search"
+                                        type="search"
+                                        inputmode="search"
+                                        autocomplete="off"
+                                        placeholder="Search by Order ID"
+                                        aria-label="Search orders by Order ID"
+                                        class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon"
+                                    >
+                                    <button
+                                        id="order-search-clear"
+                                        type="button"
+                                        aria-label="Clear order search"
+                                        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <i class="ph ph-x text-base"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                    <button class="filter-btn active px-4 py-2 text-sm font-medium rounded-lg bg-maroon text-white transition-colors border-transparent shadow-md outline-none" data-status="ALL">All Active</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="PENDING">Pending</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="ACCEPTED">Accepted</button>
+                                    <button class="filter-btn px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors outline-none" data-status="REJECTED">Rejected</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Orders Table -->
+                        <div class="flex-1 overflow-x-auto">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                                <thead class="bg-white sticky top-0 z-10 shadow-sm border-b border-gray-200">
+                                    <tr>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body" class="divide-y divide-gray-100">
+                                    <tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCTS TAB -->
+                <div id="tab-products" class="tab-content hidden fast-render">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Product Catalog</h3>
+                        <button onclick="openProductModal()" class="bg-maroon text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-maroon/90 flex items-center gap-2 transition-colors outline-none">
+                            <i class="ph ph-plus-circle text-lg"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid">
+                        <div class="col-span-full py-12 text-center text-gray-500 bg-white rounded-xl border border-gray-100">
+                            <i class="ph ph-spinner animate-spin text-3xl mb-2"></i><br>Loading products...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SHIPMENTS TAB -->
+                <div id="tab-shipments" class="tab-content hidden fast-render">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+                        <div class="p-4 sm:p-6 border-b border-gray-200 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 bg-gray-50/50">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">Shipments & Tracking</h3>
+                                <p class="text-xs text-gray-500 mt-1">Orders picked up by the courier are moved here.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
+                                <div class="relative w-full sm:w-80">
+                                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none"></i>
+                                    <input
+                                        id="shipment-search"
+                                        type="search"
+                                        inputmode="search"
+                                        autocomplete="off"
+                                        placeholder="Search by AWB / Order ID"
+                                        aria-label="Search shipments by AWB or Order ID"
+                                        class="w-full bg-white border border-gray-200 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon"
+                                    >
+                                    <button
+                                        id="shipment-search-clear"
+                                        type="button"
+                                        aria-label="Clear shipment search"
+                                        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <i class="ph ph-x text-base"></i>
+                                    </button>
+                                </div>
+                                <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200 flex items-center gap-1 self-start sm:self-auto"><i class="ph-fill ph-check-circle"></i> Shiprocket Ready</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-x-auto">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                                <thead class="bg-white sticky top-0 shadow-sm z-10 border-b border-gray-200">
+                                    <tr>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">AWB Number</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Courier</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Status</th>
+                                        <th class="py-3 px-4 sm:px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="shipments-table-body" class="divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="py-8 text-center text-gray-500">Loading shipments...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GALLERY TAB -->
+                <div id="tab-gallery" class="tab-content hidden fast-render">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Photo Gallery</h3>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6 mb-8">
+                        <h4 class="font-bold text-naturalBrown mb-2">Upload New Photo</h4>
+                        <p class="text-sm text-gray-500 mb-4">Max size: 700 KB. Ideal for shop photos, making process, or packaging.</p>
+                        
+                        <div class="w-full border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-maroon transition-colors bg-gray-50/50 cursor-pointer" onclick="document.getElementById('gallery-upload-input').click()" id="gallery-drop-zone">
+                            <i class="ph ph-upload-simple text-4xl text-gray-400 mb-2"></i>
+                            <p class="font-medium text-gray-700">Click to upload image</p>
+                            <input type="file" id="gallery-upload-input" accept="image/*" class="hidden" onchange="handleGalleryUpload(event)">
+                        </div>
+                        <div id="gallery-upload-loading" class="hidden text-center mt-4">
+                            <i class="ph ph-spinner-gap animate-spin text-2xl text-maroon inline-block"></i> Uploading...
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="admin-gallery-grid">
+                        <div class="col-span-full py-8 text-center text-gray-500">Loading gallery...</div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS TAB -->
+                <div id="tab-settings" class="tab-content hidden fast-render">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-3xl">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900">Business Information</h3>
+                            <p class="text-sm text-gray-500 mt-1">This information is shown to customers on the website.</p>
+                        </div>
+                        <div class="p-6 space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Business Name</label>
+                                    <input type="text" value="Sri Shambhu Sha & Sons" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GSTIN / Reg No.</label>
+                                    <input type="text" value="3271313" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 font-mono outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Business Address</label>
+                                <textarea rows="2" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 resize-none outline-none">Shop No. 01 - East Door of the Temple in Deoghar, Jharkhand 814112, India
+Shop No. 02 - Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Support Phone (WhatsApp)</label>
+                                    <input type="tel" value="7295021513" readonly class="w-full bg-gray-100 border border-gray-200 rounded-md p-2.5 text-gray-500 outline-none">
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t border-gray-100 text-sm text-gray-500">
+                                <i class="ph-fill ph-info text-blue-500"></i> Settings are currently locked by the Super Admin to maintain brand consistency.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ORDER DETAILS MODAL -->
+    <div id="order-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-naturalBrown" id="modal-order-id">Order Details</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6">
+                <div>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Customer Info</span>
+                    <p class="font-semibold text-gray-900" id="modal-customer">...</p>
+                    <p class="text-sm text-gray-600" id="modal-phone">...</p>
+                    <p class="text-sm text-gray-500" id="modal-email">...</p>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Delivery Address</span>
+                    <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100" id="modal-address">...</p>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Order Items</span>
+                    <div id="modal-items-container" class="space-y-2">
+                        <!-- Items injected here -->
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+                        <span class="text-gray-600 font-medium text-sm">Total Amount Paid</span>
+                        <span id="modal-amount" class="font-bold text-maroon text-lg">...</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Customer Selected Courier</span>
+                    <p class="text-sm font-semibold text-saffron flex items-center gap-2">
+                        <i class="ph-fill ph-truck"></i> <span id="modal-courier">...</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROCESS SHIPMENT MODAL WITH DATE & COURIER SELECTION -->
+    <div id="accept-shipment-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+                <h3 class="font-bold text-lg text-naturalBrown flex items-center gap-2"><i class="ph-fill ph-package"></i> Process Shipment & AWB</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto" id="shipment-modal-body">
+                <!-- Loading State -->
+                <div id="shiprocket-check-loading" class="text-center py-8">
+                    <i class="ph ph-spinner-gap animate-spin text-4xl text-maroon mb-4 inline-block"></i>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1">Checking Live Couriers...</h3>
+                    <p class="text-sm text-gray-500">Fetching serviceability for this PIN code.</p>
+                </div>
+
+                <!-- Content State -->
+                <div id="shiprocket-content-state" class="hidden space-y-5">
+                    
+                    <!-- Alert Box -->
+                    <div id="courier-alert-box" class="p-4 rounded-lg text-sm font-medium"></div>
+
+                    <!-- Dispatch Date -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Dispatch / Order Date *</label>
+                        <input type="date" id="order-dispatch-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 focus:outline-none focus:border-maroon transition-colors text-gray-700">
+                    </div>
+
+                    <!-- Couriers List -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Select Courier Partner *</label>
+                        <div id="courier-options" class="space-y-2 max-h-[250px] overflow-y-auto courier-scroll p-1">
+                            <!-- Options injected via API -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-gray-100 bg-gray-50 flex justify-between gap-3 shrink-0 hidden" id="shiprocket-footer-actions">
+                <button onclick="rejectFromAcceptModal()" class="px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg outline-none transition-colors flex items-center gap-1"><i class="ph-fill ph-x-circle"></i> Reject Order</button>
+                
+                <div class="flex gap-2">
+                    <button onclick="closeModals()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg outline-none transition-colors">Cancel</button>
+                    <button type="button" id="confirm-shipment-btn" class="bg-maroon text-cream px-6 py-2 rounded-lg hover:bg-maroon/90 shadow-md outline-none transition-colors flex items-center gap-2">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REJECT & REFUND MODAL -->
+    <div id="reject-modal" class="fixed inset-0 bg-gray-900/60 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-red-500">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-warning-circle text-4xl text-red-500"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg mb-2">Reject Order & Refund?</h3>
+            <p class="text-sm text-gray-600 mb-4">You are about to reject Order <strong id="reject-order-id">...</strong>.</p>
+            <div class="bg-red-50 text-red-800 text-sm p-3 rounded-lg mb-6 text-left border border-red-100">
+                <p><strong>Warning:</strong> This will trigger the Refund API and initiate a <strong>FULL REFUND</strong> of <span id="reject-amount" class="font-bold">...</span> to the customer.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeModals()" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors outline-none">Cancel</button>
+                <button id="confirm-reject-btn" class="flex-1 bg-red-500 text-white px-4 py-2.5 rounded-lg font-bold hover:bg-red-600 shadow-md transition-colors outline-none">Confirm Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT ADD/EDIT MODAL -->
+    <div id="product-modal" class="fixed inset-0 bg-gray-900/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-naturalBrown" id="product-modal-title">Add New Product</h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-red-500 transition-colors outline-none">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[75vh]">
+                <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
+                    <input type="hidden" id="edit-prod-id" value="">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg relative group hover:border-maroon transition-colors cursor-pointer bg-gray-50/50" onclick="document.getElementById('prod-img-file').click()">
+                            <div class="space-y-1 text-center" id="upload-placeholder">
+                                <i class="ph ph-image text-4xl text-gray-400 group-hover:text-maroon transition-colors"></i>
+                                <div class="flex text-sm text-gray-600 justify-center mt-2">
+                                    <span class="relative cursor-pointer rounded-md font-bold text-maroon hover:text-saffron focus-within:outline-none">
+                                        <span>Click to select file</span>
+                                        <input id="prod-img-file" name="prod-img-file" type="file" accept="image/*" class="sr-only" onchange="previewImage(event)">
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 1MB</p>
+                            </div>
+                            <div id="image-preview-container" class="hidden absolute inset-0 w-full h-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-maroon">
+                                <img id="image-preview" src="" class="h-full w-full object-cover">
+                                <button type="button" onclick="clearImagePreview(event)" class="absolute top-2 right-2 bg-white/95 text-red-500 w-8 h-8 flex items-center justify-center rounded-full shadow-lg hover:bg-red-50 transition-colors z-10 outline-none" title="Remove Image">
+                                    <i class="ph ph-trash text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="prod-img-b64" value="">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                        <input type="text" id="prod-name" required placeholder="e.g. Special Khoya Peda" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">MRP per 1 Kg (₹)</label>
+                        <input type="number" id="prod-price" required min="1" step="1" placeholder="e.g. 700" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                        <p class="text-[10px] text-gray-500 mt-1">Prices for other weights will be calculated automatically.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Selling Price per 1 Kg (₹) - Optional</label>
+                        <input type="number" id="prod-selling-price" min="1" step="1" placeholder="e.g. 600" class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon">
+                        <p class="text-[10px] text-gray-500 mt-1">Must be less than or equal to MRP. Leave blank to show no discount.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="prod-desc" rows="3" required placeholder="Describe the product flavor and ingredients..." class="w-full bg-white border border-gray-200 rounded-md p-2.5 focus:outline-none focus:border-maroon focus:ring-1 focus:ring-maroon resize-none"></textarea>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                        <button type="button" onclick="closeProductModal()" class="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors outline-none">Cancel</button>
+                        <button type="submit" id="btn-save-prod" class="bg-maroon text-cream px-6 py-2.5 rounded-lg font-bold hover:bg-maroon/90 shadow-md flex items-center gap-2 outline-none">
+                            <i class="ph ph-broadcast text-lg"></i> Publish Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI INTERACTION SCRIPTS -->
+    <script>
+        // Custom Toast Notification System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const isSuccess = type === 'success';
+            const bgColor = isSuccess ? 'bg-green-600' : (type === 'info' ? 'bg-blue-600' : 'bg-red-600');
+            const icon = isSuccess ? 'ph-check-circle' : (type === 'info' ? 'ph-info' : 'ph-warning-circle');
+
+            // Fixed pointing events and sizing for mobile screens
+            toast.className = `toast-enter w-full max-w-md flex items-center justify-between p-4 rounded-lg shadow-xl text-white pointer-events-auto ${bgColor}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3 font-medium text-sm">
+                    <i class="ph-fill ${icon} text-2xl"></i>
+                    <span>${message}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white outline-none"><i class="ph ph-x text-lg"></i></button>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 4000);
+        }
+
+        // Sidebar & Tabs Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function switchTab(tabId) {
+            const titles = {
+                'dashboard': 'Overview Dashboard', 'orders': 'Order Management', 'products': 'Product Catalog',
+                'shipments': 'Shipments & Tracking', 'gallery': 'Photo Gallery', 'settings': 'Business Settings'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('block');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/10', 'text-white');
+                btn.classList.add('text-cream/70');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-cream/70');
+                activeBtn.classList.add('bg-white/10', 'text-white');
+            }
+
+            if(window.innerWidth < 1024) toggleSidebar();
+        }
+
+        // Modals Logic
+        function closeModals() {
+            document.querySelectorAll('.fixed.inset-0.z-\\[100\\], .fixed.inset-0.z-\\[110\\]').forEach(m => {
+                m.classList.add('hidden'); m.classList.remove('flex');
+            });
+        }
+        function openProductModal() {
+            document.getElementById('product-form').reset();
+            document.getElementById('edit-prod-id').value = '';
+            document.getElementById('product-modal-title').innerText = "Add New Product";
+            document.getElementById('btn-save-prod').innerHTML = `<i class="ph ph-broadcast text-lg"></i> Publish Product`;
+            clearImagePreview();
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.getElementById('product-modal').classList.add('flex');
+        }
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('product-modal').classList.remove('flex');
+        }
+
+        // Image Preview Logic
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 1048576) {
+                    showToast("Image is too large! Please select an image under 1MB.", "error");
+                    event.target.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('prod-img-b64').value = e.target.result; 
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        function clearImagePreview(event) {
+            if(event) event.stopPropagation();
+            document.getElementById('prod-img-file').value = "";
+            document.getElementById('prod-img-b64').value = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- FIREBASE & CORE LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State variables
+        let globalOrders = [];
+        let globalProducts = [];
+        let globalGallery = [];
+        let currentOrderFilter = 'ALL';
+        let orderSearchQuery = '';
+        let shipmentSearchQuery = '';
+        let actionOrderId = null;
+
+        // STRICT AUTHENTICATION CHECK
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.replace("admin-login.html");
+                return;
+            }
+
+            try {
+                // Verify Admin Role strictly from Firestore 'admins' collection
+                const adminDoc = await getDoc(doc(db, "admins", user.uid));
+                
+                if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+                    // Valid Admin. Remove overlay and initialize dashboard.
+                    document.getElementById('admin-user-email').innerText = user.email;
+                    document.getElementById('auth-loading-overlay').classList.add('hidden');
+                    document.getElementById('main-dashboard-container').classList.remove('hidden');
+                    
+                    initRealtimeListeners();
+                    showToast("Verified Admin Access Granted.", "success");
+                } else {
+                    // Normal user trying to access admin page
+                    showToast("Access Denied. Administrator Privileges Required.", "error");
+                    await signOut(auth);
+                    window.location.replace("admin-login.html");
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                showToast("Security check failed.", "error");
+                await signOut(auth);
+                window.location.replace("admin-login.html");
+            }
+        });
+
+        window.logoutAdmin = function() {
+            signOut(auth).then(() => window.location.replace("admin-login.html"));
+        }
+
+        // --- REAL-TIME LISTENERS (Instant Auto-Sync) ---
+        function initRealtimeListeners() {
+            // Listen to Orders
+            onSnapshot(collection(db, "orders"), (snapshot) => {
+                globalOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                globalOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                
+                renderOrders();
+                renderShipments();
+                updateDashboardStats();
+            }, (error) => {
+                showToast("Failed to fetch live orders data.", "error");
+            });
+
+            // Listen to Products
+            onSnapshot(collection(db, "products"), (snapshot) => {
+                globalProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProducts();
+                updateDashboardStats(); 
+            }, (error) => {
+                showToast("Failed to fetch live products data.", "error");
+            });
+
+            // Listen to Gallery
+            onSnapshot(collection(db, "gallery"), (snapshot) => {
+                globalGallery = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                globalGallery.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderAdminGallery();
+            }, (error) => {
+                console.log("No gallery or error fetching gallery:", error);
+            });
+        }
+
+        // --- DASHBOARD UPDATES (Optimized) ---
+        function updateDashboardStats() {
+            let totalSales = 0, pendingCount = 0, validOrderCount = 0;
+            globalOrders.forEach(o => {
+                // Count valid orders (Paid and Not Rejected)
+                if (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') {
+                    if (['PENDING', 'ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)) {
+                        totalSales += Number(o.amount || 0);
+                    }
+                    validOrderCount++;
+                }
+                if(o.status === 'PENDING' && o.paymentStatus === 'PAID') pendingCount++;
+            });
+
+            document.getElementById('dash-sales').innerText = `₹${totalSales.toLocaleString('en-IN')}`;
+            document.getElementById('dash-pending').innerText = pendingCount;
+            document.getElementById('dash-orders').innerText = validOrderCount;
+            document.getElementById('dash-products').innerText = globalProducts.length;
+            
+            const badge = document.getElementById('nav-pending-badge');
+            badge.innerText = pendingCount;
+            badge.classList.toggle('hidden', pendingCount === 0);
+
+            const actionBox = document.getElementById('action-needed-box');
+            if(pendingCount > 0) {
+                actionBox.className = "bg-orange-50 border border-orange-100 p-4 rounded-lg flex items-start gap-3";
+                actionBox.innerHTML = `
+                    <i class="ph-fill ph-warning-circle text-orange-500 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-orange-800">${pendingCount} Pending Orders</h4>
+                        <p class="text-sm text-orange-600 mt-1">You have orders waiting to be accepted.</p>
+                        <button onclick="switchTab('orders')" class="mt-3 text-sm font-bold bg-orange-500 text-white px-4 py-1.5 rounded hover:bg-orange-600 transition outline-none">View Orders</button>
+                    </div>
+                `;
+            } else {
+                actionBox.className = "bg-gray-50 border border-gray-100 p-4 rounded-lg flex items-start gap-3";
+                actionBox.innerHTML = `
+                    <i class="ph-fill ph-check-circle text-green-500 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-gray-800">All Caught Up!</h4>
+                        <p class="text-sm text-gray-600 mt-1">There are no pending orders waiting right now.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // --- RENDERING HELPERS ---
+        function getStatusBadge(status) {
+            const s = status || 'UNKNOWN';
+            switch(s) {
+                case 'PENDING': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-700 border border-orange-200">Pending</span>';
+                case 'ACCEPTED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700 border border-blue-200">Accepted</span>';
+                case 'REJECTED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700 border border-red-200">Rejected</span>';
+                case 'SHIPPED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-700 border border-purple-200">Shipped</span>';
+                case 'IN_TRANSIT': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">In Transit</span>';
+                case 'DELIVERED': return '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 border border-green-200">Delivered</span>';
+                default: return `<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-gray-100 text-gray-700">${s}</span>`;
+            }
+        }
+
+        function getPaymentBadge(payment) {
+            const p = payment || 'UNKNOWN';
+            if(p === 'PAID') return '<span class="text-green-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Paid</span>';
+            if(p === 'REFUND_INITIATED') return '<span class="text-orange-500 font-bold text-xs"><i class="ph-fill ph-clock-counter-clockwise"></i> Refund Initiated</span>';
+            if(p === 'REFUND_COMPLETED') return '<span class="text-blue-600 font-bold text-xs"><i class="ph-fill ph-check-circle"></i> Refund Completed</span>';
+            return `<span class="text-gray-500 font-bold text-xs">${p}</span>`;
+        }
+
+        function formatDate(timestamp) {
+            if(!timestamp) return 'N/A';
+            const d = new Date(timestamp);
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        // --- ORDER MANAGEMENT ---
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            const searchInput = document.getElementById('order-search');
+            const clearButton = document.getElementById('order-search-clear');
+
+            let visibleOrders = globalOrders.filter(o =>
+                (o.paymentStatus === 'PAID' || o.paymentStatus === 'REFUND_COMPLETED') &&
+                ['PENDING', 'ACCEPTED', 'REJECTED'].includes(o.status || 'PENDING')
+            );
+
+            const query = orderSearchQuery.trim().toLowerCase();
+
+            if (query) {
+                visibleOrders = visibleOrders.filter(o =>
+                    String(o.id || '').toLowerCase().includes(query)
+                );
+            }
+
+            if (currentOrderFilter !== 'ALL') {
+                visibleOrders = visibleOrders.filter(o => o.status === currentOrderFilter);
+            }
+
+            if (searchInput && searchInput.value !== orderSearchQuery) {
+                searchInput.value = orderSearchQuery;
+            }
+
+            if (clearButton) {
+                clearButton.classList.toggle('hidden', orderSearchQuery.length === 0);
+                clearButton.classList.toggle('flex', orderSearchQuery.length > 0);
+            }
+
+            if(visibleOrders.length === 0) {
+                const emptyMessage = query
+                    ? `No order found for "<span class="font-medium">${orderSearchQuery.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}</span>".`
+                    : 'No active orders found for this filter.';
+
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500"><i class="ph ph-spinner animate-spin text-2xl mb-2"></i><br>Loading live orders...</td></tr>`;
+                setTimeout(() => {
+                    if(visibleOrders.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">${emptyMessage}</td></tr>`;
+                    }
+                }, 500);
+                return;
+            }
+
+            tbody.innerHTML = visibleOrders.map(order => {
+                let btns = '';
+                const status = order.status || 'PENDING';
+
+                if(status === 'PENDING') {
+                    btns = `
+                        <button onclick="window.initAcceptOrder('${order.id}', this)" class="px-3 py-1.5 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow-sm transition-colors mr-2 outline-none">Accept</button>
+                        <button onclick="window.initRejectOrder('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors mr-2 outline-none">Reject</button>
+                    `;
+                } else if (status === 'ACCEPTED' && order.awb) {
+                    const shipmentIdParam = order.shiprocketShipmentId || '';
+
+                    // NEW: Flow - Pickup -> Label -> Ship
+                    if (!order.pickupScheduled) {
+                        btns = `<button onclick="window.schedulePickup('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-calendar-check"></i> Schedule Pickup</button>`;
+                    } else if (!order.labelPrinted) {
+                        btns = `<button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Print Label</button>`;
+                    } else {
+                        btns = `
+                            <button onclick="window.markAsShipped('${order.id}')" class="px-3 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph-fill ph-truck"></i> Mark Shipped</button>
+                            <button onclick="window.printShippingLabel('${order.id}', '${shipmentIdParam}')" class="px-3 py-1.5 text-xs font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded shadow-sm mr-2 inline-flex items-center gap-1 outline-none"><i class="ph ph-printer"></i> Re-Print</button>
+                        `;
+                    }
+                }
+                btns += `<button onclick="window.viewOrderDetails('${order.id}')" class="text-gray-400 hover:text-maroon align-middle outline-none" title="View Details"><i class="ph ph-eye text-xl"></i></button>`;
+
+                return `
+                    <tr class="hover:bg-gray-50/50">
+                        <td class="py-4 px-4 sm:px-6 text-sm font-bold text-naturalBrown">${order.id}</td>
+                        <td class="py-4 px-4 sm:px-6 text-sm text-gray-600">${formatDate(order.createdAt)}</td>
+                        <td class="py-4 px-4 sm:px-6"><p class="text-sm font-semibold">${order.customerName || 'Guest'}</p></td>
+                        <td class="py-4 px-4 sm:px-6 text-sm font-bold">₹${order.amount || 0}</td>
+                        <td class="py-4 px-4 sm:px-6">${getPaymentBadge(order.paymentStatus)}</td>
+                        <td class="py-4 px-4 sm:px-6">${getStatusBadge(status)}</td>
+                        <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">${btns}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        const orderSearchInput = document.getElementById('order-search');
+        const orderSearchClear = document.getElementById('order-search-clear');
+
+        if (orderSearchInput) {
+            orderSearchInput.addEventListener('input', (e) => {
+                orderSearchQuery = e.target.value;
+                renderOrders();
+            });
+
+            orderSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    orderSearchQuery = '';
+                    renderOrders();
+                    orderSearchInput.focus();
+                }
+            });
+        }
+
+        if (orderSearchClear) {
+            orderSearchClear.addEventListener('click', () => {
+                orderSearchQuery = '';
+                renderOrders();
+                orderSearchInput?.focus();
+            });
+        }
+        // Order Filters Listener
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.currentTarget;
+
+                if (target.classList.contains('active')) return;
+
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove(
+                        'bg-maroon',
+                        'text-white',
+                        'border-transparent',
+                        'shadow-md',
+                        'active'
+                    );
+
+                    b.classList.add(
+                        'bg-white',
+                        'text-gray-600',
+                        'border-gray-200'
+                    );
+                });
+
+                target.classList.remove(
+                    'bg-white',
+                    'text-gray-600',
+                    'border-gray-200'
+                );
+
+                target.classList.add(
+                    'bg-maroon',
+                    'text-white',
+                    'border-transparent',
+                    'shadow-md',
+                    'active'
+                );
+
+                currentOrderFilter = target.getAttribute('data-status');
+                renderOrders();
+            });
+        });
+
+        window.viewOrderDetails = function(id) {
+            const o = globalOrders.find(x => x.id === id);
+            if(!o) return;
+            
+            document.getElementById('modal-order-id').innerText = `Order: ${o.id}`;
+            document.getElementById('modal-customer').innerText = o.customerName || 'N/A';
+            document.getElementById('modal-phone').innerText = o.customerPhone || o.phone || 'N/A';
+            document.getElementById('modal-email').innerText = o.customerEmail || o.email || 'N/A';
+            
+            let addressHtml = "N/A";
+            if(o.shippingAddress) {
+                addressHtml = `${o.shippingAddress.line1}, ${o.shippingAddress.line2}<br>${o.shippingAddress.city}, ${o.shippingAddress.state} - ${o.shippingAddress.pincode}`;
+            }
+            document.getElementById('modal-address').innerHTML = addressHtml;
+            document.getElementById('modal-amount').innerText = `₹${o.amount || 0}`;
+            document.getElementById('modal-courier').innerText = o.courier || 'Standard';
+            
+            let itemsHtml = '';
+            if(Array.isArray(o.items)) {
+                itemsHtml = o.items.map(item => `
+                    <div class="bg-cream p-3 rounded-lg border border-golden/20 text-sm font-medium text-naturalBrown flex justify-between items-center mb-2">
+                        <span>${item.qty}x ${item.name} (${item.weight})</span>
+                        <span class="font-bold">₹${item.price * item.qty}</span>
+                    </div>
+                `).join('');
+            } else {
+                itemsHtml = `<p class="text-sm text-gray-500">${o.items || 'No item data'}</p>`;
+            }
+            document.getElementById('modal-items-container').innerHTML = itemsHtml;
+            
+            document.getElementById('order-modal').classList.remove('hidden');
+            document.getElementById('order-modal').classList.add('flex');
+        }
+
+        // --- SAFE DIMENSION CALCULATOR ---
+        function getSafeDimensions(weightKg) {
+            if (weightKg <= 1.0) return { l: 15, b: 15, h: 15 };
+            if (weightKg <= 1.5) return { l: 20, b: 15, h: 15 };
+            if (weightKg <= 2.0) return { l: 20, b: 20, h: 15 };
+            if (weightKg <= 3.0) return { l: 25, b: 20, h: 15 };
+            if (weightKg <= 4.0) return { l: 25, b: 25, h: 15 };
+            if (weightKg <= 5.0) return { l: 30, b: 25, h: 20 };
+            if (weightKg <= 7.5) return { l: 35, b: 30, h: 20 };
+            return { l: 40, b: 30, h: 25 }; 
+        }
+
+        // --- SMART ACCEPT ORDER LOGIC ---
+        window.initAcceptOrder = async function(id, btnObj) {
+            actionOrderId = id;
+            const o = globalOrders.find(x => x.id === id);
+            const originalCourier = o.courier || 'Standard';
+            
+            const originalText = btnObj.innerHTML;
+            btnObj.innerHTML = `<i class="ph ph-spinner animate-spin"></i>`;
+            btnObj.disabled = true;
+
+            // Open modal, show loading
+            const modal = document.getElementById('accept-shipment-modal');
+            document.getElementById('shiprocket-check-loading').classList.remove('hidden');
+            document.getElementById('shiprocket-content-state').classList.add('hidden');
+            document.getElementById('shiprocket-footer-actions').classList.add('hidden');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+
+            try {
+                // Calculate weight
+                let totalWeight = 0;
+                if(Array.isArray(o.items)) {
+                    o.items.forEach(item => {
+                        if (item.weight.includes("Kg")) totalWeight += parseFloat(item.weight) * item.qty;
+                        else if (item.weight.includes("g")) totalWeight += (parseFloat(item.weight) / 1000) * item.qty;
+                    });
+                }
+                if (totalWeight === 0) totalWeight = 1;
+                const pin = o.shippingAddress?.pincode;
+                if(!pin) throw new Error("Customer PIN code is missing.");
+
+                // 1. Fetch Serviceability
+                const response = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/serviceability", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delivery_postcode: pin, weight: totalWeight, cod: 0 })
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.available_courier_companies) {
+                    let couriers = result.data.available_courier_companies;
+                    let matchedCourier = couriers.find(c => c.courier_name.toLowerCase() === originalCourier.toLowerCase());
+                    
+                    const alertBox = document.getElementById('courier-alert-box');
+                    if (matchedCourier) {
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-blue-50 border border-blue-200 text-blue-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-info"></i> Customer selected <strong>${originalCourier}</strong>. It is available, but you can change it below.`;
+                    } else {
+                        alertBox.className = "p-3 rounded-lg text-sm font-medium bg-orange-50 border border-orange-200 text-orange-800";
+                        alertBox.innerHTML = `<i class="ph-fill ph-warning-circle"></i> Customer selected <strong>${originalCourier}</strong>, but it is currently unavailable. Please select another.`;
+                    }
+
+                    // Populate date (default today)
+                    document.getElementById('order-dispatch-date').value = new Date().toISOString().split('T')[0];
+
+                    const optionsBox = document.getElementById('courier-options');
+                    couriers.sort((a,b) => a.rate - b.rate);
+
+                    optionsBox.innerHTML = couriers.map((c, idx) => {
+                        let isChecked = matchedCourier ? (c.courier_company_id === matchedCourier.courier_company_id) : (idx === 0);
+                        return `
+                            <label class="cursor-pointer relative block mb-2">
+                                <input type="radio" name="admin-courier-selection" value="${c.courier_company_id}" data-name="${c.courier_name}" class="courier-radio sr-only" ${isChecked ? 'checked' : ''}>
+                                <div class="border border-gray-200 rounded-lg p-3 flex justify-between items-center transition-all hover:border-maroon/30 shadow-sm bg-white">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center shrink-0">
+                                            <div class="check-icon w-2 h-2 bg-maroon rounded-full opacity-0 transform scale-50 transition-all"></div>
+                                        </div>
+                                        <span class="font-semibold text-sm text-naturalBrown">${c.courier_name}</span>
+                                    </div>
+                                    <span class="font-bold text-sm text-maroon">₹${Math.ceil(c.rate)}</span>
+                                </div>
+                            </label>
+                        `;
+                    }).join('');
+
+                    document.getElementById('shiprocket-check-loading').classList.add('hidden');
+                    document.getElementById('shiprocket-content-state').classList.remove('hidden');
+                    document.getElementById('shiprocket-footer-actions').classList.remove('hidden');
+                } else {
+                    throw new Error(result.error || "No couriers available for this PIN.");
+                }
+            } catch(e) {
+                console.error(e);
+                closeModals();
+                showToast("Failed to fetch couriers: " + e.message, "error");
+            } finally {
+                btnObj.innerHTML = originalText;
+                btnObj.disabled = false;
+            }
+        }
+
+        // Helper to reject order directly from the accept modal
+        window.rejectFromAcceptModal = function() {
+            closeModals();
+            setTimeout(() => {
+                window.initRejectOrder(actionOrderId);
+            }, 300);
+        }
+
+        // Triggered from Final Accept Modal
+        document.getElementById('confirm-shipment-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirm-shipment-btn');
+            const originalText = btn.innerHTML;
+
+            try {
+                const selectedCourierRadio = document.querySelector('input[name="admin-courier-selection"]:checked');
+                if (!selectedCourierRadio) {
+                    showToast("Please select a courier partner.", "error");
+                    return;
+                }
+
+                const selectedCourierId = selectedCourierRadio.value;
+                const selectedCourierName = selectedCourierRadio.getAttribute('data-name') || 'Standard';
+                const selectedDate = document.getElementById('order-dispatch-date').value;
+
+                if (!selectedDate) {
+                    showToast("Please select a dispatch date.", "error");
+                    return;
+                }
+
+                if (!actionOrderId) {
+                    showToast("Order ID not found. Please close and open Accept again.", "error");
+                    return;
+                }
+
+                const o = globalOrders.find(x => x.id === actionOrderId);
+                if (!o) {
+                    showToast("Order data not found. Please refresh the admin page.", "error");
+                    return;
+                }
+
+                btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Confirming...`;
+                btn.disabled = true;
+
+                let totalWeight = 0;
+                if (Array.isArray(o.items)) {
+                    o.items.forEach(item => {
+                        const rawWeight = String(item?.weight || '');
+                        const qty = Number(item?.qty || 1);
+                        if (rawWeight.includes("Kg")) {
+                            totalWeight += parseFloat(rawWeight) * qty;
+                        } else if (rawWeight.includes("g")) {
+                            totalWeight += (parseFloat(rawWeight) / 1000) * qty;
+                        }
+                    });
+                }
+                if (!totalWeight || Number.isNaN(totalWeight)) totalWeight = 1;
+
+                await processShipmentAndAccept(
+                    o,
+                    selectedCourierId,
+                    selectedCourierName,
+                    totalWeight,
+                    selectedDate
+                );
+
+                closeModals();
+            } catch(e) {
+                console.error("Confirm shipment error:", e);
+                showToast("Failed to confirm shipment: " + (e?.message || e), "error");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // The core logic for generating AWB, label and saving the selected shipment details
+        async function processShipmentAndAccept(order, courierId, courierName, totalWeight, dispatchDate) {
+            const dims = getSafeDimensions(totalWeight);
+
+            const shipRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/create-order", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    order_id: order.id,
+                    order_date: dispatchDate,
+                    pickup_location: "Primary",
+                    billing_customer_name: order.customerName || "Guest",
+                    billing_last_name: "",
+                    billing_address: order.shippingAddress?.line1 || "N/A",
+                    billing_address_2: order.shippingAddress?.line2 || "",
+                    billing_city: order.shippingAddress?.city || "Deoghar",
+                    billing_pincode: order.shippingAddress?.pincode || "814112",
+                    billing_state: order.shippingAddress?.state || "Jharkhand",
+                    billing_country: "India",
+                    billing_email: order.customerEmail || order.email || "support@srishambhushaandsons.in",
+                    billing_phone: order.customerPhone || order.phone || "0000000000",
+                    shipping_is_billing: true,
+                    order_items: Array.isArray(order.items) ? order.items.map(item => ({
+                        name: item.name,
+                        sku: item.id,
+                        units: item.qty,
+                        selling_price: item.price,
+                        discount: "",
+                        tax: ""
+                    })) : [],
+                    payment_method: "Prepaid",
+                    shipping_charges: order.shippingFee || 0,
+                    giftwrap_charges: 0,
+                    transaction_charges: 0,
+                    total_discount: 0,
+                    sub_total: order.subtotal || 0,
+                    length: dims.l,
+                    breadth: dims.b,
+                    height: dims.h,
+                    weight: totalWeight,
+                    courier_id: courierId
+                })
+            });
+
+            const shipData = await shipRes.json().catch(() => ({}));
+
+            if (!shipRes.ok || !shipData.success) {
+                console.error("Shiprocket API Error:", shipData);
+                throw new Error(
+                    shipData.error ||
+                    shipData.details?.message ||
+                    `Shiprocket create order failed (${shipRes.status})`
+                );
+            }
+
+            const generatedAWB = shipData.awb;
+            const shipmentId = shipData.shipment_id || shipData.shiprocketShipmentId;
+
+            if (!generatedAWB || !shipmentId) {
+                throw new Error("Shiprocket did not return AWB or Shipment ID.");
+            }
+
+            // Keep the existing automatic pickup behavior.
+            showToast("AWB generated. Scheduling pickup...", "info");
+            let isPickupScheduled = false;
+
+            try {
+                const pickupRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/pickup", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId, 10) })
+                });
+                const pickupData = await pickupRes.json().catch(() => ({}));
+
+                if (pickupRes.ok && pickupData.success) {
+                    isPickupScheduled = true;
+                } else {
+                    console.warn("Auto-Pickup failed:", pickupData);
+                }
+            } catch(e) {
+                console.warn("Auto-Pickup error:", e);
+            }
+
+            // Save all selected/generated shipment data immediately.
+            const orderRef = doc(db, "orders", order.id);
+            await updateDoc(orderRef, {
+                status: 'ACCEPTED',
+                awb: generatedAWB,
+                courier: courierName,
+                courierId: String(courierId),
+                dispatchDate: dispatchDate,
+                shiprocketOrderId: shipData.shiprocket_order_id || '',
+                shiprocketShipmentId: String(shipmentId),
+                pickupScheduled: isPickupScheduled,
+                labelUrl: '',
+                labelPrinted: false
+            });
+
+            // Generate the label with retries because Shiprocket can need a few seconds
+            // after AWB assignment before the label endpoint is ready.
+            let generatedLabelUrl = "";
+            for (let attempt = 1; attempt <= 4; attempt++) {
+                try {
+                    showToast(
+                        attempt === 1 ? "Preparing shipping label..." : `Preparing shipping label (${attempt}/4)...`,
+                        "info"
+                    );
+
+                    const labelRes = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ shipment_id: parseInt(shipmentId, 10) })
+                    });
+                    const labelData = await labelRes.json().catch(() => ({}));
+
+                    if (labelRes.ok && labelData.success && labelData.label_url) {
+                        generatedLabelUrl = labelData.label_url;
+                        break;
+                    }
+
+                    console.warn(`Label attempt ${attempt} failed:`, labelData);
+                } catch(e) {
+                    console.warn(`Label attempt ${attempt} error:`, e);
+                }
+
+                if (attempt < 4) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            }
+
+            if (generatedLabelUrl) {
+                await updateDoc(orderRef, {
+                    labelUrl: generatedLabelUrl,
+                    labelPrinted: false
+                });
+            }
+
+            // Send customer email after AWB/date/courier are safely saved.
+            try {
+                const mailRes = await fetch("https://api.srishambhushaandsons.in/api/email/send", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'ACCEPT',
+                        email: order.customerEmail || order.email,
+                        name: order.customerName || 'Customer',
+                        orderId: order.id,
+                        awb: generatedAWB,
+                        courier: courierName,
+                        dispatchDate: dispatchDate
+                    })
+                });
+
+                const mailData = await mailRes.json().catch(() => ({}));
+                if (!mailRes.ok || mailData.success === false) {
+                    console.warn("Mail send failed:", mailData);
+                }
+            } catch (mailErr) {
+                console.error("Mail send failed:", mailErr);
+            }
+
+            // Update current in-memory order immediately.
+            const liveOrder = globalOrders.find(x => x.id === order.id);
+            if (liveOrder) {
+                liveOrder.status = 'ACCEPTED';
+                liveOrder.awb = generatedAWB;
+                liveOrder.courier = courierName;
+                liveOrder.courierId = String(courierId);
+                liveOrder.dispatchDate = dispatchDate;
+                liveOrder.shiprocketOrderId = shipData.shiprocket_order_id || '';
+                liveOrder.shiprocketShipmentId = String(shipmentId);
+                liveOrder.pickupScheduled = isPickupScheduled;
+                liveOrder.labelUrl = generatedLabelUrl;
+                liveOrder.labelPrinted = false;
+            }
+
+            renderOrders();
+            renderShipments();
+
+            if (generatedLabelUrl) {
+                showToast(
+                    isPickupScheduled
+                        ? "Confirmed! AWB, selected date/courier, label and pickup are ready. Email sent."
+                        : "Confirmed! AWB, selected date/courier and label are ready. Email sent.",
+                    "success"
+                );
+            } else {
+                showToast(
+                    isPickupScheduled
+                        ? "Confirmed! AWB saved and pickup scheduled. Label can be generated from Print Label."
+                        : "Confirmed! AWB saved. Label can be generated from Print Label.",
+                    "success"
+                );
+            }
+        }
+
+        // --- REJECT ORDER LOGIC ---
+        window.initRejectOrder = function(id) {
+            actionOrderId = id;
+            const o = globalOrders.find(x => x.id === id);
+            document.getElementById('reject-order-id').innerText = o.id;
+            document.getElementById('reject-amount').innerText = `₹${o.amount || 0}`;
+            
+            const modal = document.getElementById('reject-modal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+        }
+
+        document.getElementById('confirm-reject-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirm-reject-btn');
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Processing...`;
+            btn.disabled = true;
+
+            try {
+                const o = globalOrders.find(x => x.id === actionOrderId);
+                
+                // Call Cloudflare Refund API
+                const refundRes = await fetch("https://api.srishambhushaandsons.in/api/admin/refund", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_id: o.razorpayPaymentId,
+                        amount: o.amount
+                    })
+                });
+                
+                const refundData = await refundRes.json();
+                if(!refundData.success) throw new Error(refundData.error || "Refund API Failed");
+
+                // Update status in Firestore
+                const orderRef = doc(db, "orders", actionOrderId);
+                await updateDoc(orderRef, {
+                    status: 'REJECTED',
+                    paymentStatus: 'REFUND_COMPLETED',
+                    refundId: refundData.refund_id || refundData.id || ''
+                });
+
+                // Trigger Email via Brevo
+                try {
+                    await fetch("https://api.srishambhushaandsons.in/api/email/send", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'REJECT',
+                            email: o.customerEmail || o.email,
+                            name: o.customerName || 'Customer',
+                            orderId: o.id,
+                            amount: o.amount
+                        })
+                    });
+                } catch (mailErr) {
+                    console.error("Mail send failed", mailErr);
+                }
+
+                closeModals();
+                showToast("Order Rejected & Refund Processed. Email Sent.", "success");
+                btn.innerHTML = `Confirm Reject`; btn.disabled = false;
+
+            } catch(e) {
+                console.error(e);
+                btn.innerHTML = `Confirm Reject`; btn.disabled = false;
+                showToast("Failed to process refund: " + e.message, "error");
+            }
+        });
+
+        // --- SHIPMENTS TAB LOGIC ---
+        function renderShipments() {
+            const tbody = document.getElementById('shipments-table-body');
+            const searchInput = document.getElementById('shipment-search');
+            const clearButton = document.getElementById('shipment-search-clear');
+
+            const shippedOrders = globalOrders.filter(o =>
+                ['ACCEPTED', 'SHIPPED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'].includes(o.status)
+            );
+
+            const query = shipmentSearchQuery.trim().toLowerCase();
+
+            const visibleShipments = query
+                ? shippedOrders.filter(o => {
+                    const orderId = String(o.id || '').toLowerCase();
+                    const awb = String(o.awb || '').toLowerCase();
+                    return orderId.includes(query) || awb.includes(query);
+                })
+                : shippedOrders;
+
+            if (searchInput && searchInput.value !== shipmentSearchQuery) {
+                searchInput.value = shipmentSearchQuery;
+            }
+
+            if (clearButton) {
+                clearButton.classList.toggle('hidden', shipmentSearchQuery.length === 0);
+                clearButton.classList.toggle('flex', shipmentSearchQuery.length > 0);
+            }
+
+            if (shippedOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No active shipments found.</td></tr>`;
+                return;
+            }
+
+            if (visibleShipments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-gray-500">No shipment found for "<span class="font-medium">${shipmentSearchQuery.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}</span>".</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = visibleShipments.map(o => `
+                <tr class="hover:bg-gray-50/50">
+                    <td class="py-4 px-4 sm:px-6 font-bold text-sm text-naturalBrown">${o.id}</td>
+                    <td class="py-4 px-4 sm:px-6"><span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded border border-gray-200 text-gray-700">${o.awb || 'Pending Sync'}</span></td>
+                    <td class="py-4 px-4 sm:px-6 text-sm font-semibold text-gray-700">${o.courier || 'Standard'}</td>
+                    <td class="py-4 px-4 sm:px-6">${getStatusBadge(o.status)}</td>
+                    <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
+                        <button onclick="window.printShippingLabel('${o.id}', '${o.shiprocketShipmentId}')" class="text-xs font-bold text-naturalBrown bg-gray-100 hover:bg-gray-200 border border-gray-300 px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none mr-2" title="Print Label"><i class="ph ph-printer"></i> Print Label</button>
+                        <a href="https://shiprocket.co/tracking/${o.awb}" target="_blank" class="text-xs font-bold text-maroon hover:text-white border border-maroon hover:bg-maroon px-3 py-1.5 rounded transition-colors inline-flex items-center gap-1 outline-none" title="Track Live"><i class="ph ph-navigation-arrow"></i> Track Live</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        const shipmentSearchInput = document.getElementById('shipment-search');
+        const shipmentSearchClear = document.getElementById('shipment-search-clear');
+
+        if (shipmentSearchInput) {
+            shipmentSearchInput.addEventListener('input', (e) => {
+                shipmentSearchQuery = e.target.value;
+                renderShipments();
+            });
+
+            shipmentSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    shipmentSearchQuery = '';
+                    renderShipments();
+                    shipmentSearchInput.focus();
+                }
+            });
+        }
+
+        if (shipmentSearchClear) {
+            shipmentSearchClear.addEventListener('click', () => {
+                shipmentSearchQuery = '';
+                renderShipments();
+                shipmentSearchInput?.focus();
+            });
+        }
+        // NEW: Schedule Pickup Function
+        window.schedulePickup = async function(orderId, shipmentId) {
+            if(!shipmentId || shipmentId === 'undefined') {
+                showToast("Shipment ID not found. Cannot schedule pickup.", "error");
+                return;
+            }
+            showToast("Scheduling Pickup...", "info");
+            try {
+                const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/pickup", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    await updateDoc(doc(db, "orders", orderId), { pickupScheduled: true });
+                    showToast("Pickup Scheduled Successfully!", "success");
+                } else {
+                    let errorMsg = data.details?.message || data.error || "Pickup scheduling failed.";
+                    showToast("Shiprocket Error: " + errorMsg, "error");
+                }
+            } catch(e) {
+                showToast("Failed to schedule pickup.", "error");
+            }
+        }
+
+        window.printShippingLabel = async function(orderId, shipmentId) {
+            if(!shipmentId || shipmentId === 'undefined') {
+                showToast("Shipment ID not found. Cannot generate label.", "error");
+                return;
+            }
+
+            const order = globalOrders.find(x => x.id === orderId);
+
+            // Open the label generated during confirmation.
+            if (order?.labelUrl) {
+                window.open(order.labelUrl, '_blank');
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { labelPrinted: true });
+                    order.labelPrinted = true;
+                } catch(e) {
+                    console.warn("Failed to mark label as printed:", e);
+                }
+                return;
+            }
+
+            // Fallback for older orders that do not have a saved label URL.
+            showToast("Generating Label from Shiprocket...", "success");
+            try {
+                const res = await fetch("https://api.srishambhushaandsons.in/api/shiprocket/label", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shipment_id: parseInt(shipmentId) })
+                });
+                const data = await res.json();
+
+                if(data.success && data.label_url) {
+                    window.open(data.label_url, '_blank');
+
+                    await updateDoc(doc(db, "orders", orderId), {
+                        labelPrinted: true,
+                        labelUrl: data.label_url
+                    });
+
+                    if (order) {
+                        order.labelPrinted = true;
+                        order.labelUrl = data.label_url;
+                    }
+                } else {
+                    let errorMsg = data.details?.message || data.error || "Label not generated yet.";
+                    showToast("Shiprocket Error: " + errorMsg, "error");
+                }
+            } catch(e) {
+                showToast("Failed to fetch label.", "error");
+            }
+        }
+
+        window.markAsShipped = async function(id) {
+            try {
+                const orderRef = doc(db, "orders", id);
+                await updateDoc(orderRef, { status: 'SHIPPED' });
+                showToast(`Order moved to Shipments tab!`, "success");
+            } catch(e) { 
+                console.error(e); 
+                showToast("Failed to mark as shipped.", "error");
+            }
+        }
+
+        // --- PRODUCT MANAGEMENT ---
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            if(globalProducts.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 bg-white rounded-xl border border-gray-100">No products available. Click 'Add Product' to create one.</div>`;
+                return;
+            }
+
+            grid.innerHTML = globalProducts.map(p => {
+                return `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group relative">
+                    <!-- Action Buttons: Always visible top-right -->
+                    <div class="absolute top-3 right-3 z-10 flex gap-2">
+                        <button onclick="window.editProduct('${p.id}')" class="bg-blue-500 hover:bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 outline-none" title="Edit"><i class="ph ph-pencil-simple text-lg"></i></button>
+                        <button onclick="window.deleteProduct('${p.id}')" class="bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 outline-none" title="Delete"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                    
+                    <div class="h-48 w-full bg-gray-100 relative">
+                        <img src="${p.img || 'https://placehold.co/400x300/eee/999?text=No+Image'}" alt="Product" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h4 class="font-bold text-lg text-naturalBrown mb-1 pr-16 leading-tight">${p.name}</h4>
+                        <p class="text-xs text-gray-500 mb-4 flex-1">${p.description || p.desc || ''}</p>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                            <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Base (1 Kg)</span>
+                            <span class="text-right"><span class="block font-bold text-maroon text-lg">${p.sellingPrice && p.sellingPrice < (p.basePrice || p.price) ? `₹${p.sellingPrice} <span class="text-sm text-gray-400 line-through">₹${p.basePrice || p.price}</span>` : `₹${p.basePrice || p.price}`}</span></span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        window.editProduct = function(id) {
+            const p = globalProducts.find(x => x.id === id);
+            if(!p) return;
+            
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-price').value = p.basePrice || p.price;
+            document.getElementById('prod-selling-price').value = p.sellingPrice || '';
+            document.getElementById('prod-desc').value = p.description || p.desc;
+            document.getElementById('prod-img-b64').value = p.img || '';
+            
+            if(p.img) {
+                document.getElementById('image-preview').src = p.img;
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('image-preview-container').classList.remove('hidden');
+            } else {
+                clearImagePreview();
+            }
+
+            document.getElementById('product-modal-title').innerText = "Edit Product Details";
+            document.getElementById('btn-save-prod').innerHTML = `<i class="ph ph-pencil-simple text-lg"></i> Update Product`;
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.getElementById('product-modal').classList.add('flex');
+        }
+
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-prod');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Saving...`;
+            btn.disabled = true;
+
+            const editId = document.getElementById('edit-prod-id').value;
+            const name = document.getElementById('prod-name').value.trim();
+            const price = Number(document.getElementById('prod-price').value);
+            const sellingPriceInput = document.getElementById('prod-selling-price').value;
+            const sellingPrice = sellingPriceInput === '' ? null : Number(sellingPriceInput);
+            const desc = document.getElementById('prod-desc').value.trim();
+            const imgBase64 = document.getElementById('prod-img-b64').value;
+
+            if (sellingPrice !== null && (!Number.isFinite(sellingPrice) || sellingPrice <= 0 || sellingPrice > price)) {
+                showToast("Selling price must be greater than 0 and no higher than MRP.", "error");
+                btn.innerHTML = originalText; btn.disabled = false;
+                return;
+            }
+
+            if(!imgBase64) {
+                showToast("Please select an image first.", "error");
+                btn.innerHTML = originalText; btn.disabled = false;
+                return;
+            }
+
+            try {
+                const productData = {
+                    name: name,
+                    basePrice: price,
+                    sellingPrice: sellingPrice,
+                    description: desc,
+                    img: imgBase64,
+                    inStock: true
+                };
+
+                if (editId) {
+                    await updateDoc(doc(db, "products", editId), productData);
+                    showToast("Product updated successfully!", "success");
+                } else {
+                    productData.createdAt = Date.now();
+                    await addDoc(collection(db, "products"), productData);
+                    showToast("Product added successfully to live database!", "success");
+                }
+                
+                closeProductModal();
+            } catch(error) {
+                console.error("Save Product Error:", error);
+                showToast("Error saving product to database.", "error");
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        }
+
+        window.deleteProduct = async function(id) {
+            if(!confirm("Are you sure you want to permanently delete this product?")) return;
+            try {
+                await deleteDoc(doc(db, "products", id));
+                showToast("Product deleted successfully.", "success");
+            } catch(e) {
+                console.error(e);
+                showToast("Failed to delete product.", "error");
+            }
+        }
+
+        // --- GALLERY MANAGEMENT ---
+        function renderAdminGallery() {
+            const grid = document.getElementById('admin-gallery-grid');
+            if(globalGallery.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 bg-white rounded-xl border border-gray-100">No images in gallery. Upload some photos!</div>`;
+                return;
+            }
+
+            grid.innerHTML = globalGallery.map(img => `
+                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-200 h-40">
+                    <img src="${img.url}" class="w-full h-full object-cover">
+                    <!-- Delete button always visible top-right -->
+                    <button onclick="deleteGalleryImage('${img.id}')" class="absolute top-2 right-2 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 shadow-md backdrop-blur-sm transition-transform active:scale-95 outline-none" title="Delete Image">
+                        <i class="ph ph-trash text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.handleGalleryUpload = function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            // Maximum Size 700KB (716,800 bytes)
+            if(file.size > 716800) {
+                showToast("Image size must be less than 700 KB. Please compress and try again.", "error");
+                event.target.value = '';
+                return;
+            }
+
+            document.getElementById('gallery-drop-zone').classList.add('hidden');
+            document.getElementById('gallery-upload-loading').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Str = e.target.result;
+                try {
+                    await addDoc(collection(db, "gallery"), {
+                        url: base64Str,
+                        createdAt: Date.now()
+                    });
+                    showToast("Image added to gallery!", "success");
+                } catch (error) {
+                    console.error("Gallery Upload Error", error);
+                    showToast("Failed to upload image.", "error");
+                } finally {
+                    document.getElementById('gallery-drop-zone').classList.remove('hidden');
+                    document.getElementById('gallery-upload-loading').classList.add('hidden');
+                    event.target.value = '';
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+
+        window.deleteGalleryImage = async function(id) {
+            if(!confirm("Delete this image from the gallery?")) return;
+            try {
+                await deleteDoc(doc(db, "gallery", id));
+                showToast("Image removed.", "success");
+            } catch(e) {
+                showToast("Failed to delete image.", "error");
+            }
+        }
+    </script>
+</body>
+</html>

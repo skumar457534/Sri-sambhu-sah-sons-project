@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Sri Shambhu Sha & Sons</title>
+    <meta name="description" content="Know the story of Sri Shambhu Sha & Sons, serving authentic traditional peda at Baidyanath Dham, Deoghar.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: "#FDFBF7",
+                        maroon: "#7B1818",
+                        golden: "#D4AF37",
+                        saffron: "#F48C06",
+                        naturalBrown: "#5C4033",
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FDFBF7; }
+        ::-webkit-scrollbar-thumb { background: #7B1818; border-radius: 4px; }
+        
+        /* Cart Drawer Animation Styles */
+        .cart-open { transform: translateX(0) !important; }
+        .overlay-open { opacity: 1 !important; visibility: visible !important; }
+    </style>
+<style id="premium-redesign">
+:root{
+  --ivory:#FBF8F1;
+  --ivory-2:#F4EFE4;
+  --paper:#FFFDF8;
+  --coffee:#3B2417;
+  --coffee-2:#5A3925;
+  --brown:#76543B;
+  --gold:#C99A3B;
+  --gold-2:#E5C77B;
+  --line:rgba(104,72,39,.16);
+  --shadow:rgba(68,44,24,.12);
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 8% 8%,rgba(201,154,59,.08),transparent 26%),
+    radial-gradient(circle at 92% 32%,rgba(118,84,59,.055),transparent 24%),
+    linear-gradient(180deg,var(--ivory) 0%,#F7F2E8 42%,var(--ivory-2) 100%) !important;
+  color:var(--coffee) !important;
+  font-family:Inter,sans-serif !important;
+  overflow-x:hidden;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.024;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#EEE7DA}
+::-webkit-scrollbar-thumb{background:linear-gradient(#9A6E2E,#D4AE5A,#9A6E2E);border-radius:999px}
+
+section{position:relative;z-index:1}
+
+/* ===== HEADER ===== */
+header{
+  background:rgba(251,248,241,.78)!important;
+  border-bottom:1px solid rgba(104,72,39,.09)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:0 7px 24px rgba(68,44,24,.035)!important;
+}
+header.scrolled{
+  background:rgba(251,248,241,.95)!important;
+  border-bottom-color:rgba(104,72,39,.15)!important;
+  box-shadow:0 16px 42px rgba(68,44,24,.09)!important;
+}
+header *{border-color:rgba(104,72,39,.11)!important}
+header a,.nav-link{color:#6A5544!important}
+header a:hover,.nav-link:hover,.nav-link.active{color:var(--coffee)!important}
+header .text-maroon{color:var(--coffee)!important}
+header .text-saffron{color:var(--gold)!important}
+header .bg-cream{background:transparent!important}
+header .shadow-sm,header .shadow-md{box-shadow:none!important}
+
+header .rounded-full{
+  background:var(--paper)!important;
+  border-color:rgba(201,154,59,.48)!important;
+  box-shadow:0 0 0 4px rgba(201,154,59,.045),0 7px 18px rgba(68,44,24,.08)!important;
+}
+
+#mobile-menu{
+  background:rgba(251,248,241,.985)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  border-top:1px solid rgba(104,72,39,.10)!important;
+  box-shadow:0 22px 40px rgba(68,44,24,.12)!important;
+}
+#mobile-menu>div{background:transparent!important}
+#mobile-menu a{
+  color:#614A38!important;
+  border-bottom-color:rgba(104,72,39,.09)!important;
+  border-radius:12px!important;
+}
+#mobile-menu a:hover{background:#F1EADD!important;color:var(--coffee)!important}
+#mobile-menu .bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;
+  color:#FFFDF8!important;
+}
+
+/* ===== HERITAGE FLOATING DETAILS ===== */
+.premium-float{
+  position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+}
+.premium-float:before,
+.premium-float:after{
+  content:"";
+  position:absolute;
+  width:260px;height:260px;border:1px solid rgba(201,154,59,.11);
+  border-radius:50%;
+}
+.premium-float:before{top:16%;left:-150px}
+.premium-float:after{right:-160px;bottom:10%}
+.premium-float i{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:rgba(201,154,59,.44);
+  box-shadow:0 0 10px rgba(201,154,59,.24);
+  animation:heritageParticle linear infinite;
+}
+@keyframes heritageParticle{
+  0%{transform:translateY(108vh) translateX(0);opacity:0}
+  12%{opacity:.55}
+  88%{opacity:.34}
+  100%{transform:translateY(-12vh) translateX(55px);opacity:0}
+}
+
+/* ===== HERO ===== */
+#home{
+  margin-top:0!important;
+  min-height:100svh!important;
+  background:#6C5948!important;
+  overflow:hidden;
+}
+#home .slide img{
+  transform:scale(1.045);
+  animation:heritageZoom 15s ease-in-out infinite alternate;
+  filter:saturate(.88) contrast(1.03) brightness(.98);
+}
+@keyframes heritageZoom{
+  from{transform:scale(1.045)}
+  to{transform:scale(1.11)}
+}
+#home .slide>div:first-child{
+  background:
+    linear-gradient(90deg,rgba(29,17,9,.68) 0%,rgba(29,17,9,.30) 44%,rgba(29,17,9,.10) 72%,rgba(29,17,9,.28) 100%)!important;
+}
+#home .slide:nth-child(2)>div:first-child{
+  background:
+    linear-gradient(90deg,rgba(29,17,9,.60) 0%,rgba(29,17,9,.28) 45%,rgba(29,17,9,.10) 74%,rgba(29,17,9,.24) 100%)!important;
+}
+#home h1{
+  color:#FFF9EE!important;
+  text-shadow:0 14px 36px rgba(26,14,7,.24)!important;
+  letter-spacing:-.035em!important;
+}
+#home h1 .text-golden{color:var(--gold-2)!important}
+#home p{color:rgba(255,250,240,.90)!important}
+#home .pt-16{padding-top:4rem!important}
+#home .text-golden{color:var(--gold-2)!important}
+#home button{
+  border-radius:13px!important;
+  border:1px solid rgba(229,199,123,.35)!important;
+  transition:transform .25s ease,box-shadow .25s ease,background .25s ease!important;
+}
+#home button:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:0 16px 36px rgba(26,14,7,.20)!important;
+}
+#home .bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;
+  color:#FFFDF8!important;
+}
+#home .bg-black\/20{
+  background:rgba(57,34,18,.29)!important;
+  border:1px solid rgba(255,245,225,.18)!important;
+  backdrop-filter:blur(12px)!important;
+}
+#home .bg-black\/20 .text-golden{color:var(--gold-2)!important}
+
+/* elegant hero content entrance */
+#home h1{animation:heroTitleIn .85s cubic-bezier(.22,.8,.25,1) both}
+#home p{animation:heroCopyIn .95s .08s cubic-bezier(.22,.8,.25,1) both}
+#home .bg-maroon{animation:heroBtnIn 1s .15s cubic-bezier(.22,.8,.25,1) both}
+@keyframes heroTitleIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes heroCopyIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes heroBtnIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ===== GOLD MARQUEE ===== */
+.hero-marquee{
+  overflow:hidden;
+  border-top:1px solid rgba(201,154,59,.18);
+  border-bottom:1px solid rgba(201,154,59,.18);
+  background:#4A2C1C;
+}
+.hero-marquee-track{
+  display:flex;gap:3.5rem;width:max-content;
+  padding:.8rem 0;
+  animation:marquee 28s linear infinite;
+}
+.hero-marquee span{
+  color:#F1D99A;
+  font-size:10px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
+  white-space:nowrap;
+}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ===== SECTION TITLES ===== */
+.section-kicker{
+  color:#A87525!important;
+  letter-spacing:.27em!important;
+}
+section h2,section h3{color:var(--coffee)!important}
+section h2.font-serif,section h3.font-serif,footer h4.font-serif{
+  font-family:"Playfair Display",serif!important;
+}
+.section-rule{
+  width:74px!important;height:2px!important;
+  background:linear-gradient(90deg,transparent,#C99A3B,transparent)!important;
+}
+
+/* ===== PRODUCT AREA ===== */
+#products{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,154,59,.05),transparent 27%),
+    linear-gradient(180deg,#FAF7EF,#F2EBDF)!important;
+  border-color:var(--line)!important;
+}
+#home-product-grid>div{
+  background:linear-gradient(180deg,#FFFDF9,#F8F3EA)!important;
+  border:1px solid rgba(104,72,39,.11)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 40px rgba(68,44,24,.07)!important;
+  transition:transform .42s cubic-bezier(.2,.7,.2,1),box-shadow .42s,border-color .42s!important;
+  overflow:hidden;
+}
+#home-product-grid>div:hover{
+  transform:translateY(-9px)!important;
+  border-color:rgba(201,154,59,.38)!important;
+  box-shadow:0 26px 58px rgba(68,44,24,.12),0 0 0 1px rgba(201,154,59,.05)!important;
+}
+#home-product-grid img{
+  transition:transform .75s cubic-bezier(.22,.61,.36,1),filter .5s ease!important;
+  filter:saturate(.96);
+}
+#home-product-grid>div:hover img{transform:scale(1.07);filter:saturate(1.04)}
+#home-product-grid .bg-gray-100{background:#E9E0D2!important}
+#home-product-grid .bg-cream{background:#F7F1E6!important}
+#home-product-grid .text-naturalBrown{color:var(--coffee)!important}
+#home-product-grid .text-maroon{color:#6A4127!important}
+#home-product-grid button.bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;
+  color:#FFFDF8!important;
+}
+#home-product-grid button.bg-maroon:hover{
+  background:linear-gradient(110deg,#623B25,#7C4D2F)!important;
+}
+#home-product-grid .text-xs{color:#7D6855!important}
+
+/* ===== GALLERY / TRACK ===== */
+section.py-20.bg-white,section.py-20.bg-cream,section.py-24.bg-white{
+  background:linear-gradient(180deg,#FFFDF9,#F2EBDF)!important;
+  border-color:var(--line)!important;
+}
+section a.border-maroon{
+  border-color:rgba(201,154,59,.42)!important;
+  color:#5A3925!important;
+  background:#FFFDF9!important;
+  border-radius:13px!important;
+  box-shadow:0 8px 22px rgba(68,44,24,.055)!important;
+}
+section a.border-maroon:hover{
+  background:#5A3925!important;
+  color:#FFFDF8!important;
+  border-color:#5A3925!important;
+}
+section p.text-gray-600{color:#756252!important}
+
+/* ===== CART ===== */
+#cart-overlay{background:rgba(48,29,17,.42)!important}
+#cart-drawer{
+  background:#FBF7EF!important;
+  border-left:1px solid rgba(104,72,39,.14)!important;
+}
+#cart-drawer .bg-white{
+  background:#FFFDF9!important;
+}
+#cart-drawer .border-golden\/20{border-color:rgba(104,72,39,.12)!important}
+#cart-drawer #checkout-btn{
+  background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;
+  color:#FFFDF8!important;
+  border-radius:13px!important;
+}
+#cart-items>div{
+  background:#F7F1E7!important;
+  border-color:rgba(104,72,39,.10)!important;
+  border-radius:16px!important;
+}
+#cart-items .text-naturalBrown{color:var(--coffee)!important}
+#cart-items .text-maroon{color:#6A4127!important}
+
+/* ===== MODAL ===== */
+#guest-checkout-modal{background:rgba(48,29,17,.50)!important}
+#guest-checkout-modal>div{
+  background:#FFFDF9!important;
+  border-color:rgba(201,154,59,.25)!important;
+  border-radius:24px!important;
+}
+#guest-checkout-modal .bg-orange-50{background:#F6EEDD!important}
+#guest-checkout-modal a.bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;
+}
+#guest-checkout-modal a.bg-white{
+  background:#F7F1E7!important;
+  color:#5A3925!important;
+  border-color:rgba(104,72,39,.13)!important;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+
+/* ===== MAP BUTTON ===== */
+.fixed.bottom-6.right-6,.fixed.bottom-5.right-5{
+  background:rgba(255,253,249,.94)!important;
+  border:1px solid rgba(201,154,59,.26)!important;
+  backdrop-filter:blur(12px)!important;
+  box-shadow:0 12px 28px rgba(68,44,24,.13)!important;
+}
+
+/* ===== SCROLL REVEALS ===== */
+.reveal-premium{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .8s ease,transform .8s ease;
+}
+.reveal-premium.is-visible{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+/* ===== MOBILE POLISH ===== */
+@media(max-width:1023px){
+  #home .slide>div:first-child{
+    background:
+      linear-gradient(180deg,rgba(29,17,9,.14) 0%,rgba(29,17,9,.09) 44%,rgba(29,17,9,.44) 100%)!important;
+  }
+  #home .slide:nth-child(2)>div:first-child{
+    background:
+      linear-gradient(180deg,rgba(29,17,9,.12) 0%,rgba(29,17,9,.07) 44%,rgba(29,17,9,.40) 100%)!important;
+  }
+  #home h1{
+    font-size:2.72rem!important;
+    line-height:1.02!important;
+  }
+  #home{min-height:94svh!important}
+}
+@media(max-width:640px){
+  header .rounded-full{
+    box-shadow:0 0 0 3px rgba(201,154,59,.05),0 5px 12px rgba(68,44,24,.07)!important;
+  }
+  #home .slide img{filter:saturate(.94) contrast(1.02) brightness(1.03)}
+  #home .slide>div:first-child{
+    background:
+      linear-gradient(180deg,rgba(29,17,9,.10) 0%,rgba(29,17,9,.05) 42%,rgba(29,17,9,.36) 100%)!important;
+  }
+  #home .slide:nth-child(2)>div:first-child{
+    background:
+      linear-gradient(180deg,rgba(29,17,9,.08) 0%,rgba(29,17,9,.04) 42%,rgba(29,17,9,.33) 100%)!important;
+  }
+  #home .bg-black\/20{
+    background:rgba(73,45,25,.20)!important;
+  }
+}
+</style>
+<style id="absolute-final-ui-fix">
+/* =========================================================
+   CART BADGE — explicit styling; do not inherit logo circle
+   ========================================================= */
+header #cart-badge{
+  position:absolute!important;
+  top:-1px!important;
+  right:-1px!important;
+  z-index:20!important;
+  width:20px!important;
+  min-width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  padding:0!important;
+  border-radius:9999px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#6A4127!important;
+  color:#FFFDF8!important;
+  border:1.5px solid #D8B15C!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  opacity:1!important;
+  visibility:visible!important;
+  box-shadow:0 3px 10px rgba(59,36,23,.18)!important;
+  transform:none!important;
+}
+header #cart-badge.hidden{
+  display:none!important;
+}
+/* Prevent the generic rounded-full/logo rule from touching the cart badge. */
+header #cart-badge.rounded-full{
+  background:#6A4127!important;
+  color:#FFFDF8!important;
+}
+
+/* =========================================================
+   MOBILE MENU — hidden by default, animated ONLY when open
+   ========================================================= */
+@media(max-width:1023px){
+  #mobile-menu{
+    /* IMPORTANT: no display:block here — Tailwind .hidden must work */
+    background:#FBF8F1!important;
+    background-image:linear-gradient(180deg,#FFFDF8 0%,#F8F2E8 58%,#F1E8DA 100%)!important;
+    color:#3B2417!important;
+    opacity:1!important;
+    visibility:visible!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    border-top:1px solid rgba(201,154,59,.18)!important;
+    border-bottom:1px solid rgba(104,72,39,.12)!important;
+    box-shadow:0 20px 42px rgba(67,45,26,.14)!important;
+    transform-origin:top center;
+    isolation:isolate;
+    z-index:999!important;
+  }
+
+  #mobile-menu.hidden{
+    display:none!important;
+  }
+
+  #mobile-menu:not(.hidden){
+    display:block!important;
+    animation:mobileMenuReveal .36s cubic-bezier(.22,.78,.22,1) both!important;
+  }
+
+  #mobile-menu::before{
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    background:
+      radial-gradient(circle at 92% 8%,rgba(201,154,59,.11),transparent 26%),
+      radial-gradient(circle at 8% 90%,rgba(118,84,59,.055),transparent 24%)!important;
+    z-index:-1!important;
+    pointer-events:none!important;
+  }
+
+  #mobile-menu>div{
+    position:relative!important;
+    z-index:2!important;
+    background:transparent!important;
+  }
+
+  #mobile-menu .mobile-link{
+    opacity:1!important;
+    transform:none!important;
+  }
+
+  #mobile-menu:not(.hidden) .mobile-link{
+    animation:mobileMenuItem .42s cubic-bezier(.22,.78,.22,1) both!important;
+  }
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(1){animation-delay:.03s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(2){animation-delay:.065s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(3){animation-delay:.10s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(4){animation-delay:.135s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(5){animation-delay:.17s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(6){animation-delay:.205s!important}
+  #mobile-menu:not(.hidden) .mobile-link:nth-child(7){animation-delay:.24s!important}
+
+  #mobile-menu a{
+    color:#614A38!important;
+    background:transparent!important;
+    border-bottom-color:rgba(104,72,39,.08)!important;
+    border-radius:12px!important;
+    transition:background .22s ease,color .22s ease,transform .22s ease,box-shadow .22s ease!important;
+  }
+  #mobile-menu a:hover{
+    background:rgba(201,154,59,.08)!important;
+    color:#3B2417!important;
+    transform:translateX(3px)!important;
+  }
+  #mobile-menu a.bg-maroon{
+    background:linear-gradient(110deg,#4B2B1B,#6A4127)!important;
+    color:#FFFDF8!important;
+  }
+}
+
+@keyframes mobileMenuReveal{
+  0%{opacity:0;transform:translateY(-13px) scaleY(.92)}
+  70%{opacity:1;transform:translateY(2px) scaleY(1.01)}
+  100%{opacity:1;transform:translateY(0) scaleY(1)}
+}
+@keyframes mobileMenuItem{
+  0%{opacity:0;transform:translateX(-9px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #mobile-menu:not(.hidden),
+  #mobile-menu:not(.hidden) .mobile-link{
+    animation:none!important;
+    transform:none!important;
+  }
+}
+</style>
+
+<style id="about-page-premium">
+/* ===== ABOUT PAGE — MATCH INDEX THEME ===== */
+body{
+  min-height:100vh;
+}
+header{
+  transition:background .3s ease,border-color .3s ease,box-shadow .3s ease!important;
+}
+header .text-maroon,
+header .text-naturalBrown,
+header .text-saffron{color:var(--coffee)!important}
+header .text-golden{color:var(--gold)!important}
+header .border-maroon,
+header .border-golden\/20{border-color:rgba(201,154,59,.30)!important}
+
+/* About hero */
+section.pt-32.pb-16.bg-maroon{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(229,199,123,.16),transparent 28%),
+    radial-gradient(circle at 88% 80%,rgba(118,84,59,.16),transparent 24%),
+    linear-gradient(135deg,#4A2C1C 0%,#3B2417 55%,#5A3925 100%)!important;
+  border-bottom:1px solid rgba(201,154,59,.20);
+}
+section.pt-32.pb-16.bg-maroon .text-golden{
+  color:#E5C77B!important;
+  letter-spacing:.28em!important;
+}
+section.pt-32.pb-16.bg-maroon h1{
+  color:#FFF9EE!important;
+  letter-spacing:-.035em!important;
+  text-shadow:0 12px 30px rgba(26,14,7,.22)!important;
+}
+section.pt-32.pb-16.bg-maroon .bg-saffron{
+  background:linear-gradient(90deg,transparent,#E5C77B,transparent)!important;
+}
+
+/* Story */
+section.py-16.md\:py-24.bg-white{
+  background:
+    radial-gradient(circle at 7% 15%,rgba(201,154,59,.055),transparent 25%),
+    linear-gradient(180deg,#FFFDF9 0%,#F6F0E6 100%)!important;
+}
+section.py-16.md\:py-24.bg-white .border-4.border-cream{
+  border-color:#EFE6D8!important;
+  box-shadow:0 22px 55px rgba(68,44,24,.13)!important;
+}
+section.py-16.md\:py-24.bg-white img{
+  filter:saturate(.96) contrast(1.02)!important;
+}
+section.py-16.md\:py-24.bg-white .bg-maroon\/10{
+  background:rgba(106,65,39,.08)!important;
+}
+section.py-16.md\:py-24.bg-white .bg-cream{
+  background:linear-gradient(145deg,#FFFDF8,#F1E8DA)!important;
+}
+section.py-16.md\:py-24.bg-white .border-golden{
+  border-color:#C99A3B!important;
+}
+section.py-16.md\:py-24.bg-white .text-saffron{
+  color:#A87525!important;
+}
+section.py-16.md\:py-24.bg-white .text-maroon{
+  color:#6A4127!important;
+}
+section.py-16.md\:py-24.bg-white h2{
+  color:var(--coffee)!important;
+}
+section.py-16.md\:py-24.bg-white h2 .text-maroon{
+  color:#A87525!important;
+}
+section.py-16.md\:py-24.bg-white .text-gray-600{
+  color:#756252!important;
+}
+section.py-16.md\:py-24.bg-white .border-l-4{
+  border-left-color:#C99A3B!important;
+  background:linear-gradient(135deg,#FFFDF8,#F6EFE3)!important;
+  box-shadow:0 12px 30px rgba(68,44,24,.07)!important;
+}
+section.py-16.md\:py-24.bg-white .border-l-4 h4{
+  color:#6A4127!important;
+}
+
+/* Why section + cards */
+section.py-16.bg-cream{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,154,59,.05),transparent 28%),
+    linear-gradient(180deg,#F7F2E8,#EEE6D8)!important;
+  border-top-color:rgba(104,72,39,.12)!important;
+}
+section.py-16.bg-cream .bg-white{
+  background:linear-gradient(180deg,#FFFDF9,#F8F2E9)!important;
+  border-color:rgba(104,72,39,.10)!important;
+  border-radius:20px!important;
+  box-shadow:0 14px 38px rgba(68,44,24,.07)!important;
+  transition:transform .38s cubic-bezier(.2,.7,.2,1),box-shadow .38s,border-color .38s!important;
+}
+section.py-16.bg-cream .bg-white:hover{
+  transform:translateY(-8px)!important;
+  border-color:rgba(201,154,59,.36)!important;
+  box-shadow:0 25px 52px rgba(68,44,24,.11)!important;
+}
+section.py-16.bg-cream .bg-cream{
+  background:#F4EBDD!important;
+  border-color:rgba(201,154,59,.30)!important;
+}
+section.py-16.bg-cream .text-maroon{
+  color:#6A4127!important;
+}
+section.py-16.bg-cream .text-gray-600{
+  color:#756252!important;
+}
+section.py-16.bg-cream h2,section.py-16.bg-cream h3{
+  color:var(--coffee)!important;
+}
+
+/* CTA */
+section.py-16.bg-white.text-center{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(201,154,59,.06),transparent 30%),
+    linear-gradient(180deg,#FFFDF9,#F4EEE4)!important;
+  border-top-color:rgba(104,72,39,.10)!important;
+}
+section.py-16.bg-white.text-center h2{color:var(--coffee)!important}
+section.py-16.bg-white.text-center a.bg-maroon{
+  background:linear-gradient(110deg,#4B2B1B,#C99A3B,#6A4127)!important;
+  color:#FFFDF8!important;
+  border:1px solid rgba(229,199,123,.28)!important;
+  border-radius:13px!important;
+  box-shadow:0 12px 28px rgba(68,44,24,.13)!important;
+}
+section.py-16.bg-white.text-center a.bg-maroon:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 34px rgba(68,44,24,.17)!important;
+}
+
+/* Footer */
+footer{
+  background:#3B2417!important;
+  border-top:4px solid #C99A3B!important;
+}
+footer .text-golden{color:#E6C87A!important}
+footer .text-cream\/80{color:rgba(255,248,235,.72)!important}
+footer .border-cream\/20{border-color:rgba(255,248,235,.16)!important}
+footer a:hover{color:#F2D997!important}
+
+/* Map floating button */
+.fixed.bottom-6.right-6,.fixed.bottom-5.right-5{
+  background:rgba(255,253,249,.94)!important;
+  border:1px solid rgba(201,154,59,.28)!important;
+  backdrop-filter:blur(12px)!important;
+  box-shadow:0 12px 28px rgba(68,44,24,.13)!important;
+}
+
+/* Subtle about page reveal */
+.about-premium-reveal{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity .75s ease,transform .75s ease;
+}
+.about-premium-reveal.is-visible{opacity:1;transform:none}
+
+@media (max-width:1023px){
+  section.pt-32.pb-16.bg-maroon{
+    padding-top:7.25rem!important;
+    padding-bottom:4rem!important;
+  }
+  section.pt-32.pb-16.bg-maroon h1{
+    font-size:2.55rem!important;
+    line-height:1.05!important;
+  }
+}
+@media (max-width:640px){
+  section.pt-32.pb-16.bg-maroon{
+    padding-top:7rem!important;
+    padding-bottom:3.2rem!important;
+  }
+  section.pt-32.pb-16.bg-maroon h1{
+    font-size:2.2rem!important;
+  }
+}
+</style>
+
+
+<style id="footer-only-animation">
+/* FOOTER ANIMATION ONLY — soft fade, no upward movement */
+footer{
+  opacity:0;
+  transition:opacity 1.1s cubic-bezier(.16,1,.3,1);
+  will-change:opacity;
+}
+footer.footer-visible{
+  opacity:1;
+}
+footer .flex.space-x-4 a{
+  transition:transform .3s cubic-bezier(.22,.8,.25,1),background-color .3s ease;
+}
+footer .flex.space-x-4 a:hover{
+  transform:translate3d(0,-4px,0) scale(1.06);
+}
+@media(prefers-reduced-motion:reduce){
+  footer{
+    opacity:1!important;
+    transition:none!important;
+  }
+}
+</style>
+
+</head>
+<body class="bg-cream text-naturalBrown font-sans antialiased overflow-x-hidden">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="fixed w-full top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-golden/20 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Brand -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shadow-[0_0_10px_rgba(212,175,55,0.3)] border-2 border-golden/80 relative flex-shrink-0 bg-cream">
+                        <img src="images/icon.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/7B1818/FDFBF7?text=S'">
+                    </div>
+                    <a href="index.html" class="flex flex-col">
+                        <span class="font-serif font-bold text-lg md:text-2xl text-maroon leading-tight tracking-tight">Sri Shambhu Sha <span class="text-xl md:text-2xl text-golden">&amp;</span> Sons</span>
+                        <span class="text-[10px] md:text-xs text-saffron tracking-widest font-semibold uppercase" style="color:#C99A3B!important;">Deoghar</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden lg:flex space-x-6 items-center text-sm xl:text-base">
+                    <a href="index.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Home</a>
+                    <a href="#" class="text-maroon font-bold border-b-2 border-maroon transition-colors">About Us</a>
+                    <a href="our_peda.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Our Peda</a>
+                    <a href="gallery.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Gallery</a>
+                    <a href="track_order.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Track Order</a>
+                    <a href="faq.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">FAQ</a>
+                    <a href="contact_us.html" class="text-naturalBrown hover:text-maroon font-medium transition-colors">Contact Us</a>
+                    <!-- Dynamic Auth Link Desktop -->
+                    <span id="auth-link-desk" class="pl-2 border-l border-gray-300">
+                        <i class="ph ph-spinner-gap animate-spin text-maroon"></i>
+                    </span>
+                </nav>
+
+                <!-- Actions (Cart & Mobile Toggle ONLY) -->
+                <div class="flex items-center space-x-2 md:space-x-4">
+                    <button onclick="toggleCart()" class="relative text-maroon hover:text-saffron transition-colors p-2" aria-label="Cart">
+                        <i class="ph ph-shopping-cart text-2xl"></i>
+                        <span id="cart-badge" class="absolute top-0 right-0 bg-saffron text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="lg:hidden text-maroon p-2">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-cream border-t border-golden/20 absolute w-full shadow-xl max-h-[80vh] overflow-y-auto">
+            <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
+                <a href="index.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Home</a>
+                <a href="#" class="mobile-link block px-3 py-3 text-base font-medium text-cream bg-maroon rounded-md border-b border-gray-100">About Us</a>
+                <a href="our_peda.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Our Peda</a>
+                <a href="gallery.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Gallery</a>
+                <a href="track_order.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Track Order</a>
+                <a href="faq.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">FAQ</a>
+                <a href="contact_us.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Contact Us</a>
+                <!-- Dynamic Auth Link Mobile -->
+                <div id="auth-link-mob" class="mt-2 pt-2 border-t border-gray-200">
+                    <span class="block px-3 py-3 text-sm text-gray-500">Checking auth...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SHOPPING CART DRAWER -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 z-[90] opacity-0 invisible transition-all duration-300 backdrop-blur-sm"></div>
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[100] w-full sm:w-[400px] bg-cream shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="flex items-center justify-between p-5 border-b border-golden/20 bg-white">
+            <h2 class="text-xl font-serif font-bold text-maroon flex items-center gap-2">
+                <i class="ph-fill ph-shopping-bag text-2xl"></i> Your Cart
+            </h2>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-maroon transition-colors p-1 rounded-full hover:bg-gray-100">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <!-- Items injected by JS -->
+        </div>
+        <div class="p-5 border-t border-golden/20 bg-white shadow-[0_-4px_15px_rgba(0,0,0,0.02)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">Subtotal</span>
+                <span id="cart-subtotal" class="text-xl font-bold text-naturalBrown">₹0</span>
+            </div>
+            <p class="text-xs text-gray-500 mb-4 text-center">Shipping calculated at checkout.</p>
+            <button onclick="window.proceedToCheckoutFlow()" id="checkout-btn" class="w-full bg-maroon text-cream py-3.5 rounded-lg font-bold text-lg hover:bg-maroon/90 transition-colors shadow-md flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                Proceed to Checkout <i class="ph ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- GUEST CHECKOUT WARNING MODAL -->
+    <div id="guest-checkout-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-center p-6 border-t-4 border-maroon">
+            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-user-circle text-4xl text-saffron"></i>
+            </div>
+            <h3 class="font-serif font-bold text-naturalBrown text-2xl mb-2">Login Required?</h3>
+            <p class="text-sm text-gray-600 mb-4 leading-relaxed">You are not logged in. Creating an account allows you to track your live order history and manage addresses easily.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 text-gray-700 text-xs p-3 rounded-lg mb-6 text-left shadow-sm">
+                <strong><i class="ph-fill ph-warning-circle text-saffron"></i> Note:</strong> If you proceed without signing up, you will <span class="font-bold text-maroon">not</span> be able to see your order history in a dashboard later (though you will receive email updates).
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <a href="login.html?redirect=checkout.html" class="w-full bg-maroon text-cream px-4 py-3 rounded-lg font-bold hover:bg-maroon/90 shadow-md transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-sign-in"></i> Login / Signup Now
+                </a>
+                <a href="checkout.html" class="w-full bg-white border-2 border-gray-200 text-gray-600 px-4 py-3 rounded-lg font-bold hover:bg-gray-50 hover:border-gray-300 transition-colors">
+                    Order Without Signup (Guest)
+                </a>
+                <button onclick="closeGuestModal()" class="mt-2 text-sm text-gray-400 hover:text-maroon underline transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT US HERO BANNER -->
+    <section class="relative pt-32 pb-16 bg-maroon overflow-hidden about-premium-reveal">
+        <div class="absolute inset-0 opacity-10">
+            <div class="w-full h-full" style="background-image: radial-gradient(#FDFBF7 1px, transparent 1px); background-size: 20px 20px;"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span class="text-golden font-bold tracking-widest uppercase text-sm mb-3 block">Our Heritage</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl text-cream font-serif font-bold mb-4">The Story of Tradition</h1>
+            <div class="w-24 h-1 bg-saffron mx-auto rounded"></div>
+        </div>
+    </section>
+
+    <!-- MAIN STORY SECTION -->
+    <section class="py-16 md:py-24 bg-white relative about-premium-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                
+                <!-- Left Side: Image (Loaded from GitHub repo path) -->
+                <div class="w-full lg:w-1/2 relative">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-cream">
+                        <div class="absolute inset-0 bg-maroon/10 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                        <img src="images/aboutimage.jpg" alt="Making Traditional Peda" onerror="this.src='https://placehold.co/800x500/7B1818/FDFBF7?text=Sri+Shambhu+Sha+%26+Sons'" class="w-full h-[400px] md:h-[500px] object-cover hover:scale-105 transition-transform duration-700" />
+                    </div>
+                    <div class="absolute -bottom-6 -right-2 md:-right-6 bg-cream border-2 border-golden p-4 rounded-full shadow-xl z-20 flex flex-col items-center justify-center w-28 h-28 md:w-32 md:h-32 transform rotate-12 hover:rotate-0 transition-transform">
+                        <i class="ph-fill ph-seal-check text-saffron text-3xl md:text-4xl mb-1"></i>
+                        <span class="text-maroon font-bold text-xs md:text-sm text-center leading-tight">100%<br/>Shuddh</span>
+                    </div>
+                </div>
+
+                <!-- Right Side: Content -->
+                <div class="w-full lg:w-1/2 flex flex-col justify-center">
+                    <h2 class="text-3xl md:text-4xl font-serif font-bold text-naturalBrown mb-6 leading-tight">
+                        Serving the Taste of <span class="text-maroon">Baidyanath Dham</span> Since Generations
+                    </h2>
+                    
+                    <div class="space-y-4 text-gray-600 text-base md:text-lg mb-8 leading-relaxed">
+                        <p>
+                            Welcome to <strong>Sri Shambhu Sha & Sons</strong>. Located at the sacred <strong>Shop No. 01</strong> East Door of the Temple in Deoghar and <strong>Shop No. 02</strong> Bara Bazar, Baidyanath Dham in Deoghar, we have dedicated ourselves to preserving the authentic taste of traditional Baba Dham Peda.
+                        </p>
+                        <p>
+                            Our pedas are not just sweets; they are an emotion, a prasad, and a symbol of purity. Made daily with the finest quality khoya (milk solids), rich sugar, and a touch of traditional cardamom, every bite connects you to the spiritual essence of Baidyanath Dham.
+                        </p>
+                        <p>
+                            What started as a humble offering for devotees has now become a trusted name. We take pride in our handmade process, ensuring that no artificial preservatives touch our products. 
+                        </p>
+                    </div>
+
+                    <!-- Quality Box -->
+                    <div class="bg-cream border-l-4 border-maroon p-5 rounded-r-lg shadow-sm">
+                        <h4 class="font-serif font-bold text-maroon text-lg mb-1">Premium Quality Guarantee</h4>
+                        <p class="text-sm text-naturalBrown">Every batch is prepared with utmost hygiene and devotion, packed securely to deliver the freshness straight from our kitchen to your doorstep anywhere in India.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY CHOOSE US -->
+    <section class="py-16 bg-cream border-t border-golden/10 about-premium-reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-3xl font-serif font-bold text-naturalBrown mb-4">Why We Are Special</h2>
+                <div class="w-16 h-1 bg-saffron mx-auto rounded"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center group hover:shadow-md transition-shadow border border-gray-100">
+                    <div class="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-golden/30 shadow-sm">
+                        <i class="ph ph-hands-praying text-3xl text-maroon"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Spiritual Roots</h3>
+                    <p class="text-gray-600 text-sm md:text-base">Prepared right at the heart of Deoghar, carrying the traditional blessings and pure taste.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center group hover:shadow-md transition-shadow border border-gray-100">
+                    <div class="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-golden/30 shadow-sm">
+                        <i class="ph ph-drop text-3xl text-maroon"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Shuddh & Fresh</h3>
+                    <p class="text-gray-600 text-sm md:text-base">Made daily with pure milk and khoya. No artificial colors or preservatives, just traditional goodness.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm text-center group hover:shadow-md transition-shadow border border-gray-100">
+                    <div class="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-golden/30 shadow-sm">
+                        <i class="ph ph-package text-3xl text-maroon"></i>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold text-naturalBrown mb-3">Safe Delivery</h3>
+                    <p class="text-gray-600 text-sm md:text-base">Premium, hygienic packaging ensures your peda reaches you fresh and intact, anywhere in India.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="py-16 bg-white text-center border-t border-gray-100 about-premium-reveal">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold text-naturalBrown mb-6">Ready to taste the purity?</h2>
+        <a href="our_peda.html" class="inline-flex items-center gap-2 bg-maroon hover:bg-maroon/90 text-cream px-8 py-4 rounded-md font-semibold text-lg transition-all shadow-[0_4px_14px_0_rgba(123,24,24,0.39)]">
+            <i class="ph ph-shopping-bag text-xl"></i> Explore Our Menu
+        </a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-naturalBrown text-cream pt-12 pb-8 border-t-[6px] border-maroon">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-8 text-center md:text-left">
+                <!-- Brand Info -->
+                <div class="max-w-md">
+                    <h4 class="font-serif font-bold text-2xl text-golden mb-3">Sri Shambhu Sha & Sons</h4>
+                    <p class="text-cream/80 text-sm mb-4 leading-relaxed">Pure Peda Shop. Serving the authentic taste of Baba Baidyanath Dham straight to your home.</p>
+                    <div class="flex space-x-4 justify-center md:justify-start">
+                        <a href="https://www.instagram.com/shri_shambhu_sha_and_sons?igsi=MXVxYm9mOGIyc3Fieg==" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-instagram-logo text-xl"></i></a>
+                        <a href="https://www.facebook.com/share/1CRMup3fgu/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-saffron transition-colors"><i class="ph ph-facebook-logo text-xl"></i></a>
+                    </div>
+                </div>
+
+                <!-- Policies -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Policies</h4>
+                    <ul class="space-y-2 text-sm text-cream/80">
+                        <li><a href="privacy_policy.html" class="hover:text-golden transition-colors">Privacy Policy</a></li>
+                        <li><a href="return_policy.html" class="hover:text-golden transition-colors">Return & Refund Policy</a></li>
+                        <li><a href="terms.html" class="hover:text-golden transition-colors">Terms & Conditions</a></li>
+                        <li><a href="shipping_policy.html" class="hover:text-golden transition-colors">Shipping Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info (Single WhatsApp Number Only) -->
+                <div>
+                    <h4 class="font-serif font-bold text-xl mb-4 text-golden">Contact Support</h4>
+                    <ul class="space-y-4 text-sm text-cream/80">
+                        <li class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 max-w-xs">
+                            <i class="ph ph-map-pin text-golden text-xl flex-shrink-0"></i>
+                            <div>
+    <strong>Shop No. 01</strong><br>
+    <span>East Door of the Temple in Deoghar, Jharkhand 814112, India</span><br><br>
+
+    <strong>Shop No. 02</strong><br>
+    <span>Bara Bazar, Baidyanath Dham in Deoghar, Jharkhand 814112, India</span>
+</div>
+                        </li>
+                        <li class="flex flex-col md:flex-row items-center gap-2 md:gap-3 mt-4">
+                            <i class="ph ph-whatsapp-logo text-green-500 text-2xl flex-shrink-0"></i>
+                            <a href="https://wa.me/917295021513" target="_blank" rel="noopener noreferrer" class="font-bold text-xl text-cream hover:text-golden transition-colors block">+91 7295021513</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-cream/20 pt-6 text-center text-sm text-cream/60 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>© 2026 Sri Shambhu Sha & Sons. All Rights Reserved.</p>
+                <p>Regd. No.: 3271313</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FLOATING MAP / VISIT SHOP BUTTON -->
+    <a href="https://maps.app.goo.gl/yYWQamBuURmRLsgS8" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_15px_rgba(0,0,0,0.15)] border border-gray-100" aria-label="Visit Our Shop">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Google_Maps_icon_%282020%29.svg" alt="Google Maps" class="w-9 h-9" />
+        <span class="absolute right-16 bg-white text-naturalBrown text-sm font-semibold py-2 px-4 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block w-max border border-gray-100">
+            Visit Our Shop
+        </span>
+    </a>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- Mobile Menu Logic ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        const menuIcon = mobileMenuBtn.querySelector('i');
+
+        function closeMobileMenu() {
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('ph-x');
+                menuIcon.classList.add('ph-list');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            mobileMenu.classList.toggle('hidden');
+            if(mobileMenu.classList.contains('hidden')) {
+                menuIcon.classList.remove('ph-x'); menuIcon.classList.add('ph-list');
+            } else {
+                menuIcon.classList.remove('ph-list'); menuIcon.classList.add('ph-x');
+            }
+        });
+
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
+        });
+
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            closeMobileMenu(); 
+            if (window.scrollY > 20) header.classList.add('shadow-md');
+            else header.classList.remove('shadow-md');
+        });
+
+        // --- Cart Drawer Toggle ---
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            drawer.classList.toggle('cart-open');
+            overlay.classList.toggle('overlay-open');
+        }
+
+        function closeGuestModal() {
+            document.getElementById('guest-checkout-modal').classList.add('hidden');
+            document.getElementById('guest-checkout-modal').classList.remove('flex');
+        }
+
+        // --- Dynamic Cart Rendering from LocalStorage ---
+        let cart = JSON.parse(localStorage.getItem('shriShambhuCart')) || [];
+
+        function saveCart() {
+            localStorage.setItem('shriShambhuCart', JSON.stringify(cart));
+            renderCartUI();
+        }
+
+        function renderCartUI() {
+            const itemsContainer = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const badgeEl = document.getElementById('cart-badge');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            let subtotal = 0;
+            let totalItems = 0;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10">
+                        <i class="ph ph-shopping-cart text-6xl mb-4 opacity-50"></i>
+                        <p class="font-medium text-lg">Your cart is empty</p>
+                    </div>`;
+                subtotalEl.innerText = '₹0';
+                badgeEl.classList.add('hidden');
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            itemsContainer.innerHTML = cart.map((item, index) => {
+                subtotal += (item.price * item.qty);
+                totalItems += item.qty;
+                return `
+                    <div class="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 relative">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-md border border-gray-200">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-naturalBrown text-sm leading-tight pr-6">${item.name}</h4>
+                            <p class="text-xs text-gray-500 mb-2 mt-1">Weight: ${item.weight}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-maroon text-sm">₹${item.price}</span>
+                                <div class="flex items-center bg-white border border-gray-200 rounded-md shadow-sm">
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="minus">-</button>
+                                    <span class="px-2 text-sm font-semibold">${item.qty}</span>
+                                    <button class="px-2 py-0.5 text-gray-500 hover:text-maroon update-qty" data-index="${index}" data-action="plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="absolute top-3 right-3 text-gray-400 hover:text-red-500 remove-item" data-index="${index}"><i class="ph ph-trash text-lg"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.innerText = `₹${subtotal}`;
+            badgeEl.innerText = totalItems;
+            badgeEl.classList.remove('hidden');
+            checkoutBtn.disabled = false;
+
+            document.querySelectorAll('.update-qty').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    const action = e.target.getAttribute('data-action');
+                    if(action === 'plus') cart[idx].qty += 1;
+                    if(action === 'minus' && cart[idx].qty > 1) cart[idx].qty -= 1;
+                    saveCart();
+                });
+            });
+
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
+                    cart.splice(idx, 1);
+                    saveCart();
+                });
+            });
+        }
+
+        // Init cart rendering
+        renderCartUI();
+    </script>
+
+    <!-- FIREBASE AUTH & CHECKOUT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNVAJqAmAqXFLG_pUacvpkhvB99G9u7jc",
+            authDomain: "srishambhushaandsons.firebaseapp.com",
+            projectId: "srishambhushaandsons",
+            storageBucket: "srishambhushaandsons.firebasestorage.app",
+            messagingSenderId: "711660800708",
+            appId: "1:711660800708:web:1062afe7a0ca5ffde85791",
+            measurementId: "G-3EE0MXD090"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        let currentUser = null;
+
+        // AUTHENTICATION LISTENER
+        onAuthStateChanged(auth, (user) => {
+            const deskLink = document.getElementById('auth-link-desk');
+            const mobLink = document.getElementById('auth-link-mob');
+            
+            if (user) {
+                currentUser = user;
+                deskLink.innerHTML = `<button onclick="window.userLogout()" class="text-maroon font-bold hover:text-saffron transition-colors">Logout</button>`;
+                mobLink.innerHTML = `<button onclick="window.userLogout()" class="mobile-link block px-3 py-3 w-full text-left text-base font-medium text-red-600 hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Logout (${user.email || 'User'})</button>`;
+            } else {
+                currentUser = null;
+                deskLink.innerHTML = `<a href="login.html" class="text-naturalBrown hover:text-maroon font-bold transition-colors">Login / Signup</a>`;
+                mobLink.innerHTML = `<a href="login.html" class="mobile-link block px-3 py-3 text-base font-medium text-naturalBrown hover:bg-maroon hover:text-cream rounded-md border-b border-gray-100">Login / Signup</a>`;
+            }
+        });
+
+        window.userLogout = function() {
+            signOut(auth).then(() => window.location.reload());
+        }
+
+        // CHECKOUT FLOW WITH AUTH CHECK
+        window.proceedToCheckoutFlow = function() {
+            if (currentUser) {
+                // Logged in, proceed directly
+                window.location.href = "checkout.html";
+            } else {
+                // Not logged in, show Guest Checkout Modal
+                document.getElementById('guest-checkout-modal').classList.remove('hidden');
+                document.getElementById('guest-checkout-modal').classList.add('flex');
+                toggleCart(); // Close cart drawer to focus on modal
+            }
+        }
+    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const els = document.querySelectorAll('.about-premium-reveal');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+  const io = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  els.forEach(el => io.observe(el));
+});
+</script>
+
+<script id="footer-only-animation-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const footer=document.querySelector('footer');
+  if(!footer) return;
+  const showFooter=()=>{
+    footer.classList.add('footer-visible');
+    observer.disconnect();
+  };
+  const observer=new IntersectionObserver((entries)=>{
+    if(entries.some(entry=>entry.isIntersecting)) showFooter();
+  },{threshold:.12});
+  observer.observe(footer);
+});
+</script>
+
+</body>
+</html>
